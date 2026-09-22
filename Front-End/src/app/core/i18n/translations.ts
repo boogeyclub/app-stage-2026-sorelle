@@ -23,6 +23,34 @@ export const TRANSLATIONS = {
         french: 'FR'
       }
     },
+    notifications: {
+      outletAria: 'Notifications',
+      dismiss: 'Dismiss notification',
+      types: {
+        loading: 'In progress',
+        success: 'Success',
+        error: 'Error',
+        warning: 'Attention',
+        info: 'Information'
+      },
+      forms: {
+        invalid: 'Review the highlighted fields before continuing.'
+      },
+      api: {
+        requestFailed: 'We could not complete the request. Please try again.'
+      },
+      registration: {
+        starting: 'Creating your account…',
+        success: 'Your registration request was accepted. Check your email to confirm it.'
+      },
+      login: {
+        starting: 'Checking your credentials…',
+        success: 'You are signed in.'
+      },
+      language: {
+        changed: 'Language changed to {{language}}.'
+      }
+    },
     landing: {
       brandTagline: 'Trade with intent',
       navigation: {
@@ -228,6 +256,34 @@ export const TRANSLATIONS = {
       languageCodes: {
         english: 'EN',
         french: 'FR'
+      }
+    },
+    notifications: {
+      outletAria: 'Notifications',
+      dismiss: 'Fermer la notification',
+      types: {
+        loading: 'En cours',
+        success: 'Succès',
+        error: 'Erreur',
+        warning: 'Attention',
+        info: 'Information'
+      },
+      forms: {
+        invalid: 'Vérifiez les champs mis en évidence avant de continuer.'
+      },
+      api: {
+        requestFailed: 'Nous n’avons pas pu terminer la demande. Réessayez.'
+      },
+      registration: {
+        starting: 'Création de votre compte…',
+        success: 'Votre demande d’inscription a été acceptée. Consultez votre e-mail pour la confirmer.'
+      },
+      login: {
+        starting: 'Vérification de vos identifiants…',
+        success: 'Vous êtes connecté(e).'
+      },
+      language: {
+        changed: 'La langue a été changée pour {{language}}.'
       }
     },
     landing: {

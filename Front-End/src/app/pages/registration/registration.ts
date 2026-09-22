@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ApiErrorResponse, AuthApiService, RegistrableUserRole } from '../../core/auth/auth-api.service';
 import { TranslationService } from '../../core/i18n/translation.service';
+import { NotificationService } from '../../core/notifications/notification.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher';
 
 const passwordsMatch: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -24,6 +25,7 @@ const passwordsMatch: ValidatorFn = (control: AbstractControl): ValidationErrors
 export class RegistrationComponent {
   protected readonly i18n = inject(TranslationService);
   private readonly authApi = inject(AuthApiService);
+  private readonly notifications = inject(NotificationService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly title = inject(Title);
 
@@ -62,6 +64,7 @@ export class RegistrationComponent {
 
     if (this.registrationForm.invalid) {
       this.registrationForm.markAllAsTouched();
+      this.notifications.warning({ key: 'notifications.forms.invalid' });
       return;
     }
 
@@ -79,6 +82,11 @@ export class RegistrationComponent {
       acceptTerms: formValue.acceptTerms,
       language: this.i18n.language()
     }).pipe(
+      this.notifications.trackApiCall({
+        start: { key: 'notifications.registration.starting' },
+        success: { key: 'notifications.registration.success' },
+        error: (error) => ({ key: this.errorTranslationKey(error) })
+      }),
       finalize(() => this.isSubmitting.set(false))
     ).subscribe({
       next: (response) => {

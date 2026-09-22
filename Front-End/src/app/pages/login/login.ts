@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ApiErrorResponse, AuthApiService } from '../../core/auth/auth-api.service';
 import { TranslationService } from '../../core/i18n/translation.service';
+import { NotificationService } from '../../core/notifications/notification.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher';
 
 @Component({
@@ -17,6 +18,7 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
 export class LoginComponent {
   protected readonly i18n = inject(TranslationService);
   private readonly authApi = inject(AuthApiService);
+  private readonly notifications = inject(NotificationService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly title = inject(Title);
 
@@ -47,6 +49,7 @@ export class LoginComponent {
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      this.notifications.warning({ key: 'notifications.forms.invalid' });
       return;
     }
 
@@ -58,6 +61,11 @@ export class LoginComponent {
       password: formValue.password,
       rememberMe: formValue.rememberMe
     }).pipe(
+      this.notifications.trackApiCall({
+        start: { key: 'notifications.login.starting' },
+        success: { key: 'notifications.login.success' },
+        error: (error) => ({ key: this.errorTranslationKey(error) })
+      }),
       finalize(() => this.isSubmitting.set(false))
     ).subscribe({
       next: (user) => {
