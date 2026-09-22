@@ -49,6 +49,112 @@ CREATE TABLE IF NOT EXISTS gu.basic_rights (
     CONSTRAINT uq_basic_rights_code UNIQUE (code)
 );
 
+-- Table: Associations between user types and basic rights
+CREATE TABLE IF NOT EXISTS gu.type_utilisateur_basic_right (
+    type_utilisateur_id BIGINT NOT NULL REFERENCES gu.type_utilisateur(id),
+    basic_right_id BIGINT NOT NULL REFERENCES gu.basic_rights(id),
+    "dateCreation" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (type_utilisateur_id, basic_right_id)
+);
+
+-- An ADMINISTRATEUR type receives every existing basic right.
+CREATE OR REPLACE FUNCTION gu.assign_all_basic_rights_to_administrateur()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.code = 'ADMINISTRATEUR' THEN
+        INSERT INTO gu.type_utilisateur_basic_right (type_utilisateur_id, basic_right_id)
+        SELECT NEW.id, br.id
+        FROM gu.basic_rights AS br
+        ON CONFLICT DO NOTHING;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_type_utilisateur_assign_administrateur_rights ON gu.type_utilisateur;
+
+CREATE TRIGGER trg_type_utilisateur_assign_administrateur_rights
+AFTER INSERT OR UPDATE OF code ON gu.type_utilisateur
+FOR EACH ROW
+EXECUTE FUNCTION gu.assign_all_basic_rights_to_administrateur();
+
+-- Every newly-created basic right is automatically assigned to ADMINISTRATEUR.
+CREATE OR REPLACE FUNCTION gu.assign_basic_right_to_administrateur()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    INSERT INTO gu.type_utilisateur_basic_right (type_utilisateur_id, basic_right_id)
+    SELECT tu.id, NEW.id
+    FROM gu.type_utilisateur AS tu
+    WHERE tu.code = 'ADMINISTRATEUR'
+    ON CONFLICT DO NOTHING;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_basic_right_assign_administrateur ON gu.basic_rights;
+
+CREATE TRIGGER trg_basic_right_assign_administrateur
+AFTER INSERT ON gu.basic_rights
+FOR EACH ROW
+EXECUTE FUNCTION gu.assign_basic_right_to_administrateur();
+
+-- Basic rights cannot be removed or reassigned from the ADMINISTRATEUR type.
+CREATE OR REPLACE FUNCTION gu.prevent_administrateur_basic_right_change()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM gu.type_utilisateur AS tu
+        WHERE tu.id = OLD.type_utilisateur_id
+          AND tu.code = 'ADMINISTRATEUR'
+    ) THEN
+        RAISE EXCEPTION 'Basic rights cannot be removed or reassigned from the ADMINISTRATEUR type.';
+    END IF;
+
+    IF TG_OP = 'DELETE' THEN
+        RETURN OLD;
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_type_utilisateur_basic_right_protect_administrateur ON gu.type_utilisateur_basic_right;
+
+CREATE TRIGGER trg_type_utilisateur_basic_right_protect_administrateur
+BEFORE DELETE OR UPDATE ON gu.type_utilisateur_basic_right
+FOR EACH ROW
+EXECUTE FUNCTION gu.prevent_administrateur_basic_right_change();
+
+-- The first basic right: every user type can connect to the application.
+INSERT INTO gu.basic_rights (code, br_name)
+VALUES ('APP-CONN', 'Connexion a l''application CacaoMARKETCM')
+ON CONFLICT (code) DO UPDATE
+SET br_name = EXCLUDED.br_name;
+
+INSERT INTO gu.type_utilisateur_basic_right (type_utilisateur_id, basic_right_id)
+SELECT tu.id, br.id
+FROM gu.type_utilisateur AS tu
+CROSS JOIN gu.basic_rights AS br
+WHERE br.code = 'APP-CONN'
+ON CONFLICT DO NOTHING;
+
+-- Ensure ADMINISTRATEUR is associated with every existing basic right.
+INSERT INTO gu.type_utilisateur_basic_right (type_utilisateur_id, basic_right_id)
+SELECT tu.id, br.id
+FROM gu.type_utilisateur AS tu
+CROSS JOIN gu.basic_rights AS br
+WHERE tu.code = 'ADMINISTRATEUR'
+ON CONFLICT DO NOTHING;
+
 -- Table: Password history
 -- Each password row belongs to one utilisateur and preserves the complete password history.
 CREATE TABLE IF NOT EXISTS gu.password_history (

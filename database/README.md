@@ -12,7 +12,7 @@ This directory keeps database SQL under version control before it is executed.
 
 | Schema | Script | Tables |
 | --- | --- | --- |
-| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `basic_rights`, `password_history` |
+| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
 
 ## User types
 
@@ -39,15 +39,25 @@ This directory keeps database SQL under version control before it is executed.
 | `statut` | Account status, defaulting to `ACTIF` |
 | `dateCreation` | Timestamp set when the row is created |
 
-## Basic rights
+## Basic rights and type associations
 
-`gu.basic_rights` stores the initial rights catalog:
+`gu.basic_rights` stores the rights catalog.
 
 | Column | Purpose |
 | --- | --- |
 | `id` | Identity primary key |
 | `code` | Unique, stable right code |
 | `br_name` | Human-readable basic-right name |
+
+`gu.type_utilisateur_basic_right` manages the many-to-many association between a user type and its basic rights. Its composite primary key is `(type_utilisateur_id, basic_right_id)`.
+
+The initial right is seeded as follows:
+
+```text
+APP-CONN — Connexion a l'application CacaoMARKETCM
+```
+
+`APP-CONN` is associated with every user type so all users can connect to the application. `ADMINISTRATEUR` is automatically associated with every basic right, including any added in the future. A database trigger prevents an administrator right from being removed or reassigned.
 
 ## Password history
 
