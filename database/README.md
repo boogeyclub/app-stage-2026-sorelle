@@ -14,7 +14,18 @@ This directory keeps database SQL under version control before it is executed.
 | --- | --- | --- |
 | `gu` | [`gu.sql`](./gu.sql) | `client`, `administrateur`, `vendeur` |
 
-The three initial tables keep authentication data in `mot_de_passe_hash`; passwords must never be stored in plaintext.
+Each of the three tables uses the same initial columns:
+
+| Column | Purpose |
+| --- | --- |
+| `id` | Identity primary key |
+| `nom` | Last name |
+| `prenom` | First name |
+| `email` | Unique email address |
+| `login` | Unique login name |
+| `password` | Password hash only; never plaintext |
+| `statut` | Account status, defaulting to `ACTIF` |
+| `dateCreation` | Timestamp set when the row is created |
 
 To apply a script manually to the local database, run it from the repository root:
 
