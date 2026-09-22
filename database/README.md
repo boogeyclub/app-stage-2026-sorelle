@@ -12,19 +12,30 @@ This directory keeps database SQL under version control before it is executed.
 
 | Schema | Script | Tables |
 | --- | --- | --- |
-| `gu` | [`gu.sql`](./gu.sql) | `client`, `administrateur`, `vendeur`, `password_history` |
+| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `basic_rights`, `password_history` |
 
-## Account tables
+## User types
 
-The `client`, `administrateur`, and `vendeur` tables share these initial columns:
+`gu.type_utilisateur` is the user-type lookup table. Its seeded values determine whether an `utilisateurs` row is a `CLIENT`, `VENDEUR`, or `ADMINISTRATEUR`.
 
 | Column | Purpose |
 | --- | --- |
 | `id` | Identity primary key |
+| `code` | Unique role code: `CLIENT`, `VENDEUR`, or `ADMINISTRATEUR` |
+| `tu_name` | Human-readable user-type name |
+
+## Utilisateurs
+
+`gu.utilisateurs` replaces the separate `client`, `vendeur`, and `administrateur` tables. Each row references one user type through `type_utilisateur_id`.
+
+| Column | Purpose |
+| --- | --- |
+| `id` | Identity primary key |
+| `type_utilisateur_id` | Required reference to `type_utilisateur` |
 | `nom` | Last name |
 | `prenom` | First name |
-| `email` | Unique email address |
-| `login` | Unique login name |
+| `email` | Globally unique email address |
+| `login` | Globally unique login name |
 | `statut` | Account status, defaulting to `ACTIF` |
 | `dateCreation` | Timestamp set when the row is created |
 
@@ -40,15 +51,15 @@ The `client`, `administrateur`, and `vendeur` tables share these initial columns
 
 ## Password history
 
-Passwords are stored only in `gu.password_history`, not in the account tables.
+Passwords are stored only in `gu.password_history`, not in `utilisateurs`.
 
-- Each row references exactly one account through `client_id`, `administrateur_id`, or `vendeur_id`.
+- Each row references one account through `utilisateur_id`.
 - `password` must contain a secure password hash, never a plaintext password.
-- The quoted `"current"` boolean identifies the active password for that account.
+- The quoted `"current"` boolean identifies the active password for that user.
 - `date_insertion` records when the password was added.
 - `date_changement` records when a current password was replaced and became an old password.
 - A database trigger automatically archives the previous current password when a new current password row is inserted.
-- A unique partial index prevents more than one current password for the same account.
+- A unique partial index prevents more than one current password for the same user.
 
 To apply a script manually to the local database, run it from the repository root:
 
