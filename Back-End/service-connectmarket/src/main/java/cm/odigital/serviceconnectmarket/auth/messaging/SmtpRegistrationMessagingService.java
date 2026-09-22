@@ -18,28 +18,34 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final RegistrationProperties registrationProperties;
     private final String mailHost;
+    private final String mailUsername;
+    private final String mailPassword;
 
     public SmtpRegistrationMessagingService(
         ObjectProvider<JavaMailSender> mailSenderProvider,
         RegistrationProperties registrationProperties,
-        @Value("${spring.mail.host:}") String mailHost
+        @Value("${spring.mail.host:}") String mailHost,
+        @Value("${spring.mail.username:}") String mailUsername,
+        @Value("${spring.mail.password:}") String mailPassword
     ) {
         this.mailSenderProvider = mailSenderProvider;
         this.registrationProperties = registrationProperties;
         this.mailHost = mailHost;
+        this.mailUsername = mailUsername;
+        this.mailPassword = mailPassword;
     }
 
     @Override
     public void sendConfirmation(RegistrationConfirmationMessage confirmation) {
-        if (!StringUtils.hasText(mailHost)) {
+        if (!isConfigured()) {
             throw AuthException.unavailable(
                 "REGISTRATION_MAIL_DELIVERY_UNAVAILABLE",
-                "Registration email delivery is not configured."
+                "Google SMTP email delivery is not configured."
             );
         }
 
         SimpleMailMessage email = new SimpleMailMessage();
-        email.setFrom(registrationProperties.getMailFrom());
+        email.setFrom(senderAddress());
         email.setTo(confirmation.recipientEmail());
         email.setSubject(subjectFor(confirmation.language()));
         email.setText(bodyFor(confirmation));
@@ -60,6 +66,18 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
                 "The registration confirmation email could not be sent."
             );
         }
+    }
+
+    private boolean isConfigured() {
+        return StringUtils.hasText(mailHost)
+            && StringUtils.hasText(mailUsername)
+            && StringUtils.hasText(mailPassword);
+    }
+
+    private String senderAddress() {
+        return StringUtils.hasText(registrationProperties.getMailFrom())
+            ? registrationProperties.getMailFrom()
+            : mailUsername;
     }
 
     private String subjectFor(RegistrationLanguage language) {

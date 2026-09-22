@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class RegistrationProperties {
 
     private String confirmationUrl = "http://localhost:8080/api/auth/registration/confirm";
-    private String mailFrom = "no-reply@cacaomarket.local";
+    private String mailFrom = "";
     private String cleanupInterval = "PT1M";
 
     public String getConfirmationUrl() {

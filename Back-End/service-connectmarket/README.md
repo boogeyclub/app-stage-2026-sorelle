@@ -6,7 +6,7 @@ This Spring service owns the first account flow for `CLIENT` and `VENDEUR` rows 
 
 1. `POST /api/auth/registration` validates a `CLIENT` or `VENDEUR` registration.
 2. The service writes an `EN_ATTENTE_CONFIRMATION` row in `gu.utilisateurs`, stores a BCrypt password hash in `gu.password_history`, and stores only the SHA-256 hash of a cryptographically random confirmation token in `gu.registration_confirmation`.
-3. The messaging module sends a single-use confirmation URL by SMTP. The URL is valid for exactly **3 hours**.
+3. The messaging module sends a single-use confirmation URL through Google Gmail SMTP. The URL is valid for exactly **3 hours**.
 4. `GET /api/auth/registration/confirm?token=...` activates the user (`ACTIF`) when the token is valid.
 5. A scheduler runs every minute, and registration/authentication requests also perform cleanup. Any unconfirmed expired registration is denied and its `utilisateurs`, `password_history`, and confirmation rows are removed transactionally.
 
@@ -64,11 +64,52 @@ Only active `CLIENT` and `VENDEUR` accounts with a valid current password and th
 
 `POST /api/auth/logout` invalidates the active HTTP session.
 
-## SMTP configuration
+## Google Gmail SMTP configuration
 
-Copy `.env.example` to an untracked `.env` file and fill in the SMTP settings. Registration deliberately fails with `503 REGISTRATION_MAIL_DELIVERY_UNAVAILABLE` when SMTP is absent or cannot deliver: this rolls back the pending account instead of leaving an unconfirmable account in the database.
+The reusable registration messaging module is [`SmtpRegistrationMessagingService`](src/main/java/cm/odigital/serviceconnectmarket/auth/messaging/SmtpRegistrationMessagingService.java). It uses Spring's `JavaMailSender` with Gmail's authenticated SMTP server (`smtp.gmail.com`, port `587`, STARTTLS) and sends each registration confirmation email through that account.
 
-Set `REGISTRATION_CONFIRMATION_URL` to the public backend confirmation endpoint that should be included in emails. Do not include a token in that environment variable; the service appends a fresh secure token.
+### Where to set the Google email and App Password
+
+Set them only in this local, ignored file:
+
+```text
+Back-End/service-connectmarket/.env
+```
+
+Start from the tracked template:
+
+```bash
+cd Back-End/service-connectmarket
+cp .env.example .env
+```
+
+Then edit these values in `.env`:
+
+```properties
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=your-google-address@gmail.com
+MAIL_PASSWORD=your-16-character-google-app-password
+MAIL_SMTP_AUTH=true
+MAIL_STARTTLS=true
+MAIL_STARTTLS_REQUIRED=true
+REGISTRATION_MAIL_FROM=your-google-address@gmail.com
+```
+
+Do **not** put the App Password in `application.properties`, commit `.env`, or use the normal Google account password. The repository ignores `.env` intentionally.
+
+### Create the Google App Password
+
+1. Enable **2-Step Verification** for the Google account that will send CacaoMarket mail.
+2. Open [Google App Passwords](https://myaccount.google.com/apppasswords), create an App Password, and copy the generated 16-character value.
+3. Paste that generated value into `MAIL_PASSWORD` in `Back-End/service-connectmarket/.env`. If Google displays it in groups, paste it without spaces.
+4. Set `REGISTRATION_MAIL_FROM` to the same Gmail/Google Workspace mailbox or to an alias verified by that account. You may leave it blank to use `MAIL_USERNAME` automatically.
+
+For Google Workspace accounts, App Password availability can be disabled by the organization administrator. If it is unavailable, ask the administrator to permit it or use an approved SMTP relay/OAuth configuration instead.
+
+Set `REGISTRATION_CONFIRMATION_URL` in the same `.env` file to the public backend confirmation endpoint that should be included in emails. Do not include a token in that environment variable; the service appends a fresh secure token.
+
+Registration deliberately fails with `503 REGISTRATION_MAIL_DELIVERY_UNAVAILABLE` when Gmail SMTP is absent or cannot deliver. The transaction rolls back so the application never leaves an unconfirmable pending account in the database.
 
 ## Database setup
 
