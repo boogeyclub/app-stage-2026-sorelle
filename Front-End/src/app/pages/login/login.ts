@@ -1,7 +1,10 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+import { ApiErrorResponse, AuthApiService } from '../../core/auth/auth-api.service';
 import { TranslationService } from '../../core/i18n/translation.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher';
 
@@ -13,11 +16,16 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
 })
 export class LoginComponent {
   protected readonly i18n = inject(TranslationService);
+  private readonly authApi = inject(AuthApiService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly title = inject(Title);
 
   protected readonly passwordVisible = signal(false);
   protected readonly submitted = signal(false);
+  protected readonly isSubmitting = signal(false);
+  protected readonly loginState = signal<'idle' | 'success' | 'error'>('idle');
+  protected readonly authenticatedName = signal('');
+  protected readonly loginErrorKey = signal<string | null>(null);
   protected readonly loginForm = this.formBuilder.nonNullable.group({
     identity: ['', [Validators.required]],
     password: ['', [Validators.required, Validators.minLength(8)]],
@@ -29,15 +37,66 @@ export class LoginComponent {
   }
 
   protected submit(): void {
+    if (this.isSubmitting()) {
+      return;
+    }
+
     this.submitted.set(true);
+    this.loginState.set('idle');
+    this.loginErrorKey.set(null);
 
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
+      return;
     }
+
+    const formValue = this.loginForm.getRawValue();
+    this.isSubmitting.set(true);
+
+    this.authApi.login({
+      identity: formValue.identity.trim(),
+      password: formValue.password,
+      rememberMe: formValue.rememberMe
+    }).pipe(
+      finalize(() => this.isSubmitting.set(false))
+    ).subscribe({
+      next: (user) => {
+        this.authenticatedName.set(user.prenom);
+        this.loginState.set('success');
+        this.passwordVisible.set(false);
+        this.loginForm.controls.password.reset();
+      },
+      error: (error: unknown) => {
+        this.loginErrorKey.set(this.errorTranslationKey(error));
+        this.loginState.set('error');
+      }
+    });
   }
 
   protected hasError(controlName: 'identity' | 'password', error: string): boolean {
     const control = this.loginForm.controls[controlName];
     return control.hasError(error) && (control.touched || this.submitted());
+  }
+
+  private errorTranslationKey(error: unknown): string {
+    const code = error instanceof HttpErrorResponse && this.isApiError(error.error)
+      ? error.error.code
+      : undefined;
+
+    switch (code) {
+      case 'INVALID_CREDENTIALS':
+        return 'auth.login.errors.invalidCredentials';
+      case 'REGISTRATION_PENDING_CONFIRMATION':
+        return 'auth.login.errors.pendingConfirmation';
+      default:
+        return 'auth.login.errors.requestFailed';
+    }
+  }
+
+  private isApiError(value: unknown): value is ApiErrorResponse {
+    return typeof value === 'object'
+      && value !== null
+      && 'code' in value
+      && typeof value.code === 'string';
   }
 }

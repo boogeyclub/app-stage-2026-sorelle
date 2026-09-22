@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
@@ -8,7 +9,7 @@ describe('RegistrationComponent', () => {
   it('requires matching passwords before registration is valid', async () => {
     await TestBed.configureTestingModule({
       imports: [RegistrationComponent],
-      providers: [provideRouter([])]
+      providers: [provideRouter([]), provideHttpClient()]
     }).compileComponents();
 
     const i18n = TestBed.inject(TranslationService);
@@ -45,7 +46,7 @@ describe('RegistrationComponent', () => {
   it('renders the registration content, validation text, and document title in French', async () => {
     await TestBed.configureTestingModule({
       imports: [RegistrationComponent],
-      providers: [provideRouter([])]
+      providers: [provideRouter([]), provideHttpClient()]
     }).compileComponents();
 
     const i18n = TestBed.inject(TranslationService);

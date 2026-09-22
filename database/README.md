@@ -12,7 +12,7 @@ This directory keeps database SQL under version control before it is executed.
 
 | Schema | Script | Tables |
 | --- | --- | --- |
-| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
+| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `registration_confirmation`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
 
 ## User types
 
@@ -36,8 +36,24 @@ This directory keeps database SQL under version control before it is executed.
 | `prenom` | First name |
 | `email` | Globally unique email address |
 | `login` | Globally unique login name |
-| `statut` | Account status, defaulting to `ACTIF` |
+| `statut` | Account status, defaulting to `ACTIF`; unconfirmed registrations use `EN_ATTENTE_CONFIRMATION` |
 | `dateCreation` | Timestamp set when the row is created |
+
+Email and login identities also have case-insensitive unique indexes so that `buyer@example.com` and `BUYER@example.com` cannot become separate accounts.
+
+## Registration confirmations
+
+`gu.registration_confirmation` holds the one-time confirmation state for a pending registration.
+
+| Column | Purpose |
+| --- | --- |
+| `utilisateur_id` | Unique reference to the pending `utilisateurs` row |
+| `token_hash` | SHA-256 hash of the email token; the raw token is never persisted |
+| `expires_at` | Exact confirmation deadline, set to three hours after registration |
+| `confirmed_at` | Timestamp written only after a successful confirmation |
+| `date_creation` | Timestamp when the confirmation record was created |
+
+The backend creates `CLIENT` and `VENDEUR` registrations with `statut = EN_ATTENTE_CONFIRMATION`. A scheduled cleanup and every registration/authentication request remove any unconfirmed expired account together with its password history. A valid confirmation sets the status to `ACTIF`; only then can the account authenticate through the `APP-CONN` basic right.
 
 ## Basic rights and type associations
 

@@ -56,7 +56,8 @@
         "serve": {
           "builder": "@angular/build:dev-server",
           "options": {
-            "servePath": "/CacaoMarket/"
+            "servePath": "/CacaoMarket/",
+            "proxyConfig": "proxy.conf.json"
           },
           "configurations": {
             "production": {

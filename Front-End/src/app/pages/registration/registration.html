@@ -32,6 +32,18 @@
         <h1 class="mt-5 max-w-2xl text-3xl font-black tracking-[-0.05em] text-cacao-ink sm:text-4xl">{{ i18n.t('auth.registration.title') }}</h1>
         <p class="mt-4 max-w-2xl leading-7 text-cacao-brown">{{ i18n.t('auth.registration.description') }}</p>
 
+        @if (registrationState() === 'success') {
+          <div class="mt-6 rounded-2xl border border-emerald-500/35 bg-emerald-50 p-4 text-sm leading-6 text-emerald-950" role="status" aria-live="polite">
+            <p class="font-extrabold">{{ i18n.t('auth.registration.confirmationSent', { email: registrationEmail() }) }}</p>
+            <p class="mt-1">{{ i18n.t('auth.registration.confirmationExpiry') }}</p>
+          </div>
+        }
+        @if (registrationState() === 'error' && registrationErrorKey(); as errorKey) {
+          <div class="mt-6 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm leading-6 text-red-800" role="alert">
+            {{ i18n.t(errorKey) }}
+          </div>
+        }
+
         <form class="mt-8" [formGroup]="registrationForm" (ngSubmit)="submit()" novalidate>
           <fieldset>
             <legend class="text-sm font-extrabold text-cacao-ink">{{ i18n.t('auth.registration.chooseRole') }}</legend>
@@ -125,8 +137,8 @@
           </label>
           @if (hasError('acceptTerms', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.agreementRequired') }}</p> }
 
-          <button class="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-cacao-gold px-5 py-3.5 text-sm font-extrabold text-cacao-ink shadow-[0_12px_24px_rgba(93,53,25,0.16)] transition hover:-translate-y-0.5 hover:bg-cacao-yellow focus:outline-none focus:ring-4 focus:ring-cacao-gold/35" type="submit">
-            {{ i18n.t('auth.registration.submit') }}
+          <button class="mt-7 inline-flex w-full items-center justify-center rounded-2xl bg-cacao-gold px-5 py-3.5 text-sm font-extrabold text-cacao-ink shadow-[0_12px_24px_rgba(93,53,25,0.16)] transition hover:-translate-y-0.5 hover:bg-cacao-yellow focus:outline-none focus:ring-4 focus:ring-cacao-gold/35 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:bg-cacao-gold" type="submit" [disabled]="isSubmitting() || registrationState() === 'success'">
+            {{ i18n.t(isSubmitting() ? 'auth.registration.submitting' : 'auth.registration.submit') }}
             <svg class="ml-2 size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
         </form>

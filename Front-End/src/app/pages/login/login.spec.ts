@@ -1,3 +1,4 @@
+import { provideHttpClient } from '@angular/common/http';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
@@ -8,7 +9,7 @@ describe('LoginComponent', () => {
   it('requires a valid identity and password before the form is valid', async () => {
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
-      providers: [provideRouter([])]
+      providers: [provideRouter([]), provideHttpClient()]
     }).compileComponents();
 
     const i18n = TestBed.inject(TranslationService);
@@ -30,7 +31,7 @@ describe('LoginComponent', () => {
   it('renders the login content and document title in French', async () => {
     await TestBed.configureTestingModule({
       imports: [LoginComponent],
-      providers: [provideRouter([])]
+      providers: [provideRouter([]), provideHttpClient()]
     }).compileComponents();
 
     const i18n = TestBed.inject(TranslationService);
@@ -44,7 +45,7 @@ describe('LoginComponent', () => {
     const password = nativeElement.querySelector('#login-password') as HTMLInputElement;
 
     expect(nativeElement.textContent).toContain('Connectez-vous pour faire avancer votre commerce du cacao.');
-    expect(nativeElement.textContent).toContain('Rester connecté');
+    expect(nativeElement.textContent).toContain('Garder cette session active plus longtemps');
     expect(identity.placeholder).toBe('vous@exemple.com ou votre identifiant');
     expect(password.placeholder).toBe('Saisissez votre mot de passe');
     expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Connexion');

@@ -10,7 +10,11 @@ To start a local development server, run:
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Once the server is running, open your browser and navigate to `http://localhost:4200/CacaoMarket/`. The application will automatically reload whenever you modify any of the source files.
+
+## Authentication API proxy
+
+The registration and login pages call relative `/api/auth/...` endpoints. During `ng serve`, [`proxy.conf.json`](./proxy.conf.json) forwards those requests to the Spring service at `http://localhost:8080`, so browser-facing code never calls `localhost` directly. Start the backend service and configure its SMTP `.env` file before submitting a registration.
 
 ## Code scaffolding
 
