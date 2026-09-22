@@ -5,7 +5,7 @@ import { TranslationService } from '../../core/i18n/translation.service';
   selector: 'app-language-switcher',
   template: `
     <div
-      class="inline-flex rounded-full border border-stone-200 bg-stone-100/80 p-1"
+      class="inline-flex rounded-full border border-cacao-gold/40 bg-cacao-pale/80 p-1"
       role="group"
       [attr.aria-label]="i18n.t('common.languageSelector')"
     >
@@ -14,9 +14,9 @@ import { TranslationService } from '../../core/i18n/translation.service';
           class="rounded-full px-2.5 py-1 text-[0.68rem] font-extrabold tracking-[0.08em] transition sm:px-3"
           type="button"
           [class.bg-white]="i18n.language() === language.code"
-          [class.text-[#18352b]]="i18n.language() === language.code"
+          [class.text-cacao-ink]="i18n.language() === language.code"
           [class.shadow-sm]="i18n.language() === language.code"
-          [class.text-stone-500]="i18n.language() !== language.code"
+          [class.text-cacao-brown]="i18n.language() !== language.code"
           [attr.aria-pressed]="i18n.language() === language.code"
           [attr.aria-label]="i18n.t('common.switchToLanguage', { language: language.label })"
           (click)="i18n.setLanguage(language.code)"
