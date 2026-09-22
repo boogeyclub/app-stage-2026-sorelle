@@ -1,11 +1,12 @@
 import { Component, effect, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
+import { RouterLink } from '@angular/router';
 import { TranslationService } from '../../core/i18n/translation.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-landing',
-  imports: [LanguageSwitcherComponent],
+  imports: [LanguageSwitcherComponent, RouterLink],
   templateUrl: './landing.html',
   styleUrl: './landing.css'
 })

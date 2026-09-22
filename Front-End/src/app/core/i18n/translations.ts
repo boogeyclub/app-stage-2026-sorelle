@@ -4,7 +4,9 @@ export type TranslationDictionary = Record<string, TranslationNode>;
 export const TRANSLATIONS = {
   en: {
     meta: {
-      landingTitle: 'CacaoMarket | Cocoa trade with confidence'
+      landingTitle: 'CacaoMarket | Cocoa trade with confidence',
+      loginTitle: 'CacaoMarket | Sign in',
+      registrationTitle: 'CacaoMarket | Create your account'
     },
     common: {
       homeAria: 'CacaoMarket home',
@@ -26,7 +28,8 @@ export const TRANSLATIONS = {
         sourceCocoa: 'Source cocoa with intent',
         seeWhereYouFit: 'See where you fit',
         growCocoa: 'I grow cocoa',
-        sourceCocoaShort: 'I source cocoa'
+        sourceCocoaShort: 'I source cocoa',
+        signIn: 'Sign in'
       },
       hero: {
         badge: 'Built for serious cocoa trade',
@@ -115,11 +118,77 @@ export const TRANSLATIONS = {
         buyers: 'Buyers',
         about: 'About'
       }
+    },
+    auth: {
+      shared: {
+        secureAccess: 'Secure access for the cocoa market',
+        backToMarket: 'Back to CacaoMarket',
+        footer: 'CacaoMarket — cocoa trade with confidence',
+        profileProtection: 'Your account information is protected and used only to create your market profile.',
+        showPassword: 'Show password',
+        hidePassword: 'Hide password'
+      },
+      login: {
+        eyebrow: 'Welcome back',
+        title: 'Sign in to move cocoa trade forward.',
+        description: 'Access your CacaoMarket workspace to manage your profile, market activity, and conversations.',
+        identityLabel: 'Email address or login',
+        identityPlaceholder: 'you@example.com or your login',
+        passwordLabel: 'Password',
+        passwordPlaceholder: 'Enter your password',
+        rememberMe: 'Keep me signed in',
+        forgotPassword: 'Forgot password?',
+        submit: 'Sign in securely',
+        noAccount: 'New to CacaoMarket?',
+        createAccount: 'Create an account',
+        identityRequired: 'Enter your email address or login.',
+        passwordRequired: 'Enter your password.',
+        passwordMin: 'Your password must contain at least 8 characters.'
+      },
+      registration: {
+        eyebrow: 'Create your market profile',
+        title: 'Start your next cocoa trade with clarity.',
+        description: 'Create an account to present your interest in selling or sourcing commercial cocoa lots.',
+        chooseRole: 'How will you use CacaoMarket?',
+        sellerTitle: 'I want to sell cocoa',
+        sellerDescription: 'For farmers, cooperatives, and sellers with cocoa lots to present.',
+        buyerTitle: 'I want to source cocoa',
+        buyerDescription: 'For buyers and sourcing teams looking for commercial quantities.',
+        firstNameLabel: 'First name',
+        firstNamePlaceholder: 'Your first name',
+        lastNameLabel: 'Last name',
+        lastNamePlaceholder: 'Your last name',
+        emailLabel: 'Email address',
+        emailPlaceholder: 'you@example.com',
+        loginLabel: 'Choose a login',
+        loginPlaceholder: 'Your preferred login',
+        passwordLabel: 'Create a password',
+        passwordPlaceholder: 'At least 8 characters',
+        confirmPasswordLabel: 'Confirm password',
+        confirmPasswordPlaceholder: 'Repeat your password',
+        agreement: 'I agree to create a CacaoMarket account for market-related communication.',
+        submit: 'Create my account',
+        alreadyAccount: 'Already have an account?',
+        signIn: 'Sign in',
+        roleRequired: 'Choose how you will use CacaoMarket.',
+        firstNameRequired: 'Enter your first name.',
+        lastNameRequired: 'Enter your last name.',
+        emailRequired: 'Enter your email address.',
+        emailInvalid: 'Enter a valid email address.',
+        loginRequired: 'Choose a login.',
+        loginMin: 'Your login must contain at least 3 characters.',
+        passwordRequired: 'Create a password.',
+        passwordMin: 'Your password must contain at least 8 characters.',
+        passwordMismatch: 'The password confirmation does not match.',
+        agreementRequired: 'Please confirm your agreement to continue.'
+      }
     }
   },
   fr: {
     meta: {
-      landingTitle: 'CacaoMarket | Le commerce du cacao en toute confiance'
+      landingTitle: 'CacaoMarket | Le commerce du cacao en toute confiance',
+      loginTitle: 'CacaoMarket | Connexion',
+      registrationTitle: 'CacaoMarket | Créer votre compte'
     },
     common: {
       homeAria: 'Accueil CacaoMarket',
@@ -141,7 +210,8 @@ export const TRANSLATIONS = {
         sourceCocoa: 'S’approvisionner avec clarté',
         seeWhereYouFit: 'Voir comment participer',
         growCocoa: 'Je produis du cacao',
-        sourceCocoaShort: 'Je recherche du cacao'
+        sourceCocoaShort: 'Je recherche du cacao',
+        signIn: 'Se connecter'
       },
       hero: {
         badge: 'Pensé pour le commerce sérieux du cacao',
@@ -229,6 +299,70 @@ export const TRANSLATIONS = {
         farmers: 'Producteurs',
         buyers: 'Acheteurs',
         about: 'À propos'
+      }
+    },
+    auth: {
+      shared: {
+        secureAccess: 'Accès sécurisé au marché du cacao',
+        backToMarket: 'Retour à CacaoMarket',
+        footer: 'CacaoMarket — le commerce du cacao en toute confiance',
+        profileProtection: 'Vos informations sont protégées et utilisées uniquement pour créer votre profil de marché.',
+        showPassword: 'Afficher le mot de passe',
+        hidePassword: 'Masquer le mot de passe'
+      },
+      login: {
+        eyebrow: 'Bienvenue',
+        title: 'Connectez-vous pour faire avancer votre commerce du cacao.',
+        description: 'Accédez à votre espace CacaoMarket pour gérer votre profil, votre activité de marché et vos conversations.',
+        identityLabel: 'Adresse e-mail ou identifiant',
+        identityPlaceholder: 'vous@exemple.com ou votre identifiant',
+        passwordLabel: 'Mot de passe',
+        passwordPlaceholder: 'Saisissez votre mot de passe',
+        rememberMe: 'Rester connecté',
+        forgotPassword: 'Mot de passe oublié ?',
+        submit: 'Se connecter en toute sécurité',
+        noAccount: 'Nouveau sur CacaoMarket ?',
+        createAccount: 'Créer un compte',
+        identityRequired: 'Saisissez votre adresse e-mail ou votre identifiant.',
+        passwordRequired: 'Saisissez votre mot de passe.',
+        passwordMin: 'Votre mot de passe doit contenir au moins 8 caractères.'
+      },
+      registration: {
+        eyebrow: 'Créez votre profil de marché',
+        title: 'Préparez votre prochaine transaction cacao avec clarté.',
+        description: 'Créez un compte pour présenter votre intérêt à vendre ou à rechercher des lots de cacao commerciaux.',
+        chooseRole: 'Comment allez-vous utiliser CacaoMarket ?',
+        sellerTitle: 'Je souhaite vendre du cacao',
+        sellerDescription: 'Pour les producteurs, coopératives et vendeurs ayant des lots de cacao à présenter.',
+        buyerTitle: 'Je souhaite rechercher du cacao',
+        buyerDescription: 'Pour les acheteurs et équipes sourcing qui recherchent des quantités commerciales.',
+        firstNameLabel: 'Prénom',
+        firstNamePlaceholder: 'Votre prénom',
+        lastNameLabel: 'Nom',
+        lastNamePlaceholder: 'Votre nom',
+        emailLabel: 'Adresse e-mail',
+        emailPlaceholder: 'vous@exemple.com',
+        loginLabel: 'Choisissez un identifiant',
+        loginPlaceholder: 'Votre identifiant préféré',
+        passwordLabel: 'Créez un mot de passe',
+        passwordPlaceholder: 'Au moins 8 caractères',
+        confirmPasswordLabel: 'Confirmez le mot de passe',
+        confirmPasswordPlaceholder: 'Répétez votre mot de passe',
+        agreement: 'J’accepte de créer un compte CacaoMarket pour des échanges liés au marché.',
+        submit: 'Créer mon compte',
+        alreadyAccount: 'Vous avez déjà un compte ?',
+        signIn: 'Se connecter',
+        roleRequired: 'Choisissez comment vous utiliserez CacaoMarket.',
+        firstNameRequired: 'Saisissez votre prénom.',
+        lastNameRequired: 'Saisissez votre nom.',
+        emailRequired: 'Saisissez votre adresse e-mail.',
+        emailInvalid: 'Saisissez une adresse e-mail valide.',
+        loginRequired: 'Choisissez un identifiant.',
+        loginMin: 'Votre identifiant doit contenir au moins 3 caractères.',
+        passwordRequired: 'Créez un mot de passe.',
+        passwordMin: 'Votre mot de passe doit contenir au moins 8 caractères.',
+        passwordMismatch: 'La confirmation du mot de passe ne correspond pas.',
+        agreementRequired: 'Veuillez confirmer votre accord pour continuer.'
       }
     }
   }

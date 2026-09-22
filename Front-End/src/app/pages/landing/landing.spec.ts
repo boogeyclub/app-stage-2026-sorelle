@@ -1,11 +1,13 @@
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { TranslationService } from '../../core/i18n/translation.service';
 import { LandingComponent } from './landing';
 
 describe('LandingComponent', () => {
   async function createComponent() {
     await TestBed.configureTestingModule({
-      imports: [LandingComponent]
+      imports: [LandingComponent],
+      providers: [provideRouter([])]
     }).compileComponents();
 
     const i18n = TestBed.inject(TranslationService);

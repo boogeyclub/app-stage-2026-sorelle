@@ -22,8 +22,9 @@
       </nav>
 
       <div class="flex items-center gap-2 sm:gap-3">
+        <a class="hidden text-sm font-extrabold text-cacao-roast transition hover:text-cacao-ink sm:inline" routerLink="/login">{{ i18n.t('landing.actions.signIn') }}</a>
         <app-language-switcher />
-        <a class="hidden items-center justify-center rounded-full bg-cacao-gold px-4 py-2.5 text-sm font-bold text-cacao-ink shadow-[0_8px_18px_rgba(59,33,23,0.16)] transition hover:-translate-y-0.5 hover:bg-cacao-yellow sm:inline-flex sm:px-5" href="#get-started">
+        <a class="hidden items-center justify-center rounded-full bg-cacao-gold px-4 py-2.5 text-sm font-bold text-cacao-ink shadow-[0_8px_18px_rgba(59,33,23,0.16)] transition hover:-translate-y-0.5 hover:bg-cacao-yellow sm:inline-flex sm:px-5" routerLink="/registration">
           {{ i18n.t('landing.actions.joinMarket') }}
           <svg class="ml-2 size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -57,13 +58,13 @@
           </p>
 
           <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-            <a class="group inline-flex items-center justify-center rounded-full bg-cacao-gold px-6 py-3.5 text-sm font-bold text-cacao-ink shadow-[0_12px_24px_rgba(59,33,23,0.2)] transition hover:-translate-y-0.5 hover:bg-cacao-yellow" href="#get-started">
+            <a class="group inline-flex items-center justify-center rounded-full bg-cacao-gold px-6 py-3.5 text-sm font-bold text-cacao-ink shadow-[0_12px_24px_rgba(59,33,23,0.2)] transition hover:-translate-y-0.5 hover:bg-cacao-yellow" routerLink="/registration">
               {{ i18n.t('landing.actions.listBatch') }}
               <svg class="ml-2 size-4 transition-transform group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
             </a>
-            <a class="inline-flex items-center justify-center rounded-full border border-cacao-gold/65 bg-white px-6 py-3.5 text-sm font-bold text-cacao-ink transition hover:border-cacao-ink hover:bg-cacao-cream" href="#for-buyers">
+            <a class="inline-flex items-center justify-center rounded-full border border-cacao-gold/65 bg-white px-6 py-3.5 text-sm font-bold text-cacao-ink transition hover:border-cacao-ink hover:bg-cacao-cream" routerLink="/registration">
               {{ i18n.t('landing.actions.sourceCocoa') }}
             </a>
           </div>
@@ -193,7 +194,7 @@
           <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-cacao-yellow">{{ i18n.t('landing.process.eyebrow') }}</p>
           <h2 class="mt-4 max-w-md text-3xl font-black tracking-[-0.05em] sm:text-5xl">{{ i18n.t('landing.process.title') }}</h2>
           <p class="mt-6 max-w-md text-lg leading-8 text-cacao-cream/80">{{ i18n.t('landing.process.description') }}</p>
-          <a class="mt-8 inline-flex items-center rounded-full border border-white/25 px-5 py-3 text-sm font-bold text-white transition hover:border-cacao-yellow hover:bg-white/10" href="#get-started">{{ i18n.t('landing.actions.seeWhereYouFit') }} <span class="ml-2">↓</span></a>
+          <a class="mt-8 inline-flex items-center rounded-full border border-white/25 px-5 py-3 text-sm font-bold text-white transition hover:border-cacao-yellow hover:bg-white/10" routerLink="/registration">{{ i18n.t('landing.actions.seeWhereYouFit') }} <span class="ml-2">↓</span></a>
         </div>
 
         <ol class="space-y-4">
@@ -219,7 +220,7 @@
               <span class="inline-flex rounded-full bg-white/70 px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-cacao-amber">{{ i18n.t('landing.farmers.eyebrow') }}</span>
               <h2 class="mt-5 text-3xl font-black tracking-[-0.05em] text-cacao-ink sm:text-4xl">{{ i18n.t('landing.farmers.title') }}</h2>
               <p class="mt-5 leading-7 text-cacao-brown">{{ i18n.t('landing.farmers.description') }}</p>
-              <a class="mt-7 inline-flex items-center rounded-full bg-cacao-amber px-5 py-3 text-sm font-bold text-white transition hover:bg-cacao-roast" href="#get-started">{{ i18n.t('landing.farmers.action') }} <span class="ml-2">→</span></a>
+              <a class="mt-7 inline-flex items-center rounded-full bg-cacao-amber px-5 py-3 text-sm font-bold text-white transition hover:bg-cacao-roast" routerLink="/registration">{{ i18n.t('landing.farmers.action') }} <span class="ml-2">→</span></a>
             </div>
           </article>
 
@@ -229,7 +230,7 @@
               <span class="inline-flex rounded-full bg-white/75 px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.14em] text-cacao-roast">{{ i18n.t('landing.buyers.eyebrow') }}</span>
               <h2 class="mt-5 text-3xl font-black tracking-[-0.05em] text-cacao-ink sm:text-4xl">{{ i18n.t('landing.buyers.title') }}</h2>
               <p class="mt-5 leading-7 text-cacao-brown">{{ i18n.t('landing.buyers.description') }}</p>
-              <a class="mt-7 inline-flex items-center rounded-full bg-cacao-ink px-5 py-3 text-sm font-bold text-white transition hover:bg-cacao-roast" href="#get-started">{{ i18n.t('landing.buyers.action') }} <span class="ml-2">→</span></a>
+              <a class="mt-7 inline-flex items-center rounded-full bg-cacao-ink px-5 py-3 text-sm font-bold text-white transition hover:bg-cacao-roast" routerLink="/registration">{{ i18n.t('landing.buyers.action') }} <span class="ml-2">→</span></a>
             </div>
           </article>
         </div>
@@ -245,8 +246,8 @@
             <h2 class="mt-4 text-3xl font-black tracking-[-0.05em] sm:text-5xl">{{ i18n.t('landing.finalCta.title') }}</h2>
             <p class="mt-5 text-lg leading-8 text-cacao-cream/80">{{ i18n.t('landing.finalCta.description') }}</p>
             <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-              <a class="inline-flex items-center justify-center rounded-full bg-cacao-yellow px-6 py-3.5 text-sm font-extrabold text-cacao-ink transition hover:-translate-y-0.5 hover:bg-cacao-pale" href="#for-farmers">{{ i18n.t('landing.actions.growCocoa') }}</a>
-              <a class="inline-flex items-center justify-center rounded-full border border-white/25 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10" href="#for-buyers">{{ i18n.t('landing.actions.sourceCocoaShort') }}</a>
+              <a class="inline-flex items-center justify-center rounded-full bg-cacao-yellow px-6 py-3.5 text-sm font-extrabold text-cacao-ink transition hover:-translate-y-0.5 hover:bg-cacao-pale" routerLink="/registration">{{ i18n.t('landing.actions.growCocoa') }}</a>
+              <a class="inline-flex items-center justify-center rounded-full border border-white/25 px-6 py-3.5 text-sm font-bold text-white transition hover:bg-white/10" routerLink="/registration">{{ i18n.t('landing.actions.sourceCocoaShort') }}</a>
             </div>
           </div>
         </div>
