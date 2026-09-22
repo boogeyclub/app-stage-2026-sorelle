@@ -10,12 +10,14 @@ This directory keeps database SQL under version control before it is executed.
 
 ## Current schemas
 
-| Schema | Script |
-| --- | --- |
-| `gu` | [`gu.sql`](./gu.sql) |
+| Schema | Script | Tables |
+| --- | --- | --- |
+| `gu` | [`gu.sql`](./gu.sql) | `client`, `administrateur`, `vendeur` |
+
+The three initial tables keep authentication data in `mot_de_passe_hash`; passwords must never be stored in plaintext.
 
 To apply a script manually to the local database, run it from the repository root:
 
 ```bash
-psql -h localhost -p 6000 -U sorelle -d connectmarket -f database/gu.sql
+psql -v ON_ERROR_STOP=1 -h localhost -p 6000 -U sorelle -d connectmarket -f database/gu.sql
 ```
