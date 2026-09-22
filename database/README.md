@@ -28,6 +28,16 @@ The `client`, `administrateur`, and `vendeur` tables share these initial columns
 | `statut` | Account status, defaulting to `ACTIF` |
 | `dateCreation` | Timestamp set when the row is created |
 
+## Basic rights
+
+`gu.basic_rights` stores the initial rights catalog:
+
+| Column | Purpose |
+| --- | --- |
+| `id` | Identity primary key |
+| `code` | Unique, stable right code |
+| `br_name` | Human-readable basic-right name |
+
 ## Password history
 
 Passwords are stored only in `gu.password_history`, not in the account tables.
