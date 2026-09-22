@@ -74,5 +74,5 @@ Passwords are stored only in `gu.password_history`, not in `utilisateurs`.
 To apply a script manually to the local database, run it from the repository root:
 
 ```bash
-psql -v ON_ERROR_STOP=1 -h localhost -p 6000 -U sorelle -d connectmarket -f database/gu.sql
+psql -v ON_ERROR_STOP=1 -h localhost -p 6000 -U sorelle -d cacaomarketcm -f database/gu.sql
 ```
