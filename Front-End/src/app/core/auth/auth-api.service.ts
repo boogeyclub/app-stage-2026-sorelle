@@ -47,15 +47,19 @@ export interface ApiErrorResponse {
 export class AuthApiService {
   private readonly http = inject(HttpClient);
 
+  // Keep API URLs relative to the application's /CacaoMarket/ base href.
+  // The development proxy strips that base path before forwarding to Spring.
+  private readonly apiRoot = 'api';
+
   register(payload: RegistrationPayload): Observable<RegistrationAcceptedResponse> {
-    return this.http.post<RegistrationAcceptedResponse>('/api/auth/registration', payload, { withCredentials: true });
+    return this.http.post<RegistrationAcceptedResponse>(`${this.apiRoot}/auth/registration`, payload, { withCredentials: true });
   }
 
   login(payload: LoginPayload): Observable<AuthenticatedUser> {
-    return this.http.post<AuthenticatedUser>('/api/auth/login', payload, { withCredentials: true });
+    return this.http.post<AuthenticatedUser>(`${this.apiRoot}/auth/login`, payload, { withCredentials: true });
   }
 
   logout(): Observable<void> {
-    return this.http.post<void>('/api/auth/logout', {}, { withCredentials: true });
+    return this.http.post<void>(`${this.apiRoot}/auth/logout`, {}, { withCredentials: true });
   }
 }

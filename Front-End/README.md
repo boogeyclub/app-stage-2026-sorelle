@@ -14,7 +14,38 @@ Once the server is running, open your browser and navigate to `http://localhost:
 
 ## Authentication API proxy
 
-The registration and login pages call relative `/api/auth/...` endpoints. During `ng serve`, [`proxy.conf.json`](./proxy.conf.json) forwards those requests to the Spring service at `http://localhost:8080`, so browser-facing code never calls `localhost` directly. Start the backend service and configure its SMTP `.env` file before submitting a registration.
+The application is served below `/CacaoMarket/`, so registration and login use application-relative `api/auth/...` endpoints. In the browser these become `/CacaoMarket/api/auth/...`.
+
+During `ng serve`, [`proxy.conf.json`](./proxy.conf.json) forwards `/CacaoMarket/api/...` to the Spring service at `http://localhost:8080/api/...` and removes the `/CacaoMarket` prefix. Start the backend service separately before submitting a registration:
+
+```bash
+cd ../Back-End/service-connectmarket
+mvnw.cmd spring-boot:run
+```
+
+`mvnw.cmd install` only builds the backend; it does not keep the API running. After changing `proxy.conf.json`, stop and restart `ng serve` because proxy settings are loaded at startup.
+
+### Verify the connection
+
+With the backend running, first open this URL directly:
+
+```text
+http://localhost:8080/api/health
+```
+
+It should return:
+
+```json
+{"status":"UP","service":"service-connectmarket"}
+```
+
+Then, while `ng serve` is running, open:
+
+```text
+http://localhost:4200/CacaoMarket/api/health
+```
+
+The same JSON confirms that the Angular development proxy is connected to Spring. The backend logs each `/api/...` request without logging request bodies, passwords, or confirmation-token query values.
 
 ## Code scaffolding
 

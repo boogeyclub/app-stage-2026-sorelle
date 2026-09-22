@@ -64,6 +64,30 @@ Only active `CLIENT` and `VENDEUR` accounts with a valid current password and th
 
 `POST /api/auth/logout` invalidates the active HTTP session.
 
+## Run and verify the API connection
+
+From `Back-End/service-connectmarket`, start the backend process (building with `mvnw.cmd install` alone does not start it):
+
+```bat
+mvnw.cmd spring-boot:run
+```
+
+Wait for Spring Boot to report that it has started on port `8080`, then open:
+
+```text
+http://localhost:8080/api/health
+```
+
+A running service returns:
+
+```json
+{"status":"UP","service":"service-connectmarket"}
+```
+
+Every `/api/...` request is logged at `INFO` level with its method, safe path, response status, and duration. Request bodies, passwords, mail credentials, and confirmation-token query values are intentionally never written to logs.
+
+When the Angular app is started with `ng serve`, its `/CacaoMarket/api/...` requests are proxied to this service's `/api/...` routes. See the [frontend proxy instructions](../../Front-End/README.md#authentication-api-proxy) for the second connection check.
+
 ## Google Gmail SMTP configuration
 
 The reusable registration messaging module is [`SmtpRegistrationMessagingService`](src/main/java/cm/odigital/serviceconnectmarket/auth/messaging/SmtpRegistrationMessagingService.java). It uses Spring's `JavaMailSender` with Gmail's authenticated SMTP server (`smtp.gmail.com`, port `587`, STARTTLS) and sends each registration confirmation email through that account.
