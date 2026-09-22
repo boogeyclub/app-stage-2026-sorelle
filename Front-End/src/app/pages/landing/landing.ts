@@ -1,44 +1,55 @@
-import { Component } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
+import { Title } from '@angular/platform-browser';
+import { TranslationService } from '../../core/i18n/translation.service';
+import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher';
 
 @Component({
   selector: 'app-landing',
+  imports: [LanguageSwitcherComponent],
   templateUrl: './landing.html',
   styleUrl: './landing.css'
 })
 export class LandingComponent {
+  protected readonly i18n = inject(TranslationService);
+  private readonly title = inject(Title);
+
   protected readonly journeySteps = [
     {
       number: '01',
-      title: 'Publish your cocoa lot',
-      description: 'Describe your available volume, quality, location, and preferred delivery window in one clear market brief.'
+      titleKey: 'landing.process.steps.publish.title',
+      descriptionKey: 'landing.process.steps.publish.description'
     },
     {
       number: '02',
-      title: 'Meet serious demand',
-      description: 'Reach buyers looking for commercial quantities, not one-off samples or unclear conversations.'
+      titleKey: 'landing.process.steps.demand.title',
+      descriptionKey: 'landing.process.steps.demand.description'
     },
     {
       number: '03',
-      title: 'Move forward with clarity',
-      description: 'Compare interest, discuss terms, and turn a qualified connection into a confident next step.'
+      titleKey: 'landing.process.steps.clarity.title',
+      descriptionKey: 'landing.process.steps.clarity.description'
     }
   ];
 
   protected readonly marketAdvantages = [
     {
-      title: 'Made for volume',
-      description: 'Present harvests as lots so every conversation starts with the scale that matters.',
+      titleKey: 'landing.value.advantages.volume.title',
+      descriptionKey: 'landing.value.advantages.volume.description',
       icon: 'layers'
     },
     {
-      title: 'Clear market signals',
-      description: 'Share the facts buyers need early: origin, readiness, quantity, and availability.',
+      titleKey: 'landing.value.advantages.signals.title',
+      descriptionKey: 'landing.value.advantages.signals.description',
       icon: 'signal'
     },
     {
-      title: 'More purposeful matches',
-      description: 'Give farmers and buyers a focused place to start commercially meaningful conversations.',
+      titleKey: 'landing.value.advantages.matches.title',
+      descriptionKey: 'landing.value.advantages.matches.description',
       icon: 'handshake'
     }
   ];
+
+  constructor() {
+    effect(() => this.title.setTitle(this.i18n.t('meta.landingTitle')));
+  }
 }
