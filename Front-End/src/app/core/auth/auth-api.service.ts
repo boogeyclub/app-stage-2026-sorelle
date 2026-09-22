@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 export type RegistrableUserRole = 'VENDEUR' | 'CLIENT';
 export type InterfaceLanguage = 'en' | 'fr';
@@ -47,9 +48,9 @@ export interface ApiErrorResponse {
 export class AuthApiService {
   private readonly http = inject(HttpClient);
 
-  // Keep API URLs relative to the application's /CacaoMarket/ base href.
-  // The development proxy strips that base path before forwarding to Spring.
-  private readonly apiRoot = 'api';
+  // Both environments keep browser requests same-origin. In development, the
+  // Angular proxy forwards this base path to API_HOST (localhost by default).
+  private readonly apiRoot = environment.apiBaseUrl;
 
   register(payload: RegistrationPayload): Observable<RegistrationAcceptedResponse> {
     return this.http.post<RegistrationAcceptedResponse>(`${this.apiRoot}/auth/registration`, payload, { withCredentials: true });

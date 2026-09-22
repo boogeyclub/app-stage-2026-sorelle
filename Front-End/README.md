@@ -16,14 +16,47 @@ Once the server is running, open your browser and navigate to `http://localhost:
 
 The application is served below `/CacaoMarket/`, so registration and login use application-relative `api/auth/...` endpoints. In the browser these become `/CacaoMarket/api/auth/...`.
 
-During `ng serve`, [`proxy.conf.json`](./proxy.conf.json) forwards `/CacaoMarket/api/...` to the Spring service at `http://localhost:8080/api/...` and removes the `/CacaoMarket` prefix. Start the backend service separately before submitting a registration:
+During `ng serve`, [`proxy.conf.mjs`](./proxy.conf.mjs) forwards `/CacaoMarket/api/...` to the Spring API and removes the `/CacaoMarket` prefix. The proxy target defaults to `http://localhost:8080/api/...`.
+
+The browser always calls the same-origin `/CacaoMarket/api/...` path; it never calls `localhost` directly. This avoids CORS issues and means a frontend opened through a local IP or hostname still works correctly. The development server is the only process that contacts the configured local API host.
+
+### Development API host
+
+Set `API_HOST` to the hostname or full LAN IP address where Spring is running. `localhost` is the default.
+
+**PowerShell on Windows:**
+
+```powershell
+$env:API_HOST = '192.168.1.42' # replace with your backend machine's local IP or hostname
+$env:API_PORT = '8080'         # optional; 8080 is the default
+npm start
+```
+
+**Command Prompt on Windows:**
+
+```bat
+set API_HOST=192.168.1.42 && set API_PORT=8080 && npm start
+```
+
+Examples of valid `API_HOST` values are `localhost`, `192.168.1.42`, and `cacaomarket-api.local`. Use the actual hostname/IP only—do not include `http://` or the port in `API_HOST`.
+
+Start the backend service separately before submitting a registration:
 
 ```bash
 cd ../Back-End/service-connectmarket
 mvnw.cmd spring-boot:run
 ```
 
-`mvnw.cmd install` only builds the backend; it does not keep the API running. After changing `proxy.conf.json`, stop and restart `ng serve` because proxy settings are loaded at startup.
+`mvnw.cmd install` only builds the backend; it does not keep the API running. After changing `API_HOST`, `API_PORT`, or `proxy.conf.mjs`, stop and restart `ng serve` because proxy settings are loaded at startup.
+
+### Build environments
+
+| Build configuration | Environment file | Browser API base |
+| --- | --- | --- |
+| Development (`ng serve`) | [`src/environments/environment.development.ts`](./src/environments/environment.development.ts) | `/CacaoMarket/api` through the local development proxy |
+| Production (`ng build`) | [`src/environments/environment.production.ts`](./src/environments/environment.production.ts) | `/CacaoMarket/api` on the deployed origin |
+
+Production deployment must route `/CacaoMarket/api/...` to the Spring backend's `/api/...` routes (for example, through a web-server reverse proxy).
 
 ### Verify the connection
 

@@ -37,7 +37,7 @@ describe('AuthApiService', () => {
       expect(response.email).toBe(payload.email);
     });
 
-    const request = httpTesting.expectOne('api/auth/registration');
+    const request = httpTesting.expectOne('/CacaoMarket/api/auth/registration');
     expect(request.request.method).toBe('POST');
     expect(request.request.withCredentials).toBe(true);
     expect(request.request.body).toEqual(payload);
@@ -49,7 +49,7 @@ describe('AuthApiService', () => {
       expect(user.role).toBe('VENDEUR');
     });
 
-    const request = httpTesting.expectOne('api/auth/login');
+    const request = httpTesting.expectOne('/CacaoMarket/api/auth/login');
     expect(request.request.method).toBe('POST');
     expect(request.request.withCredentials).toBe(true);
     request.flush({
@@ -65,7 +65,7 @@ describe('AuthApiService', () => {
   it('uses the application-relative API path when logging out', () => {
     service.logout().subscribe();
 
-    const request = httpTesting.expectOne('api/auth/logout');
+    const request = httpTesting.expectOne('/CacaoMarket/api/auth/logout');
     expect(request.request.method).toBe('POST');
     expect(request.request.withCredentials).toBe(true);
     request.flush(null);
