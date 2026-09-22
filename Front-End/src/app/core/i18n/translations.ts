@@ -9,10 +9,19 @@ export const TRANSLATIONS = {
       registrationTitle: 'CacaoMarket | Create your account'
     },
     common: {
+      brandName: 'CacaoMarket',
       homeAria: 'CacaoMarket home',
       primaryNavigation: 'Primary navigation',
       languageSelector: 'Choose language',
-      switchToLanguage: 'Switch to {{language}}'
+      switchToLanguage: 'Switch to {{language}}',
+      languageNames: {
+        english: 'English',
+        french: 'French'
+      },
+      languageCodes: {
+        english: 'EN',
+        french: 'FR'
+      }
     },
     landing: {
       brandTagline: 'Trade with intent',
@@ -191,10 +200,19 @@ export const TRANSLATIONS = {
       registrationTitle: 'CacaoMarket | Créer votre compte'
     },
     common: {
+      brandName: 'CacaoMarket',
       homeAria: 'Accueil CacaoMarket',
       primaryNavigation: 'Navigation principale',
       languageSelector: 'Choisir la langue',
-      switchToLanguage: 'Passer en {{language}}'
+      switchToLanguage: 'Passer en {{language}}',
+      languageNames: {
+        english: 'anglais',
+        french: 'français'
+      },
+      languageCodes: {
+        english: 'EN',
+        french: 'FR'
+      }
     },
     landing: {
       brandTagline: 'Le commerce avec intention',

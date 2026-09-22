@@ -7,16 +7,16 @@ export type TranslationParams = Record<string, string | number>;
 
 export interface LanguageOption {
   code: SupportedLanguage;
-  label: string;
-  shortLabel: string;
+  labelKey: string;
+  shortLabelKey: string;
 }
 
 const LANGUAGE_STORAGE_KEY = 'cacaomarket.language';
 const FALLBACK_LANGUAGE: SupportedLanguage = 'en';
 
 const LANGUAGE_OPTIONS: readonly LanguageOption[] = [
-  { code: 'en', label: 'English', shortLabel: 'EN' },
-  { code: 'fr', label: 'Français', shortLabel: 'FR' }
+  { code: 'en', labelKey: 'common.languageNames.english', shortLabelKey: 'common.languageCodes.english' },
+  { code: 'fr', labelKey: 'common.languageNames.french', shortLabelKey: 'common.languageCodes.french' }
 ];
 
 @Injectable({ providedIn: 'root' })

@@ -18,10 +18,10 @@ import { TranslationService } from '../../core/i18n/translation.service';
           [class.shadow-sm]="i18n.language() === language.code"
           [class.text-cacao-brown]="i18n.language() !== language.code"
           [attr.aria-pressed]="i18n.language() === language.code"
-          [attr.aria-label]="i18n.t('common.switchToLanguage', { language: language.label })"
+          [attr.aria-label]="i18n.t('common.switchToLanguage', { language: i18n.t(language.labelKey) })"
           (click)="i18n.setLanguage(language.code)"
         >
-          {{ language.shortLabel }}
+          {{ i18n.t(language.shortLabelKey) }}
         </button>
       }
     </div>

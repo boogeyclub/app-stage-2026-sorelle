@@ -1,5 +1,16 @@
 import { TestBed } from '@angular/core/testing';
+import { TranslationDictionary, TRANSLATIONS } from './translations';
 import { TranslationService } from './translation.service';
+
+function leafKeys(dictionary: TranslationDictionary, prefix = ''): string[] {
+  return Object.entries(dictionary).flatMap(([key, value]) => {
+    const path = prefix ? `${prefix}.${key}` : key;
+
+    return typeof value === 'string'
+      ? [path]
+      : leafKeys(value as TranslationDictionary, path);
+  });
+}
 
 describe('TranslationService', () => {
   let service: TranslationService;
@@ -27,5 +38,9 @@ describe('TranslationService', () => {
     service.setLanguage('fr');
 
     expect(service.t('missing.translation.key')).toBe('missing.translation.key');
+  });
+
+  it('keeps the English and French translation keys aligned', () => {
+    expect(leafKeys(TRANSLATIONS.en).sort()).toEqual(leafKeys(TRANSLATIONS.fr).sort());
   });
 });
