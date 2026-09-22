@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { TranslationService } from '../../core/i18n/translation.service';
 import { LandingComponent } from './landing';
@@ -36,5 +37,6 @@ describe('LandingComponent', () => {
 
     const heading = fixture.nativeElement.querySelector('[data-testid="landing-title"]') as HTMLElement;
     expect(heading.textContent).toContain('Là où les récoltes de cacao rencontrent');
+    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Le commerce du cacao en toute confiance');
   });
 });

@@ -1,4 +1,5 @@
 import { TestBed } from '@angular/core/testing';
+import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { TranslationService } from '../../core/i18n/translation.service';
 import { LoginComponent } from './login';
@@ -24,5 +25,28 @@ describe('LoginComponent', () => {
     });
 
     expect(component.loginForm.valid).toBe(true);
+  });
+
+  it('renders the login content and document title in French', async () => {
+    await TestBed.configureTestingModule({
+      imports: [LoginComponent],
+      providers: [provideRouter([])]
+    }).compileComponents();
+
+    const i18n = TestBed.inject(TranslationService);
+    i18n.setLanguage('fr');
+
+    const fixture = TestBed.createComponent(LoginComponent);
+    fixture.detectChanges();
+
+    const nativeElement = fixture.nativeElement as HTMLElement;
+    const identity = nativeElement.querySelector('#login-identity') as HTMLInputElement;
+    const password = nativeElement.querySelector('#login-password') as HTMLInputElement;
+
+    expect(nativeElement.textContent).toContain('Connectez-vous pour faire avancer votre commerce du cacao.');
+    expect(nativeElement.textContent).toContain('Rester connecté');
+    expect(identity.placeholder).toBe('vous@exemple.com ou votre identifiant');
+    expect(password.placeholder).toBe('Saisissez votre mot de passe');
+    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Connexion');
   });
 });

@@ -188,6 +188,7 @@ export const TRANSLATIONS = {
         loginMin: 'Your login must contain at least 3 characters.',
         passwordRequired: 'Create a password.',
         passwordMin: 'Your password must contain at least 8 characters.',
+        confirmPasswordRequired: 'Confirm your password.',
         passwordMismatch: 'The password confirmation does not match.',
         agreementRequired: 'Please confirm your agreement to continue.'
       }
@@ -379,6 +380,7 @@ export const TRANSLATIONS = {
         loginMin: 'Votre identifiant doit contenir au moins 3 caractères.',
         passwordRequired: 'Créez un mot de passe.',
         passwordMin: 'Votre mot de passe doit contenir au moins 8 caractères.',
+        confirmPasswordRequired: 'Confirmez votre mot de passe.',
         passwordMismatch: 'La confirmation du mot de passe ne correspond pas.',
         agreementRequired: 'Veuillez confirmer votre accord pour continuer.'
       }

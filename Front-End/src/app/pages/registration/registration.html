@@ -115,7 +115,7 @@
                   <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M2.4 12C3.4 10.1 6.8 6 12 6s8.6 4.1 9.6 6c-1 1.9-4.4 6-9.6 6S3.4 13.9 2.4 12Z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="2.7" stroke="currentColor" stroke-width="1.8"/></svg>
                 </button>
               </div>
-              @if (hasError('confirmPassword', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.passwordRequired') }}</p> } @else if (hasPasswordMismatch()) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.passwordMismatch') }}</p> }
+              @if (hasError('confirmPassword', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.confirmPasswordRequired') }}</p> } @else if (hasPasswordMismatch()) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.passwordMismatch') }}</p> }
             </div>
           </div>
 
