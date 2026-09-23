@@ -60,9 +60,20 @@ Content-Type: application/json
 }
 ```
 
-Only active `CLIENT`, `VENDEUR`, and `ADMINISTRATEUR` accounts with a valid current password and the `APP-CONN` basic right can sign in. The service establishes an HTTP session and returns the authenticated profile without a password hash. `rememberMe: true` extends the server-side idle-session limit from 30 minutes to 7 days. A pending account returns `403` with `REGISTRATION_PENDING_CONFIRMATION`. The tracked `gu.sql` schema seeds the development administrator login `root` with initial password `root1234`; change that bootstrap credential immediately after first use.
+Only active `CLIENT`, `VENDEUR`, and `ADMINISTRATEUR` accounts with a valid current password and the `APP-CONN` basic right can sign in. The service establishes an HTTP session and returns the authenticated profile without a password hash. It also creates one `gu.sessions_utilisateur` record for that browser; the raw `JSESSIONID` is hashed before persistence and is never logged or stored as plaintext. `rememberMe: true` extends the server-side idle-session limit from 30 minutes to 7 days. A pending account returns `403` with `REGISTRATION_PENDING_CONFIRMATION`. The tracked `gu.sql` schema seeds the development administrator login `root` with initial password `root1234`; change that bootstrap credential immediately after first use.
 
-`POST /api/auth/logout` invalidates the active HTTP session.
+### Browser-session API
+
+All endpoints below require the credentialed browser session cookie except logout, which is safely idempotent.
+
+| Method | Route | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/auth/session` | Restores the currently authenticated profile after a browser refresh; checks both the servlet session and its active database row. |
+| `GET` | `/api/auth/sessions` | Lists the current user's active browser sessions with safe browser labels, timestamps, and a `current` flag. |
+| `DELETE` | `/api/auth/sessions/{sessionId}` | Disconnects one session owned by the current user. Disconnecting the current row immediately signs out that browser. |
+| `POST` | `/api/auth/logout` | Invalidates the active servlet session and marks its browser-session record invalid. |
+
+Expired browser-session records are marked invalid every five minutes by default. Set `SESSION_CLEANUP_INTERVAL` to change that schedule (for example `PT1M`). Apply the latest `database/gu.sql` before starting this version of the API, because successful login now writes to `gu.sessions_utilisateur`.
 
 ## Run and verify the API connection
 
@@ -110,7 +121,7 @@ Rejected requests also expose the safe API error code, for example `REGISTRATION
 
 The optional `APP_LOG_FILE` environment variable can move the log file to a different location.
 
-When the Angular app is started with `ng serve`, its `/CacaoMarket/api/...` requests are proxied to this service's `/api/...` routes. See the [frontend proxy instructions](../../Front-End/README.md#authentication-api-proxy) for the second connection check.
+When the Angular app is started with `ng serve`, it calls the configured Spring API origin directly with credentialed CORS requests. See the [frontend API connection instructions](../../Front-End/README.md#authentication-api-connection) and ensure `APP_CORS_ALLOWED_ORIGINS` includes the exact Angular origin.
 
 ## Google Gmail SMTP configuration
 

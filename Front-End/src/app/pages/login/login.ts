@@ -2,9 +2,11 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, effect, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { ApiErrorResponse, AuthApiService } from '../../core/auth/auth-api.service';
+import { dashboardPathForRole } from '../../core/auth/auth-role';
+import { AuthSessionService } from '../../core/auth/auth-session.service';
 import { TranslationService } from '../../core/i18n/translation.service';
 import { NotificationService } from '../../core/notifications/notification.service';
 import { LanguageSwitcherComponent } from '../../shared/language-switcher/language-switcher';
@@ -18,9 +20,11 @@ import { LanguageSwitcherComponent } from '../../shared/language-switcher/langua
 export class LoginComponent {
   protected readonly i18n = inject(TranslationService);
   private readonly authApi = inject(AuthApiService);
+  private readonly authSession = inject(AuthSessionService);
   private readonly notifications = inject(NotificationService);
   private readonly formBuilder = inject(FormBuilder);
   private readonly title = inject(Title);
+  private readonly router = inject(Router);
 
   protected readonly passwordVisible = signal(false);
   protected readonly submitted = signal(false);
@@ -69,10 +73,12 @@ export class LoginComponent {
       finalize(() => this.isSubmitting.set(false))
     ).subscribe({
       next: (user) => {
+        this.authSession.setAuthenticatedUser(user);
         this.authenticatedName.set(user.prenom);
         this.loginState.set('success');
         this.passwordVisible.set(false);
         this.loginForm.controls.password.reset();
+        void this.router.navigateByUrl(dashboardPathForRole(user.role));
       },
       error: (error: unknown) => {
         this.loginErrorKey.set(this.errorTranslationKey(error));

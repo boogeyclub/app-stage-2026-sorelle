@@ -12,7 +12,7 @@ This directory keeps database SQL under version control before it is executed.
 
 | Schema | Script | Tables |
 | --- | --- | --- |
-| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `registration_confirmation`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
+| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `sessions_utilisateur`, `registration_confirmation`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
 
 ## User types
 
@@ -40,6 +40,22 @@ This directory keeps database SQL under version control before it is executed.
 | `dateCreation` | Timestamp set when the row is created |
 
 Email and login identities also have case-insensitive unique indexes so that `buyer@example.com` and `BUYER@example.com` cannot become separate accounts.
+
+## Connected browser sessions
+
+`gu.sessions_utilisateur` records every successful browser login for a user. One user can have several active rows at the same time, allowing CacaoMarket to manage each browser/device connection independently.
+
+| Column | Purpose |
+| --- | --- |
+| `utilisateur_id` | Required owner of the browser session; it cascades when the account is removed |
+| `session_hash` | Unique SHA-256 hash of the servlet session ID; the raw `JSESSIONID` is never stored |
+| `browser_label` | Safe, compact browser/device label such as `Google Chrome on Windows`; no full User-Agent is retained |
+| `remember_me` | Whether the login was created with the extended seven-day session option |
+| `date_creation` / `last_seen_at` | Login and most recent authenticated activity timestamps |
+| `expires_at` | Current idle-session expiration timestamp |
+| `invalidated_at` | Timestamp set on logout, manual disconnect, new login in the same browser, or expiration |
+
+Active rows have `invalidated_at IS NULL` and an `expires_at` in the future. The backend checks this persistent row in addition to the servlet cookie for every protected session endpoint. Expired sessions are marked invalid by a scheduled cleanup; their safe history remains available for account-level session management.
 
 ## Default development administrator
 

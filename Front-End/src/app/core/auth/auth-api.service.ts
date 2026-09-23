@@ -44,6 +44,16 @@ export interface AuthenticatedUser {
   role: AuthenticatedUserRole;
 }
 
+export interface BrowserSession {
+  id: number;
+  browserLabel: string;
+  rememberMe: boolean;
+  createdAt: string;
+  lastSeenAt: string;
+  expiresAt: string;
+  current: boolean;
+}
+
 export interface ApiErrorResponse {
   code: string;
   message: string;
@@ -71,6 +81,18 @@ export class AuthApiService {
 
   login(payload: LoginPayload): Observable<AuthenticatedUser> {
     return this.http.post<AuthenticatedUser>(`${this.apiRoot}/auth/login`, payload, { withCredentials: true });
+  }
+
+  currentSession(): Observable<AuthenticatedUser> {
+    return this.http.get<AuthenticatedUser>(`${this.apiRoot}/auth/session`, { withCredentials: true });
+  }
+
+  browserSessions(): Observable<readonly BrowserSession[]> {
+    return this.http.get<readonly BrowserSession[]>(`${this.apiRoot}/auth/sessions`, { withCredentials: true });
+  }
+
+  disconnectBrowserSession(sessionId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiRoot}/auth/sessions/${sessionId}`, { withCredentials: true });
   }
 
   logout(): Observable<void> {

@@ -7,7 +7,11 @@ export const TRANSLATIONS = {
       landingTitle: 'CacaoMarket | Cocoa trade with confidence',
       loginTitle: 'CacaoMarket | Sign in',
       registrationTitle: 'CacaoMarket | Create your account',
-      confirmationTitle: 'CacaoMarket | Confirm your account'
+      confirmationTitle: 'CacaoMarket | Confirm your account',
+      administratorDashboardTitle: 'CacaoMarket | Administrator workspace',
+      sellerDashboardTitle: 'CacaoMarket | Seller workspace',
+      userDashboardTitle: 'CacaoMarket | User workspace',
+      accountTitle: 'CacaoMarket | Account settings'
     },
     common: {
       brandName: 'CacaoMarket',
@@ -53,6 +57,15 @@ export const TRANSLATIONS = {
       login: {
         starting: 'Checking your credentials…',
         success: 'You are signed in.'
+      },
+      session: {
+        signingOut: 'Signing you out securely…',
+        signedOut: 'You have been signed out.',
+        signOutFailed: 'We could not sign you out. Please try again.',
+        disconnecting: 'Disconnecting the selected browser session…',
+        disconnected: 'The browser session was disconnected.',
+        disconnectFailed: 'We could not disconnect that browser session. Please try again.',
+        sessionsLoadFailed: 'We could not load your browser sessions right now.'
       },
       language: {
         changed: 'Language changed to {{language}}.'
@@ -263,6 +276,111 @@ export const TRANSLATIONS = {
         passwordMismatch: 'The password confirmation does not match.',
         agreementRequired: 'Please confirm your agreement to continue.'
       }
+    },
+    dashboard: {
+      roles: {
+        administrator: 'Administrator',
+        seller: 'Seller',
+        user: 'User'
+      },
+      header: {
+        overview: 'Overview',
+        accountSettings: 'Account settings',
+        signOut: 'Sign out',
+        accountMenu: 'Account menu',
+        signedInAs: 'Signed in as {{role}}',
+        openAccountMenu: 'Open account menu'
+      },
+      shared: {
+        workspace: 'CacaoMarket workspace',
+        ready: 'Ready for your next step',
+        nextStep: 'Suggested next step',
+        viewAccount: 'View account settings',
+        secureWorkspace: 'Your workspace is protected by a browser session.'
+      },
+      admin: {
+        eyebrow: 'Administrator workspace',
+        title: 'Keep the CacaoMarket ecosystem moving with confidence.',
+        description: 'Your operational home for supervising access, trade activity, and the platform experience.',
+        accessCard: {
+          title: 'Access governance',
+          description: 'Review roles and keep the right people connected to the marketplace.'
+        },
+        sessionsCard: {
+          title: 'Connected browsers',
+          description: 'Session controls make it easier to keep account access deliberate and secure.'
+        },
+        marketCard: {
+          title: 'Market readiness',
+          description: 'Prepare the operating view for the next wave of cocoa activity.'
+        },
+        nextTitle: 'Set the operational rhythm',
+        nextDescription: 'Your administrator dashboard is ready for user management, role controls, and future market oversight modules.',
+        accountAction: 'Open my account settings'
+      },
+      seller: {
+        eyebrow: 'Seller workspace',
+        title: 'Turn your cocoa availability into a clear market story.',
+        description: 'This is your home for preparing lots, presenting readiness, and following buyer interest.',
+        prepareCard: {
+          title: 'Prepare your next lot',
+          description: 'Bring together volume, origin, quality, and your preferred delivery window.'
+        },
+        profileCard: {
+          title: 'Strengthen your seller profile',
+          description: 'Keep the contact details and commercial context buyers need up to date.'
+        },
+        conversationsCard: {
+          title: 'Stay ready for conversations',
+          description: 'Future buyer requests and trade conversations will appear here.'
+        },
+        nextTitle: 'Your seller workspace is ready',
+        nextDescription: 'Complete your account details now so your cocoa listings can be introduced with confidence.',
+        accountAction: 'Review my seller account'
+      },
+      user: {
+        eyebrow: 'User workspace',
+        title: 'Source cocoa with more context and less uncertainty.',
+        description: 'Your personal workspace will bring qualified cocoa opportunities and trade conversations into one focused view.',
+        discoverCard: {
+          title: 'Discover qualified lots',
+          description: 'Explore market-ready cocoa opportunities when the marketplace catalogue is available.'
+        },
+        preferencesCard: {
+          title: 'Clarify your sourcing needs',
+          description: 'Your account will help you keep origin, volume, and timing preferences visible.'
+        },
+        conversationsCard: {
+          title: 'Build meaningful connections',
+          description: 'Future seller conversations and requests will be organised here.'
+        },
+        nextTitle: 'Your sourcing workspace is ready',
+        nextDescription: 'Review your account details so the right cocoa opportunities can find you.',
+        accountAction: 'Review my account'
+      },
+      account: {
+        eyebrow: 'Account settings',
+        title: 'Your profile and connected browsers.',
+        description: 'Review the profile used in this workspace and manage every active browser session for this account.',
+        profileTitle: 'Profile',
+        name: 'Name',
+        email: 'Email address',
+        login: 'Login',
+        role: 'User type',
+        sessionsTitle: 'Connected browsers',
+        sessionsDescription: 'Each successful browser login has its own protected session. You can disconnect a browser you no longer use.',
+        current: 'This browser',
+        remembered: 'Extended session',
+        standard: 'Standard session',
+        lastActive: 'Last active {{time}}',
+        expires: 'Expires {{time}}',
+        created: 'Signed in {{time}}',
+        disconnect: 'Disconnect',
+        disconnectCurrent: 'Sign out this browser',
+        noSessions: 'No active browser sessions were found.',
+        refreshSessions: 'Refresh sessions',
+        loadingSessions: 'Loading your connected browsers…'
+      }
     }
   },
   fr: {
@@ -270,7 +388,11 @@ export const TRANSLATIONS = {
       landingTitle: 'CacaoMarket | Le commerce du cacao en toute confiance',
       loginTitle: 'CacaoMarket | Connexion',
       registrationTitle: 'CacaoMarket | Créer votre compte',
-      confirmationTitle: 'CacaoMarket | Confirmer votre compte'
+      confirmationTitle: 'CacaoMarket | Confirmer votre compte',
+      administratorDashboardTitle: 'CacaoMarket | Espace administrateur',
+      sellerDashboardTitle: 'CacaoMarket | Espace vendeur',
+      userDashboardTitle: 'CacaoMarket | Espace utilisateur',
+      accountTitle: 'CacaoMarket | Paramètres du compte'
     },
     common: {
       brandName: 'CacaoMarket',
@@ -316,6 +438,15 @@ export const TRANSLATIONS = {
       login: {
         starting: 'Vérification de vos identifiants…',
         success: 'Vous êtes connecté(e).'
+      },
+      session: {
+        signingOut: 'Déconnexion sécurisée en cours…',
+        signedOut: 'Vous êtes déconnecté(e).',
+        signOutFailed: 'Nous ne pouvons pas vous déconnecter. Réessayez.',
+        disconnecting: 'Déconnexion de la session navigateur sélectionnée…',
+        disconnected: 'La session navigateur a été déconnectée.',
+        disconnectFailed: 'Nous ne pouvons pas déconnecter cette session navigateur. Réessayez.',
+        sessionsLoadFailed: 'Nous ne pouvons pas charger vos sessions navigateur pour le moment.'
       },
       language: {
         changed: 'La langue a été changée pour {{language}}.'
@@ -525,6 +656,111 @@ export const TRANSLATIONS = {
         confirmPasswordRequired: 'Confirmez votre mot de passe.',
         passwordMismatch: 'La confirmation du mot de passe ne correspond pas.',
         agreementRequired: 'Veuillez confirmer votre accord pour continuer.'
+      }
+    },
+    dashboard: {
+      roles: {
+        administrator: 'Administrateur',
+        seller: 'Vendeur',
+        user: 'Utilisateur'
+      },
+      header: {
+        overview: 'Vue d’ensemble',
+        accountSettings: 'Paramètres du compte',
+        signOut: 'Se déconnecter',
+        accountMenu: 'Menu du compte',
+        signedInAs: 'Connecté(e) en tant que {{role}}',
+        openAccountMenu: 'Ouvrir le menu du compte'
+      },
+      shared: {
+        workspace: 'Espace CacaoMarket',
+        ready: 'Prêt pour votre prochaine étape',
+        nextStep: 'Prochaine étape suggérée',
+        viewAccount: 'Voir les paramètres du compte',
+        secureWorkspace: 'Votre espace est protégé par une session navigateur.'
+      },
+      admin: {
+        eyebrow: 'Espace administrateur',
+        title: 'Faites avancer l’écosystème CacaoMarket en toute confiance.',
+        description: 'Votre espace opérationnel pour superviser les accès, l’activité commerciale et l’expérience de la plateforme.',
+        accessCard: {
+          title: 'Gouvernance des accès',
+          description: 'Examinez les rôles et assurez-vous que les bonnes personnes sont connectées à la place de marché.'
+        },
+        sessionsCard: {
+          title: 'Navigateurs connectés',
+          description: 'Les contrôles de session rendent l’accès aux comptes plus réfléchi et plus sécurisé.'
+        },
+        marketCard: {
+          title: 'Préparation du marché',
+          description: 'Préparez la vue opérationnelle pour la prochaine activité autour du cacao.'
+        },
+        nextTitle: 'Donnez le rythme opérationnel',
+        nextDescription: 'Votre tableau de bord administrateur est prêt pour la gestion des utilisateurs, les contrôles de rôles et les futurs modules de supervision du marché.',
+        accountAction: 'Ouvrir mes paramètres de compte'
+      },
+      seller: {
+        eyebrow: 'Espace vendeur',
+        title: 'Transformez votre disponibilité cacao en une offre de marché claire.',
+        description: 'Voici votre espace pour préparer vos lots, présenter leur disponibilité et suivre l’intérêt des acheteurs.',
+        prepareCard: {
+          title: 'Préparez votre prochain lot',
+          description: 'Réunissez le volume, l’origine, la qualité et votre période de livraison préférée.'
+        },
+        profileCard: {
+          title: 'Renforcez votre profil vendeur',
+          description: 'Gardez à jour les coordonnées et le contexte commercial dont les acheteurs ont besoin.'
+        },
+        conversationsCard: {
+          title: 'Restez prêt pour les échanges',
+          description: 'Les futures demandes acheteurs et conversations commerciales apparaîtront ici.'
+        },
+        nextTitle: 'Votre espace vendeur est prêt',
+        nextDescription: 'Complétez vos informations de compte dès maintenant afin que vos offres de cacao soient présentées avec confiance.',
+        accountAction: 'Vérifier mon compte vendeur'
+      },
+      user: {
+        eyebrow: 'Espace utilisateur',
+        title: 'Approvisionnez-vous en cacao avec plus de contexte et moins d’incertitude.',
+        description: 'Votre espace personnel réunira les opportunités cacao qualifiées et les conversations commerciales dans une vue ciblée.',
+        discoverCard: {
+          title: 'Découvrez des lots qualifiés',
+          description: 'Explorez les opportunités cacao prêtes pour le marché lorsque le catalogue sera disponible.'
+        },
+        preferencesCard: {
+          title: 'Précisez vos besoins d’approvisionnement',
+          description: 'Votre compte vous aidera à garder visibles vos préférences d’origine, de volume et de calendrier.'
+        },
+        conversationsCard: {
+          title: 'Créez des relations utiles',
+          description: 'Les futures conversations et demandes aux vendeurs seront organisées ici.'
+        },
+        nextTitle: 'Votre espace approvisionnement est prêt',
+        nextDescription: 'Vérifiez vos informations de compte afin que les bonnes opportunités cacao puissent vous trouver.',
+        accountAction: 'Vérifier mon compte'
+      },
+      account: {
+        eyebrow: 'Paramètres du compte',
+        title: 'Votre profil et vos navigateurs connectés.',
+        description: 'Vérifiez le profil utilisé dans cet espace et gérez chaque session navigateur active de ce compte.',
+        profileTitle: 'Profil',
+        name: 'Nom',
+        email: 'Adresse e-mail',
+        login: 'Identifiant',
+        role: 'Type d’utilisateur',
+        sessionsTitle: 'Navigateurs connectés',
+        sessionsDescription: 'Chaque connexion navigateur réussie possède sa propre session protégée. Vous pouvez déconnecter un navigateur que vous n’utilisez plus.',
+        current: 'Ce navigateur',
+        remembered: 'Session prolongée',
+        standard: 'Session standard',
+        lastActive: 'Dernière activité {{time}}',
+        expires: 'Expire {{time}}',
+        created: 'Connexion {{time}}',
+        disconnect: 'Déconnecter',
+        disconnectCurrent: 'Se déconnecter de ce navigateur',
+        noSessions: 'Aucune session navigateur active n’a été trouvée.',
+        refreshSessions: 'Actualiser les sessions',
+        loadingSessions: 'Chargement de vos navigateurs connectés…'
       }
     }
   }

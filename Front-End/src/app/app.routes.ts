@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { anonymousOnlyGuard, authenticatedGuard, roleGuard } from './core/auth/auth-session.guards';
 
 export const routes: Routes = [
   {
@@ -7,6 +8,7 @@ export const routes: Routes = [
   },
   {
     path: 'login',
+    canActivate: [anonymousOnlyGuard],
     loadComponent: () => import('./pages/login/login').then((module) => module.LoginComponent)
   },
   {
@@ -21,6 +23,37 @@ export const routes: Routes = [
     path: 'register',
     pathMatch: 'full',
     redirectTo: 'registration'
+  },
+  {
+    path: 'dashboard',
+    canActivate: [authenticatedGuard],
+    loadComponent: () => import('./pages/dashboard/dashboard-shell').then((module) => module.DashboardShellComponent),
+    children: [
+      {
+        path: '',
+        pathMatch: 'full',
+        loadComponent: () => import('./pages/dashboard/dashboard-redirect').then((module) => module.DashboardRedirectComponent)
+      },
+      {
+        path: 'admin',
+        canActivate: [roleGuard('ADMINISTRATEUR')],
+        loadComponent: () => import('./pages/dashboard/admin-dashboard/admin-dashboard').then((module) => module.AdminDashboardComponent)
+      },
+      {
+        path: 'vendeur',
+        canActivate: [roleGuard('VENDEUR')],
+        loadComponent: () => import('./pages/dashboard/seller-dashboard/seller-dashboard').then((module) => module.SellerDashboardComponent)
+      },
+      {
+        path: 'client',
+        canActivate: [roleGuard('CLIENT')],
+        loadComponent: () => import('./pages/dashboard/user-dashboard/user-dashboard').then((module) => module.UserDashboardComponent)
+      },
+      {
+        path: 'account',
+        loadComponent: () => import('./pages/dashboard/account-settings/account-settings').then((module) => module.AccountSettingsComponent)
+      }
+    ]
   },
   {
     path: '**',

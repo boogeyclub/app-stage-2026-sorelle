@@ -50,6 +50,20 @@ It should return:
 
 The Angular app makes its API requests directly to this Spring origin. The backend logs each `/api/...` request without logging request bodies, passwords, or confirmation-token query values.
 
+## Role dashboards and browser sessions
+
+A successful login routes each user type to its own protected workspace:
+
+| Database user type | Angular route | Workspace |
+| --- | --- | --- |
+| `ADMINISTRATEUR` | `/CacaoMarket/dashboard/admin` | Administrator dashboard |
+| `VENDEUR` | `/CacaoMarket/dashboard/vendeur` | Seller dashboard |
+| `CLIENT` | `/CacaoMarket/dashboard/client` | User/client dashboard |
+
+Dashboard routes first call `GET /api/auth/session`, so refreshing a page verifies both the browser cookie and the persistent `gu.sessions_utilisateur` record. The professional dashboard header contains the CacaoMarket logo, account menu, language selector, account settings link, and secure sign-out action.
+
+`/CacaoMarket/dashboard/account` lists the current account's active browser sessions and can disconnect an unused browser. Apply the latest [`database/gu.sql`](../database/gu.sql) before using these features, because the login flow writes a session record after each successful sign-in.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

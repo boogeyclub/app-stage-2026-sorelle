@@ -36,7 +36,7 @@ describe('RegistrationConfirmationComponent', () => {
 
     const httpTesting = TestBed.inject(HttpTestingController);
     const request = httpTesting.expectOne((candidate) =>
-      candidate.url === '/CacaoMarket/api/auth/registration/confirm'
+      candidate.url === 'http://localhost:8080/api/auth/registration/confirm'
       && candidate.params.get('token') === 'single-use-token'
     );
     request.flush({ status: 'CONFIRMED', message: 'Confirmed.' });
