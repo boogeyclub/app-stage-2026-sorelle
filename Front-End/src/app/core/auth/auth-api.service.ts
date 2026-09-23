@@ -54,8 +54,8 @@ export interface ApiErrorResponse {
 export class AuthApiService {
   private readonly http = inject(HttpClient);
 
-  // Both environments keep browser requests same-origin. In development, the
-  // Angular proxy forwards this base path to API_HOST (localhost by default).
+  // Browser requests go directly to the configured Spring API; the backend
+  // must allow this frontend origin through CORS.
   private readonly apiRoot = environment.apiBaseUrl;
 
   register(payload: RegistrationPayload): Observable<RegistrationAcceptedResponse> {

@@ -118,20 +118,20 @@ The reusable registration messaging module is [`SmtpRegistrationMessagingService
 
 ### Where to set the Google email and App Password
 
-Set them only in this local, ignored file next to `application.properties`:
+Set them only in this local, ignored file:
 
 ```text
 Back-End/service-connectmarket/src/main/resources/.env
 ```
 
-Start from the tracked template in the same folder:
+Start from the tracked template:
 
 ```bat
 cd Back-End\service-connectmarket
 copy src\main\resources\.env.example src\main\resources\.env
 ```
 
-Then edit these values in `src/main/resources/.env`:
+Then edit these values in `src/main/resources/.env`. The Spring configuration imports this file both when launched from the service folder and when IntelliJ's working directory is `Back-End`:
 
 ```properties
 MAIL_HOST=smtp.gmail.com
@@ -144,13 +144,13 @@ MAIL_STARTTLS_REQUIRED=true
 REGISTRATION_MAIL_FROM=your-google-address@gmail.com
 ```
 
-Do **not** put the App Password in `application.properties`, commit `.env`, or use the normal Google account password. The repository ignores the resource-folder `.env` intentionally. It is also excluded from the packaged WAR, so production deployments should use environment variables or an external `.env` file.
+Do **not** put the App Password in `application.properties`, commit `.env`, or use the normal Google account password. The repository ignores this `.env` intentionally. It is also excluded from the packaged WAR, so production deployments should use environment variables or an external `.env` file.
 
 ### Create the Google App Password
 
 1. Enable **2-Step Verification** for the Google account that will send CacaoMarket mail.
 2. Open [Google App Passwords](https://myaccount.google.com/apppasswords), create an App Password, and copy the generated 16-character value.
-3. Paste that generated value into `MAIL_PASSWORD` in `Back-End/service-connectmarket/src/main/resources/.env`. If Google displays it in groups, paste it without spaces.
+3. Paste that generated value into `MAIL_PASSWORD` in `Back-End/service-connectmarket/src/main/resources/.env`. If Google displays it in groups, paste it without spaces. For the IntelliJ run configuration shown in the logs, restart the backend after saving the file so Spring reloads it.
 4. Set `REGISTRATION_MAIL_FROM` to the same Gmail/Google Workspace mailbox or to an alias verified by that account. You may leave it blank to use `MAIL_USERNAME` automatically.
 
 For Google Workspace accounts, App Password availability can be disabled by the organization administrator. If it is unavailable, ask the administrator to permit it or use an approved SMTP relay/OAuth configuration instead.
