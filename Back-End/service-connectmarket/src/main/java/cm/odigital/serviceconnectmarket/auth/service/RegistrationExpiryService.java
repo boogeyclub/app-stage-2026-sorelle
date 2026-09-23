@@ -1,7 +1,10 @@
 package cm.odigital.serviceconnectmarket.auth.service;
 
 import java.time.Clock;
+import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +14,8 @@ import cm.odigital.serviceconnectmarket.auth.persistence.AuthRepository;
 
 @Service
 public class RegistrationExpiryService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RegistrationExpiryService.class);
 
     private final AuthRepository authRepository;
     private final Clock clock;
@@ -26,10 +31,14 @@ public class RegistrationExpiryService {
      */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeExpiredRegistrations() {
-        authRepository.findExpiredPendingUtilisateurIds(
+        List<Long> expiredUtilisateurIds = authRepository.findExpiredPendingUtilisateurIds(
             clock.instant(),
             UtilisateurStatus.PENDING_CONFIRMATION.databaseValue()
-        ).forEach(this::deletePendingRegistration);
+        );
+        expiredUtilisateurIds.forEach(this::deletePendingRegistration);
+        if (!expiredUtilisateurIds.isEmpty()) {
+            LOGGER.info("event=registration.cleanup.completed removedCount={}", expiredUtilisateurIds.size());
+        }
     }
 
     private void deletePendingRegistration(long utilisateurId) {

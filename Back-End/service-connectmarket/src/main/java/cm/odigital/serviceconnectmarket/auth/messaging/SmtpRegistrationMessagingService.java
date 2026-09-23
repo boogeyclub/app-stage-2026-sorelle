@@ -1,5 +1,7 @@
 package cm.odigital.serviceconnectmarket.auth.messaging;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
@@ -11,9 +13,12 @@ import org.springframework.util.StringUtils;
 import cm.odigital.serviceconnectmarket.auth.config.RegistrationProperties;
 import cm.odigital.serviceconnectmarket.auth.domain.AuthException;
 import cm.odigital.serviceconnectmarket.auth.domain.RegistrationLanguage;
+import cm.odigital.serviceconnectmarket.observability.AuditValue;
 
 @Service
 public class SmtpRegistrationMessagingService implements RegistrationMessagingService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SmtpRegistrationMessagingService.class);
 
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final RegistrationProperties registrationProperties;
@@ -38,12 +43,23 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
     @Override
     public void sendConfirmation(RegistrationConfirmationMessage confirmation) {
         if (!isConfigured()) {
+            LOGGER.warn(
+                "event=registration.mail.dispatch.rejected reason=SMTP_CONFIGURATION_MISSING hostConfigured={} usernameConfigured={} passwordConfigured={}",
+                StringUtils.hasText(mailHost),
+                StringUtils.hasText(mailUsername),
+                StringUtils.hasText(mailPassword)
+            );
             throw AuthException.unavailable(
                 "REGISTRATION_MAIL_DELIVERY_UNAVAILABLE",
                 "Google SMTP email delivery is not configured."
             );
         }
 
+        LOGGER.info(
+            "event=registration.mail.smtp-send.started smtpHost={} recipient={}",
+            mailHost,
+            AuditValue.maskedEmail(confirmation.recipientEmail())
+        );
         SimpleMailMessage email = new SimpleMailMessage();
         email.setFrom(senderAddress());
         email.setTo(confirmation.recipientEmail());
@@ -52,6 +68,7 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
 
         JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
         if (mailSender == null) {
+            LOGGER.warn("event=registration.mail.dispatch.rejected reason=MAIL_SENDER_BEAN_UNAVAILABLE");
             throw AuthException.unavailable(
                 "REGISTRATION_MAIL_DELIVERY_UNAVAILABLE",
                 "Registration email delivery is not configured."
@@ -60,7 +77,12 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
 
         try {
             mailSender.send(email);
+            LOGGER.info("event=registration.mail.smtp-send.completed");
         } catch (MailException exception) {
+            LOGGER.warn(
+                "event=registration.mail.smtp-send.failed exceptionType={}",
+                exception.getClass().getName()
+            );
             throw AuthException.unavailable(
                 "REGISTRATION_MAIL_DELIVERY_UNAVAILABLE",
                 "The registration confirmation email could not be sent."

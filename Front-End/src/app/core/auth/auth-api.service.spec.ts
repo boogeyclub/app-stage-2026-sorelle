@@ -44,6 +44,20 @@ describe('AuthApiService', () => {
     request.flush({ email: payload.email, expiresAt: '2026-09-22T18:00:00Z' });
   });
 
+  it('sends an email confirmation token to the backend confirmation route', () => {
+    service.confirmRegistration('single-use-token').subscribe((response) => {
+      expect(response.status).toBe('CONFIRMED');
+    });
+
+    const request = httpTesting.expectOne((candidate) =>
+      candidate.url === '/CacaoMarket/api/auth/registration/confirm'
+      && candidate.params.get('token') === 'single-use-token'
+    );
+    expect(request.request.method).toBe('GET');
+    expect(request.request.withCredentials).toBe(true);
+    request.flush({ status: 'CONFIRMED', message: 'Confirmed.' });
+  });
+
   it('posts login credentials to the backend login route', () => {
     service.login({ identity: 'amina-cocoa', password: 'secure-passphrase', rememberMe: true }).subscribe((user) => {
       expect(user.role).toBe('VENDEUR');

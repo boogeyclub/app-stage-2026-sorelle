@@ -6,8 +6,8 @@ This Spring service owns the first account flow for `CLIENT` and `VENDEUR` rows 
 
 1. `POST /api/auth/registration` validates a `CLIENT` or `VENDEUR` registration.
 2. The service writes an `EN_ATTENTE_CONFIRMATION` row in `gu.utilisateurs`, stores a BCrypt password hash in `gu.password_history`, and stores only the SHA-256 hash of a cryptographically random confirmation token in `gu.registration_confirmation`.
-3. The messaging module sends a single-use confirmation URL through Google Gmail SMTP. The URL is valid for exactly **3 hours**.
-4. `GET /api/auth/registration/confirm?token=...` activates the user (`ACTIF`) when the token is valid.
+3. The messaging module sends a single-use URL to the Angular confirmation page through Google Gmail SMTP. The URL is valid for exactly **3 hours**.
+4. The Angular page captures the token, calls `GET /api/auth/registration/confirm?token=...`, shows the localized result, and redirects the user to sign in after confirmation. The backend activates the user (`ACTIF`) when the token is valid.
 5. A scheduler runs every minute, and registration/authentication requests also perform cleanup. Any unconfirmed expired registration is denied and its `utilisateurs`, `password_history`, and confirmation rows are removed transactionally.
 
 Raw confirmation tokens are never persisted or returned by the registration API.
@@ -84,7 +84,31 @@ A running service returns:
 {"status":"UP","service":"service-connectmarket"}
 ```
 
-Every `/api/...` request is logged at `INFO` level with its method, safe path, response status, and duration. Request bodies, passwords, mail credentials, and confirmation-token query values are intentionally never written to logs.
+## Structured API-call logs
+
+Every `/api/...` call receives an `X-Request-Id` response header. That identifier is included on every ordered log entry made during the request, so one registration, confirmation, login, or logout flow can be followed from start to finish.
+
+The logs are written to both the service console/IntelliJ Run view and, by default, to:
+
+```text
+Back-End/service-connectmarket/logs/cacaomarket-api.log
+```
+
+A successful registration produces a sequence similar to:
+
+```text
+event=api.request.received method=POST path=/api/auth/registration ...
+event=registration.request.accepted role=VENDEUR email=d***@example.com login=ro***
+event=registration.identity.available
+event=registration.pending.persisted utilisateurId=42 expiresAt=...
+event=registration.mail.smtp-send.completed
+event=registration.workflow.completed expiresAt=...
+event=api.request.completed method=POST path=/api/auth/registration status=202 outcome=success durationMs=...
+```
+
+Rejected requests also expose the safe API error code, for example `REGISTRATION_MAIL_DELIVERY_UNAVAILABLE`, `REGISTRATION_CONFIRMATION_EXPIRED`, or `INVALID_CREDENTIALS`. Request bodies, passwords, password hashes, raw confirmation tokens, mail credentials, and confirmation-token query values are intentionally never written to the logs.
+
+The optional `APP_LOG_FILE` environment variable can move the log file to a different location.
 
 When the Angular app is started with `ng serve`, its `/CacaoMarket/api/...` requests are proxied to this service's `/api/...` routes. See the [frontend proxy instructions](../../Front-End/README.md#authentication-api-proxy) for the second connection check.
 
@@ -131,7 +155,13 @@ Do **not** put the App Password in `application.properties`, commit `.env`, or u
 
 For Google Workspace accounts, App Password availability can be disabled by the organization administrator. If it is unavailable, ask the administrator to permit it or use an approved SMTP relay/OAuth configuration instead.
 
-Set `REGISTRATION_CONFIRMATION_URL` in the same `.env` file to the public backend confirmation endpoint that should be included in emails. Do not include a token in that environment variable; the service appends a fresh secure token.
+Set `REGISTRATION_CONFIRMATION_URL` in the same `.env` file to the public **Angular confirmation page**, for example:
+
+```properties
+REGISTRATION_CONFIRMATION_URL=http://localhost:4200/CacaoMarket/registration/confirm
+```
+
+For production, replace `localhost:4200` with the public frontend host/domain. Do not include a token in that environment variable; the service appends a fresh secure token, and the Angular page sends it safely to the backend confirmation endpoint.
 
 Registration deliberately fails with `503 REGISTRATION_MAIL_DELIVERY_UNAVAILABLE` when Gmail SMTP is absent or cannot deliver. The transaction rolls back so the application never leaves an unconfirmable pending account in the database.
 

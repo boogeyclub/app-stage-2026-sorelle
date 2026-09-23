@@ -23,6 +23,11 @@ export interface RegistrationAcceptedResponse {
   expiresAt: string;
 }
 
+export interface ConfirmationResponse {
+  status: 'CONFIRMED' | 'ALREADY_CONFIRMED';
+  message: string;
+}
+
 export interface LoginPayload {
   identity: string;
   password: string;
@@ -54,6 +59,13 @@ export class AuthApiService {
 
   register(payload: RegistrationPayload): Observable<RegistrationAcceptedResponse> {
     return this.http.post<RegistrationAcceptedResponse>(`${this.apiRoot}/auth/registration`, payload, { withCredentials: true });
+  }
+
+  confirmRegistration(token: string): Observable<ConfirmationResponse> {
+    return this.http.get<ConfirmationResponse>(`${this.apiRoot}/auth/registration/confirm`, {
+      params: { token },
+      withCredentials: true
+    });
   }
 
   login(payload: LoginPayload): Observable<AuthenticatedUser> {

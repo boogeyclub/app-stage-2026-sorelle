@@ -6,7 +6,8 @@ export const TRANSLATIONS = {
     meta: {
       landingTitle: 'CacaoMarket | Cocoa trade with confidence',
       loginTitle: 'CacaoMarket | Sign in',
-      registrationTitle: 'CacaoMarket | Create your account'
+      registrationTitle: 'CacaoMarket | Create your account',
+      confirmationTitle: 'CacaoMarket | Confirm your account'
     },
     common: {
       brandName: 'CacaoMarket',
@@ -42,6 +43,12 @@ export const TRANSLATIONS = {
       registration: {
         starting: 'Creating your account…',
         success: 'Your registration request was accepted. Check your email to confirm it.'
+      },
+      confirmation: {
+        starting: 'Confirming your CacaoMarket account…',
+        success: 'Your account is confirmed. Redirecting you to sign in…',
+        alreadyConfirmed: 'This account was already confirmed. Redirecting you to sign in…',
+        missingToken: 'This confirmation link is incomplete. Please use the complete link from your email.'
       },
       login: {
         starting: 'Checking your credentials…',
@@ -189,6 +196,27 @@ export const TRANSLATIONS = {
         passwordRequired: 'Enter your password.',
         passwordMin: 'Your password must contain at least 8 characters.'
       },
+      confirmation: {
+        eyebrow: 'Email verification',
+        title: 'Confirming your CacaoMarket account',
+        description: 'We are securely verifying your personal confirmation link.',
+        loadingTitle: 'Confirming your email address…',
+        loadingDescription: 'Please keep this page open while we activate your account.',
+        successTitle: 'Your account is confirmed.',
+        successDescription: 'You can now sign in and begin using CacaoMarket.',
+        redirecting: 'Redirecting to sign in in {{seconds}} seconds.',
+        signInNow: 'Sign in now',
+        errorTitle: 'We could not confirm your account.',
+        missingToken: 'This confirmation link is incomplete. Open the complete link from your email or register again.',
+        registerAgain: 'Create a new account',
+        errors: {
+          invalid: 'This confirmation link is invalid. Please request a new registration link.',
+          expired: 'This confirmation link has expired. Please register again.',
+          alreadyConfirmed: 'This account has already been confirmed. You can sign in now.',
+          unavailable: 'This confirmation link is not available for activation. Please register again.',
+          requestFailed: 'We could not confirm your account right now. Please try again.'
+        }
+      },
       registration: {
         eyebrow: 'Create your market profile',
         title: 'Start your next cocoa trade with clarity.',
@@ -241,7 +269,8 @@ export const TRANSLATIONS = {
     meta: {
       landingTitle: 'CacaoMarket | Le commerce du cacao en toute confiance',
       loginTitle: 'CacaoMarket | Connexion',
-      registrationTitle: 'CacaoMarket | Créer votre compte'
+      registrationTitle: 'CacaoMarket | Créer votre compte',
+      confirmationTitle: 'CacaoMarket | Confirmer votre compte'
     },
     common: {
       brandName: 'CacaoMarket',
@@ -277,6 +306,12 @@ export const TRANSLATIONS = {
       registration: {
         starting: 'Création de votre compte…',
         success: 'Votre demande d’inscription a été acceptée. Consultez votre e-mail pour la confirmer.'
+      },
+      confirmation: {
+        starting: 'Confirmation de votre compte CacaoMarket…',
+        success: 'Votre compte est confirmé. Redirection vers la connexion…',
+        alreadyConfirmed: 'Ce compte était déjà confirmé. Redirection vers la connexion…',
+        missingToken: 'Ce lien de confirmation est incomplet. Utilisez le lien complet reçu par e-mail.'
       },
       login: {
         starting: 'Vérification de vos identifiants…',
@@ -423,6 +458,27 @@ export const TRANSLATIONS = {
         identityRequired: 'Saisissez votre adresse e-mail ou votre identifiant.',
         passwordRequired: 'Saisissez votre mot de passe.',
         passwordMin: 'Votre mot de passe doit contenir au moins 8 caractères.'
+      },
+      confirmation: {
+        eyebrow: 'Vérification de l’e-mail',
+        title: 'Confirmation de votre compte CacaoMarket',
+        description: 'Nous vérifions de manière sécurisée votre lien personnel de confirmation.',
+        loadingTitle: 'Confirmation de votre adresse e-mail…',
+        loadingDescription: 'Gardez cette page ouverte pendant l’activation de votre compte.',
+        successTitle: 'Votre compte est confirmé.',
+        successDescription: 'Vous pouvez maintenant vous connecter et commencer à utiliser CacaoMarket.',
+        redirecting: 'Redirection vers la connexion dans {{seconds}} secondes.',
+        signInNow: 'Se connecter maintenant',
+        errorTitle: 'Nous n’avons pas pu confirmer votre compte.',
+        missingToken: 'Ce lien de confirmation est incomplet. Ouvrez le lien complet reçu par e-mail ou inscrivez-vous de nouveau.',
+        registerAgain: 'Créer un nouveau compte',
+        errors: {
+          invalid: 'Ce lien de confirmation est invalide. Demandez un nouveau lien en vous inscrivant à nouveau.',
+          expired: 'Ce lien de confirmation a expiré. Veuillez vous inscrire de nouveau.',
+          alreadyConfirmed: 'Ce compte a déjà été confirmé. Vous pouvez vous connecter.',
+          unavailable: 'Ce lien de confirmation ne peut pas activer ce compte. Veuillez vous inscrire de nouveau.',
+          requestFailed: 'Nous ne pouvons pas confirmer votre compte pour le moment. Réessayez.'
+        }
       },
       registration: {
         eyebrow: 'Créez votre profil de marché',

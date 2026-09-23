@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,10 +25,13 @@ import cm.odigital.serviceconnectmarket.auth.domain.PendingRegistration;
 import cm.odigital.serviceconnectmarket.auth.domain.RegistrationCommand;
 import cm.odigital.serviceconnectmarket.auth.service.AuthenticationService;
 import cm.odigital.serviceconnectmarket.auth.service.RegistrationService;
+import cm.odigital.serviceconnectmarket.observability.AuditValue;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     public static final String SESSION_USER_ID = "cacaomarket.auth.user-id";
     public static final String SESSION_USER_ROLE = "cacaomarket.auth.user-role";
@@ -41,6 +46,12 @@ public class AuthController {
 
     @PostMapping("/registration")
     public ResponseEntity<RegistrationAcceptedResponse> register(@Valid @RequestBody RegistrationRequest request) {
+        LOGGER.info(
+            "event=registration.request.accepted role={} email={} login={}",
+            request.role(),
+            AuditValue.maskedEmail(request.email()),
+            AuditValue.maskedIdentity(request.login())
+        );
         PendingRegistration registration = registrationService.startRegistration(new RegistrationCommand(
             request.role(),
             request.prenom(),
@@ -51,13 +62,20 @@ public class AuthController {
             request.language()
         ));
 
+        LOGGER.info(
+            "event=registration.request.completed email={} expiresAt={}",
+            AuditValue.maskedEmail(registration.email()),
+            registration.expiresAt()
+        );
         return ResponseEntity.status(HttpStatus.ACCEPTED)
             .body(new RegistrationAcceptedResponse(registration.email(), registration.expiresAt()));
     }
 
     @GetMapping("/registration/confirm")
     public ConfirmationResponse confirmRegistration(@RequestParam String token) {
+        LOGGER.info("event=registration.confirmation.request.accepted");
         registrationService.confirmRegistration(token);
+        LOGGER.info("event=registration.confirmation.request.completed");
         return new ConfirmationResponse(
             "CONFIRMED",
             "Your CacaoMarket registration is confirmed. You can now sign in."
@@ -69,9 +87,16 @@ public class AuthController {
         @Valid @RequestBody LoginRequest request,
         HttpServletRequest servletRequest
     ) {
+        LOGGER.info("event=login.request.accepted identity={}", AuditValue.maskedIdentity(request.identity()));
         AuthenticatedUtilisateur utilisateur = authenticationService.authenticate(request.identity(), request.password());
         establishSession(servletRequest, utilisateur, Boolean.TRUE.equals(request.rememberMe()));
 
+        LOGGER.info(
+            "event=login.request.completed utilisateurId={} role={} rememberMe={}",
+            utilisateur.id(),
+            utilisateur.role(),
+            Boolean.TRUE.equals(request.rememberMe())
+        );
         return new AuthenticatedUserResponse(
             utilisateur.id(),
             utilisateur.email(),
@@ -85,9 +110,11 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest servletRequest) {
         HttpSession session = servletRequest.getSession(false);
-        if (session != null) {
+        boolean activeSessionFound = session != null;
+        if (activeSessionFound) {
             session.invalidate();
         }
+        LOGGER.info("event=logout.request.completed activeSessionFound={}", activeSessionFound);
         return ResponseEntity.noContent().build();
     }
 
