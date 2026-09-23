@@ -41,6 +41,22 @@ This directory keeps database SQL under version control before it is executed.
 
 Email and login identities also have case-insensitive unique indexes so that `buyer@example.com` and `BUYER@example.com` cannot become separate accounts.
 
+## Default development administrator
+
+`gu.sql` creates an active bootstrap account when it is first applied:
+
+| Field | Seeded value |
+| --- | --- |
+| User type | `ADMINISTRATEUR` |
+| Login | `root` |
+| Email | `root@cacaomarket.local` |
+| Initial password | `root1234` |
+| Status | `ACTIF` |
+
+The password is stored only as a BCrypt hash in `gu.password_history`; plaintext `root1234` is never stored in PostgreSQL. The seed is idempotent: if `root` already exists, it is made an active administrator, but an existing current password is **not** overwritten.
+
+> `root` / `root1234` is a development bootstrap credential only. Change it immediately after the first login and never use it in a production deployment.
+
 ## Registration confirmations
 
 `gu.registration_confirmation` holds the one-time confirmation state for a pending registration.

@@ -60,7 +60,7 @@ Content-Type: application/json
 }
 ```
 
-Only active `CLIENT` and `VENDEUR` accounts with a valid current password and the `APP-CONN` basic right can sign in. The service establishes an HTTP session and returns the authenticated profile without a password hash. `rememberMe: true` extends the server-side idle-session limit from 30 minutes to 7 days. A pending account returns `403` with `REGISTRATION_PENDING_CONFIRMATION`.
+Only active `CLIENT`, `VENDEUR`, and `ADMINISTRATEUR` accounts with a valid current password and the `APP-CONN` basic right can sign in. The service establishes an HTTP session and returns the authenticated profile without a password hash. `rememberMe: true` extends the server-side idle-session limit from 30 minutes to 7 days. A pending account returns `403` with `REGISTRATION_PENDING_CONFIRMATION`. The tracked `gu.sql` schema seeds the development administrator login `root` with initial password `root1234`; change that bootstrap credential immediately after first use.
 
 `POST /api/auth/logout` invalidates the active HTTP session.
 

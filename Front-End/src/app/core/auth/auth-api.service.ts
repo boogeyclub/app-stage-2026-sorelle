@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 export type RegistrableUserRole = 'VENDEUR' | 'CLIENT';
+export type AuthenticatedUserRole = RegistrableUserRole | 'ADMINISTRATEUR';
 export type InterfaceLanguage = 'en' | 'fr';
 
 export interface RegistrationPayload {
@@ -40,7 +41,7 @@ export interface AuthenticatedUser {
   login: string;
   prenom: string;
   nom: string;
-  role: RegistrableUserRole;
+  role: AuthenticatedUserRole;
 }
 
 export interface ApiErrorResponse {

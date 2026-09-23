@@ -255,4 +255,65 @@ BEFORE INSERT OR UPDATE OF "password", "current", utilisateur_id ON gu.password_
 FOR EACH ROW
 EXECUTE FUNCTION gu.manage_password_history();
 
+-- Development bootstrap administrator. The password value below is a BCrypt hash of `root1234`,
+-- never the plaintext password. Change this initial password immediately after the first login.
+-- On a re-run, the existing `root` account is promoted to ADMINISTRATEUR but its current password
+-- is never replaced; the bootstrap hash is inserted only when no current password exists.
+DO $$
+DECLARE
+    administrator_type_id BIGINT;
+    administrator_utilisateur_id BIGINT;
+BEGIN
+    SELECT id
+    INTO STRICT administrator_type_id
+    FROM gu.type_utilisateur
+    WHERE code = 'ADMINISTRATEUR';
+
+    SELECT id
+    INTO administrator_utilisateur_id
+    FROM gu.utilisateurs
+    WHERE LOWER(login) = 'root'
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+        INSERT INTO gu.utilisateurs (
+            type_utilisateur_id,
+            nom,
+            prenom,
+            email,
+            login,
+            statut
+        )
+        VALUES (
+            administrator_type_id,
+            'System',
+            'Root',
+            'root@cacaomarket.local',
+            'root',
+            'ACTIF'
+        )
+        RETURNING id INTO administrator_utilisateur_id;
+    ELSE
+        UPDATE gu.utilisateurs
+        SET type_utilisateur_id = administrator_type_id,
+            statut = 'ACTIF'
+        WHERE id = administrator_utilisateur_id;
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1
+        FROM gu.password_history
+        WHERE utilisateur_id = administrator_utilisateur_id
+          AND "current" = TRUE
+    ) THEN
+        INSERT INTO gu.password_history (utilisateur_id, "password", "current")
+        VALUES (
+            administrator_utilisateur_id,
+            '$2a$12$L9cGpgE/8q1pg7YUGiteQ.SuGnfrOOV4rghX1ikMX7ahTju3Gu7HW',
+            TRUE
+        );
+    END IF;
+END;
+$$;
+
 COMMIT;

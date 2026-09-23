@@ -62,6 +62,27 @@ class AuthenticationServiceTest {
     }
 
     @Test
+    void authenticatesAnActiveAdministrateurWithTheAppConnectionRight() {
+        LoginCandidate administrateur = new LoginCandidate(
+            1L,
+            "root@cacaomarket.local",
+            "root",
+            "Root",
+            "System",
+            "ADMINISTRATEUR",
+            UtilisateurStatus.ACTIVE.databaseValue(),
+            "bcrypt-password-hash"
+        );
+        when(authRepository.findLoginCandidate("root")).thenReturn(Optional.of(administrateur));
+        when(passwordEncoder.matches("root1234", "bcrypt-password-hash")).thenReturn(true);
+
+        AuthenticatedUtilisateur authenticated = authenticationService.authenticate("root", "root1234");
+
+        assertEquals(1L, authenticated.id());
+        assertEquals("ADMINISTRATEUR", authenticated.role());
+    }
+
+    @Test
     void deniesAPendingVendeurUntilTheEmailIsConfirmed() {
         LoginCandidate vendeur = new LoginCandidate(
             8L,

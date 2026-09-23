@@ -203,7 +203,7 @@ public class AuthRepository {
                 INNER JOIN gu.password_history ph
                     ON ph.utilisateur_id = u.id AND ph."current" = TRUE
                 WHERE (LOWER(u.email) = LOWER(?) OR LOWER(u.login) = LOWER(?))
-                  AND tu.code IN ('VENDEUR', 'CLIENT')
+                  AND tu.code IN ('VENDEUR', 'CLIENT', 'ADMINISTRATEUR')
                   AND EXISTS (
                       SELECT 1
                       FROM gu.type_utilisateur_basic_right tubr
