@@ -1,4 +1,5 @@
 HELP.md
+# Local settings placed next to application.properties. Never commit this file.
 .env
 target/
 .mvn/wrapper/maven-wrapper.jar
