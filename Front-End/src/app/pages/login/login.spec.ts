@@ -46,6 +46,8 @@ describe('LoginComponent', () => {
 
     expect(nativeElement.textContent).toContain('Connectez-vous pour faire avancer votre commerce du cacao.');
     expect(nativeElement.textContent).toContain('Garder cette session active plus longtemps');
+    expect(nativeElement.textContent).toContain('Mot de passe oublié ?');
+    expect((nativeElement.querySelector('a[href$="password-reset"]') as HTMLAnchorElement).getAttribute('href')).toContain('password-reset');
     expect(identity.placeholder).toBe('vous@exemple.com ou votre identifiant');
     expect(password.placeholder).toBe('Saisissez votre mot de passe');
     expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Connexion');

@@ -139,6 +139,22 @@ public class UserSessionRepository {
         ) == 1;
     }
 
+    /**
+     * Security-sensitive password changes invalidate every active browser cookie for that account.
+     */
+    public int revokeAllForUtilisateur(long utilisateurId, Instant revokedAt) {
+        return jdbcTemplate.update(
+            """
+                UPDATE gu.sessions_utilisateur
+                SET invalidated_at = ?
+                WHERE utilisateur_id = ?
+                  AND invalidated_at IS NULL
+                """,
+            Timestamp.from(revokedAt),
+            utilisateurId
+        );
+    }
+
     public List<BrowserSession> findActiveForUtilisateur(long utilisateurId, Instant now) {
         return jdbcTemplate.query(
             """

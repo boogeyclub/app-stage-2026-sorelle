@@ -107,10 +107,13 @@
               }
             </div>
 
-            <label class="flex cursor-pointer items-center gap-3 text-sm font-semibold text-cacao-brown" for="remember-me">
-              <input id="remember-me" class="size-4 rounded border-cacao-gold text-cacao-amber focus:ring-cacao-gold" type="checkbox" formControlName="rememberMe">
-              {{ i18n.t('auth.login.rememberMe') }}
-            </label>
+            <div class="flex items-center justify-between gap-4">
+              <label class="flex cursor-pointer items-center gap-3 text-sm font-semibold text-cacao-brown" for="remember-me">
+                <input id="remember-me" class="size-4 rounded border-cacao-gold text-cacao-amber focus:ring-cacao-gold" type="checkbox" formControlName="rememberMe">
+                {{ i18n.t('auth.login.rememberMe') }}
+              </label>
+              <a class="shrink-0 text-sm font-extrabold text-cacao-amber transition hover:text-cacao-roast focus:outline-none focus:ring-2 focus:ring-cacao-gold" routerLink="/password-reset">{{ i18n.t('auth.login.forgotPassword') }}</a>
+            </div>
 
             <button class="inline-flex w-full items-center justify-center rounded-2xl bg-cacao-gold px-5 py-3.5 text-sm font-extrabold text-cacao-ink shadow-[0_12px_24px_rgba(93,53,25,0.16)] transition hover:-translate-y-0.5 hover:bg-cacao-yellow focus:outline-none focus:ring-4 focus:ring-cacao-gold/35 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0 disabled:hover:bg-cacao-gold" type="submit" [disabled]="isSubmitting()">
               {{ i18n.t(isSubmitting() ? 'auth.login.submitting' : 'auth.login.submit') }}

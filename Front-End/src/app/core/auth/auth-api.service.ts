@@ -29,6 +29,26 @@ export interface ConfirmationResponse {
   message: string;
 }
 
+export interface PasswordResetRequestPayload {
+  email: string;
+  language: InterfaceLanguage;
+}
+
+export interface PasswordResetRequestAcceptedResponse {
+  message: string;
+}
+
+export interface PasswordResetConfirmationPayload {
+  token: string;
+  password: string;
+  confirmPassword: string;
+}
+
+export interface PasswordResetConfirmationResponse {
+  status: 'RESET';
+  message: string;
+}
+
 export interface LoginPayload {
   identity: string;
   password: string;
@@ -77,6 +97,14 @@ export class AuthApiService {
       params: { token },
       withCredentials: true
     });
+  }
+
+  requestPasswordReset(payload: PasswordResetRequestPayload): Observable<PasswordResetRequestAcceptedResponse> {
+    return this.http.post<PasswordResetRequestAcceptedResponse>(`${this.apiRoot}/auth/password-reset/request`, payload, { withCredentials: true });
+  }
+
+  confirmPasswordReset(payload: PasswordResetConfirmationPayload): Observable<PasswordResetConfirmationResponse> {
+    return this.http.post<PasswordResetConfirmationResponse>(`${this.apiRoot}/auth/password-reset/confirm`, payload, { withCredentials: true });
   }
 
   login(payload: LoginPayload): Observable<AuthenticatedUser> {

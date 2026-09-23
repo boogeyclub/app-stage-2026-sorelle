@@ -186,6 +186,90 @@ public class AuthRepository {
         );
     }
 
+    /**
+     * Finds only a confirmed/active account for password recovery. Pending registrations and
+     * inactive accounts intentionally do not receive password-reset links.
+     */
+    public Optional<PasswordResetCandidate> findActiveUtilisateurByEmail(String email) {
+        List<PasswordResetCandidate> candidates = jdbcTemplate.query(
+            """
+                SELECT u.id, u.email, u.prenom
+                FROM gu.utilisateurs u
+                WHERE LOWER(u.email) = LOWER(?)
+                  AND u.statut = 'ACTIF'
+                LIMIT 1
+                """,
+            (resultSet, rowNumber) -> new PasswordResetCandidate(
+                resultSet.getLong("id"),
+                resultSet.getString("email"),
+                resultSet.getString("prenom")
+            ),
+            email
+        );
+        return candidates.stream().findFirst();
+    }
+
+    /**
+     * One account has at most one current reset record. Reissuing a link invalidates the old one
+     * by replacing its hash, deadline, and used marker.
+     */
+    public void upsertPasswordReset(long utilisateurId, String tokenHash, Instant expiresAt, Instant createdAt) {
+        jdbcTemplate.update(
+            """
+                INSERT INTO gu.password_reset (utilisateur_id, token_hash, expires_at, used_at, date_creation)
+                VALUES (?, ?, ?, NULL, ?)
+                ON CONFLICT (utilisateur_id) DO UPDATE
+                SET token_hash = EXCLUDED.token_hash,
+                    expires_at = EXCLUDED.expires_at,
+                    used_at = NULL,
+                    date_creation = EXCLUDED.date_creation
+                """,
+            utilisateurId,
+            tokenHash,
+            Timestamp.from(expiresAt),
+            Timestamp.from(createdAt)
+        );
+    }
+
+    public Optional<PasswordResetRecord> findPasswordResetByTokenHash(String tokenHash) {
+        List<PasswordResetRecord> resets = jdbcTemplate.query(
+            """
+                SELECT pr.utilisateur_id, pr.expires_at, pr.used_at, u.statut
+                FROM gu.password_reset pr
+                INNER JOIN gu.utilisateurs u ON u.id = pr.utilisateur_id
+                WHERE pr.token_hash = ?
+                FOR UPDATE OF pr, u
+                """,
+            (resultSet, rowNumber) -> {
+                Timestamp usedAt = resultSet.getTimestamp("used_at");
+                return new PasswordResetRecord(
+                    resultSet.getLong("utilisateur_id"),
+                    resultSet.getTimestamp("expires_at").toInstant(),
+                    usedAt == null ? null : usedAt.toInstant(),
+                    resultSet.getString("statut")
+                );
+            },
+            tokenHash
+        );
+        return resets.stream().findFirst();
+    }
+
+    public void markPasswordResetUsed(long utilisateurId, Instant usedAt) {
+        int updated = jdbcTemplate.update(
+            """
+                UPDATE gu.password_reset
+                SET used_at = ?
+                WHERE utilisateur_id = ?
+                  AND used_at IS NULL
+                """,
+            Timestamp.from(usedAt),
+            utilisateurId
+        );
+        if (updated != 1) {
+            throw new IllegalStateException("The password reset record could not be completed.");
+        }
+    }
+
     public Optional<LoginCandidate> findLoginCandidate(String identity) {
         List<LoginCandidate> candidates = jdbcTemplate.query(
             """

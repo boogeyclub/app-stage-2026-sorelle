@@ -12,7 +12,7 @@ This directory keeps database SQL under version control before it is executed.
 
 | Schema | Script | Tables |
 | --- | --- | --- |
-| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `sessions_utilisateur`, `registration_confirmation`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
+| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `sessions_utilisateur`, `registration_confirmation`, `password_reset`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
 
 ## User types
 
@@ -86,6 +86,20 @@ The password is stored only as a BCrypt hash in `gu.password_history`; plaintext
 | `date_creation` | Timestamp when the confirmation record was created |
 
 The backend creates `CLIENT` and `VENDEUR` registrations with `statut = EN_ATTENTE_CONFIRMATION`. A scheduled cleanup and every registration/authentication request remove any unconfirmed expired account together with its password history. A valid confirmation sets the status to `ACTIF`; only then can the account authenticate through the `APP-CONN` basic right.
+
+## Password-reset requests
+
+`gu.password_reset` holds the current single-use reset token for an account. Only an `ACTIF` account—meaning its registration has already been confirmed—can receive a row and reset link.
+
+| Column | Purpose |
+| --- | --- |
+| `utilisateur_id` | Unique owner of the reset request; it cascades when the account is removed |
+| `token_hash` | Unique SHA-256 hash of the reset token; the raw token is never stored |
+| `expires_at` | Exact reset-link deadline; the backend configures this as one hour by default |
+| `used_at` | Timestamp written when a valid token has changed the password |
+| `date_creation` | Creation time; a newer request replaces the old unused token and resets this value |
+
+A reset completion inserts a new BCrypt password history row, automatically archives the former current password through the existing database trigger, marks the reset token used, and invalidates every active browser session for that account. The user must then sign in with the new password.
 
 ## Basic rights and type associations
 

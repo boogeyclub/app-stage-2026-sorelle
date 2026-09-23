@@ -1,5 +1,9 @@
 package cm.odigital.serviceconnectmarket.auth.messaging;
 
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -19,6 +23,12 @@ import cm.odigital.serviceconnectmarket.observability.AuditValue;
 public class SmtpRegistrationMessagingService implements RegistrationMessagingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SmtpRegistrationMessagingService.class);
+    private static final DateTimeFormatter RESET_EXPIRY_ENGLISH = DateTimeFormatter
+        .ofPattern("d MMMM uuuu 'at' HH:mm 'UTC'", Locale.ENGLISH)
+        .withZone(ZoneOffset.UTC);
+    private static final DateTimeFormatter RESET_EXPIRY_FRENCH = DateTimeFormatter
+        .ofPattern("d MMMM uuuu 'à' HH:mm 'UTC'", Locale.FRENCH)
+        .withZone(ZoneOffset.UTC);
 
     private final ObjectProvider<JavaMailSender> mailSenderProvider;
     private final RegistrationProperties registrationProperties;
@@ -90,6 +100,56 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
         }
     }
 
+    @Override
+    public void sendPasswordReset(PasswordResetMessage reset) {
+        if (!isConfigured()) {
+            LOGGER.warn(
+                "event=password-reset.mail.dispatch.rejected reason=SMTP_CONFIGURATION_MISSING hostConfigured={} usernameConfigured={} passwordConfigured={}",
+                StringUtils.hasText(mailHost),
+                StringUtils.hasText(mailUsername),
+                StringUtils.hasText(mailPassword)
+            );
+            throw AuthException.unavailable(
+                "PASSWORD_RESET_MAIL_DELIVERY_UNAVAILABLE",
+                "Google SMTP email delivery is not configured."
+            );
+        }
+
+        LOGGER.info(
+            "event=password-reset.mail.smtp-send.started smtpHost={} recipient={}",
+            mailHost,
+            AuditValue.maskedEmail(reset.recipientEmail())
+        );
+        SimpleMailMessage email = new SimpleMailMessage();
+        email.setFrom(senderAddress());
+        email.setTo(reset.recipientEmail());
+        email.setSubject(passwordResetSubjectFor(reset.language()));
+        email.setText(passwordResetBodyFor(reset));
+
+        JavaMailSender mailSender = mailSenderProvider.getIfAvailable();
+        if (mailSender == null) {
+            LOGGER.warn("event=password-reset.mail.dispatch.rejected reason=MAIL_SENDER_BEAN_UNAVAILABLE");
+            throw AuthException.unavailable(
+                "PASSWORD_RESET_MAIL_DELIVERY_UNAVAILABLE",
+                "Password reset email delivery is not configured."
+            );
+        }
+
+        try {
+            mailSender.send(email);
+            LOGGER.info("event=password-reset.mail.smtp-send.completed");
+        } catch (MailException exception) {
+            LOGGER.warn(
+                "event=password-reset.mail.smtp-send.failed exceptionType={}",
+                exception.getClass().getName()
+            );
+            throw AuthException.unavailable(
+                "PASSWORD_RESET_MAIL_DELIVERY_UNAVAILABLE",
+                "The password reset email could not be sent."
+            );
+        }
+    }
+
     private boolean isConfigured() {
         return StringUtils.hasText(mailHost)
             && StringUtils.hasText(mailUsername)
@@ -134,5 +194,39 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
 
             If you did not request this registration, you can safely ignore this email.
             """.formatted(confirmation.recipientFirstName(), confirmation.confirmationUrl());
+    }
+
+    private String passwordResetSubjectFor(RegistrationLanguage language) {
+        return language == RegistrationLanguage.FR
+            ? "Réinitialisez votre mot de passe CacaoMarket"
+            : "Reset your CacaoMarket password";
+    }
+
+    private String passwordResetBodyFor(PasswordResetMessage reset) {
+        if (reset.language() == RegistrationLanguage.FR) {
+            return """
+                Bonjour %s,
+
+                Une demande de réinitialisation du mot de passe de votre compte CacaoMarket a été reçue. Pour choisir un nouveau mot de passe, ouvrez le lien ci-dessous :
+
+                %s
+
+                Ce lien personnel, à usage unique, expire le %s. Après avoir choisi un nouveau mot de passe, vous devrez vous reconnecter sur tous vos navigateurs.
+
+                Si vous n'avez pas demandé cette réinitialisation, ignorez cet e-mail : votre mot de passe actuel reste inchangé.
+                """.formatted(reset.recipientFirstName(), reset.resetUrl(), RESET_EXPIRY_FRENCH.format(reset.expiresAt()));
+        }
+
+        return """
+            Hello %s,
+
+            A password reset was requested for your CacaoMarket account. To choose a new password, open the link below:
+
+            %s
+
+            This personal, single-use link expires at %s. After choosing a new password, you will need to sign in again on every browser.
+
+            If you did not request this reset, you can safely ignore this email: your current password remains unchanged.
+            """.formatted(reset.recipientFirstName(), reset.resetUrl(), RESET_EXPIRY_ENGLISH.format(reset.expiresAt()));
     }
 }

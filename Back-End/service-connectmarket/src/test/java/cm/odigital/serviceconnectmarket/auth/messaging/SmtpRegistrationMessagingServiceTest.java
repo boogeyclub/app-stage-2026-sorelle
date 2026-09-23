@@ -61,6 +61,27 @@ class SmtpRegistrationMessagingServiceTest {
     }
 
     @Test
+    void sendsThePasswordResetThroughConfiguredGmail() {
+        when(mailSenderProvider.getIfAvailable()).thenReturn(mailSender);
+        SmtpRegistrationMessagingService service = configuredService();
+
+        service.sendPasswordReset(new PasswordResetMessage(
+            "buyer@example.com",
+            "Noah",
+            "https://frontend.example.test/CacaoMarket/password-reset/confirm?token=single-use-token",
+            Instant.parse("2026-09-23T13:00:00Z"),
+            RegistrationLanguage.EN
+        ));
+
+        ArgumentCaptor<SimpleMailMessage> email = ArgumentCaptor.forClass(SimpleMailMessage.class);
+        verify(mailSender).send(email.capture());
+        assertEquals("buyer@example.com", email.getValue().getTo()[0]);
+        assertEquals("Reset your CacaoMarket password", email.getValue().getSubject());
+        assertTrue(email.getValue().getText().contains("single-use-token"));
+        assertTrue(email.getValue().getText().contains("23 September 2026 at 13:00 UTC"));
+    }
+
+    @Test
     void failsSafelyBeforeSendingWhenGmailCredentialsAreMissing() {
         SmtpRegistrationMessagingService service = new SmtpRegistrationMessagingService(
             mailSenderProvider,

@@ -48,7 +48,15 @@ It should return:
 {"status":"UP","service":"service-connectmarket"}
 ```
 
-The Angular app makes its API requests directly to this Spring origin. The backend logs each `/api/...` request without logging request bodies, passwords, or confirmation-token query values.
+The Angular app makes its API requests directly to this Spring origin. The backend logs each `/api/...` request without logging request bodies, passwords, or registration/reset-token query values.
+
+## Password reset
+
+The sign-in form has a **Forgot password?** action that opens `/CacaoMarket/password-reset`. The request page accepts an account email and calls `POST /api/auth/password-reset/request`; it deliberately shows the same success message whether or not a link can be sent, so it does not disclose account existence.
+
+Only confirmed (`ACTIF`) accounts receive a Gmail reset link at their stored email address. The link targets `/CacaoMarket/password-reset/confirm?token=...`, where the Angular confirmation page accepts a new password and calls `POST /api/auth/password-reset/confirm`. The page never renders the raw token, directs the user back to sign-in after success, and supports English and French like the rest of the public authentication flow.
+
+The backend defaults the single-use link lifetime to one hour. Set `PASSWORD_RESET_URL` and, if needed, `PASSWORD_RESET_TOKEN_TTL` in the backend's local `src/main/resources/.env`; see the [backend Gmail and reset configuration](../Back-End/service-connectmarket/README.md#google-gmail-smtp-configuration). A successful reset invalidates all persistent browser sessions, so the user must sign in again.
 
 ## Role dashboards and browser sessions
 

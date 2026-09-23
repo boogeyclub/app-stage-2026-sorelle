@@ -1,6 +1,6 @@
 # CacaoMarket authentication service
 
-This Spring service owns the first account flow for `CLIENT` and `VENDEUR` rows in the PostgreSQL `gu` schema.
+This Spring service owns registration, authentication, browser sessions, and password recovery for `CLIENT`, `VENDEUR`, and `ADMINISTRATEUR` rows in the PostgreSQL `gu` schema.
 
 ## Registration and confirmation flow
 
@@ -11,6 +11,14 @@ This Spring service owns the first account flow for `CLIENT` and `VENDEUR` rows 
 5. A scheduler runs every minute, and registration/authentication requests also perform cleanup. Any unconfirmed expired registration is denied and its `utilisateurs`, `password_history`, and confirmation rows are removed transactionally.
 
 Raw confirmation tokens are never persisted or returned by the registration API.
+
+## Password-reset flow
+
+1. The Angular sign-in page links to `/CacaoMarket/password-reset`, where the user enters their account email address.
+2. `POST /api/auth/password-reset/request` sends a reset message only when that email belongs to an `ACTIF` account. Pending/unconfirmed, inactive, and unknown accounts receive the same generic accepted response and never receive a link.
+3. The backend stores only a SHA-256 hash of a fresh single-use token in `gu.password_reset`. A later request replaces the older unused token. Links are valid for **one hour** by default.
+4. The Gmail messaging service sends the link to the Angular reset page at `/CacaoMarket/password-reset/confirm?token=...`; the raw token is never logged or persisted.
+5. That page posts the token and a new password to `POST /api/auth/password-reset/confirm`. A valid completion writes a new BCrypt `password_history` row, consumes the reset token, and invalidates every active browser session for that account. The user must then sign in again.
 
 ## API
 
@@ -44,6 +52,39 @@ GET /api/auth/registration/confirm?token=<token-from-email>
 ```
 
 A link presented at or after its deadline is denied with `410 Gone` and `REGISTRATION_CONFIRMATION_EXPIRED` when its pending record is still present; after the scheduled purge it is treated as an invalid link. In either case, the pending account is removed and cannot be activated.
+
+### Request a password reset
+
+```http
+POST /api/auth/password-reset/request
+Content-Type: application/json
+```
+
+```json
+{
+  "email": "amina@example.com",
+  "language": "fr"
+}
+```
+
+After email-format validation, the endpoint returns `202 Accepted` with generic wording. This deliberately does not reveal whether an account exists, is confirmed, or was eligible to receive an email.
+
+### Complete a password reset
+
+```http
+POST /api/auth/password-reset/confirm
+Content-Type: application/json
+```
+
+```json
+{
+  "token": "token-from-email",
+  "password": "a new secure password",
+  "confirmPassword": "a new secure password"
+}
+```
+
+A successful request returns `200 OK` with a `RESET` status message. Invalid, expired, already-used, or ineligible tokens are rejected; password rules and confirmation matching are also enforced by the API.
 
 ### Login
 
@@ -117,7 +158,7 @@ event=registration.workflow.completed expiresAt=...
 event=api.request.completed method=POST path=/api/auth/registration status=202 outcome=success durationMs=...
 ```
 
-Rejected requests also expose the safe API error code, for example `REGISTRATION_MAIL_DELIVERY_UNAVAILABLE`, `REGISTRATION_CONFIRMATION_EXPIRED`, or `INVALID_CREDENTIALS`. Request bodies, passwords, password hashes, raw confirmation tokens, mail credentials, and confirmation-token query values are intentionally never written to the logs.
+Rejected requests also expose the safe API error code, for example `REGISTRATION_MAIL_DELIVERY_UNAVAILABLE`, `REGISTRATION_CONFIRMATION_EXPIRED`, `PASSWORD_RESET_TOKEN_EXPIRED`, or `INVALID_CREDENTIALS`. Request bodies, passwords, password hashes, raw registration or reset tokens, mail credentials, and token query values are intentionally never written to the logs.
 
 The optional `APP_LOG_FILE` environment variable can move the log file to a different location.
 
@@ -125,7 +166,7 @@ When the Angular app is started with `ng serve`, it calls the configured Spring 
 
 ## Google Gmail SMTP configuration
 
-The reusable registration messaging module is [`SmtpRegistrationMessagingService`](src/main/java/cm/odigital/serviceconnectmarket/auth/messaging/SmtpRegistrationMessagingService.java). It uses Spring's `JavaMailSender` with Gmail's authenticated SMTP server (`smtp.gmail.com`, port `587`, STARTTLS) and sends each registration confirmation email through that account.
+The reusable account-messaging module is [`SmtpRegistrationMessagingService`](src/main/java/cm/odigital/serviceconnectmarket/auth/messaging/SmtpRegistrationMessagingService.java). It uses Spring's `JavaMailSender` with Gmail's authenticated SMTP server (`smtp.gmail.com`, port `587`, STARTTLS) and sends both registration confirmations and password-reset links through that account.
 
 ### Where to set the Google email and App Password
 
@@ -173,6 +214,15 @@ REGISTRATION_CONFIRMATION_URL=http://localhost:4200/CacaoMarket/registration/con
 ```
 
 For production, replace `localhost:4200` with the public frontend host/domain. Do not include a token in that environment variable; the service appends a fresh secure token, and the Angular page sends it safely to the backend confirmation endpoint.
+
+Configure the password-reset destination and optional lifetime in the same file:
+
+```properties
+PASSWORD_RESET_URL=http://localhost:4200/CacaoMarket/password-reset/confirm
+PASSWORD_RESET_TOKEN_TTL=PT1H
+```
+
+Use the public frontend host in production and omit the token from `PASSWORD_RESET_URL`; the service appends a new token to each eligible email. `PASSWORD_RESET_TOKEN_TTL` uses ISO-8601 duration syntax (`PT1H` is one hour). Restart the backend after changing either setting.
 
 Registration deliberately fails with `503 REGISTRATION_MAIL_DELIVERY_UNAVAILABLE` when Gmail SMTP is absent or cannot deliver. The transaction rolls back so the application never leaves an unconfirmable pending account in the database.
 

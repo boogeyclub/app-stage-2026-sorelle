@@ -58,6 +58,34 @@ describe('AuthApiService', () => {
     request.flush({ status: 'CONFIRMED', message: 'Confirmed.' });
   });
 
+  it('requests and confirms a password reset through the direct API', () => {
+    const requestPayload = { email: 'buyer@example.com', language: 'fr' as const };
+    service.requestPasswordReset(requestPayload).subscribe((response) => {
+      expect(response.message).toContain('confirmed');
+    });
+
+    const requestReset = httpTesting.expectOne('http://localhost:8080/api/auth/password-reset/request');
+    expect(requestReset.request.method).toBe('POST');
+    expect(requestReset.request.withCredentials).toBe(true);
+    expect(requestReset.request.body).toEqual(requestPayload);
+    requestReset.flush({ message: 'If a confirmed CacaoMarket account uses this email address, a password reset link has been sent.' });
+
+    const confirmationPayload = {
+      token: 'single-use-reset-token',
+      password: 'new-secure-password',
+      confirmPassword: 'new-secure-password'
+    };
+    service.confirmPasswordReset(confirmationPayload).subscribe((response) => {
+      expect(response.status).toBe('RESET');
+    });
+
+    const confirmReset = httpTesting.expectOne('http://localhost:8080/api/auth/password-reset/confirm');
+    expect(confirmReset.request.method).toBe('POST');
+    expect(confirmReset.request.withCredentials).toBe(true);
+    expect(confirmReset.request.body).toEqual(confirmationPayload);
+    confirmReset.flush({ status: 'RESET', message: 'Password reset.' });
+  });
+
   it('posts login credentials to the backend login route', () => {
     service.login({ identity: 'amina-cocoa', password: 'secure-passphrase', rememberMe: true }).subscribe((user) => {
       expect(user.role).toBe('VENDEUR');

@@ -24,12 +24,18 @@ import cm.odigital.serviceconnectmarket.auth.api.dto.AuthenticatedUserResponse;
 import cm.odigital.serviceconnectmarket.auth.api.dto.BrowserSessionResponse;
 import cm.odigital.serviceconnectmarket.auth.api.dto.ConfirmationResponse;
 import cm.odigital.serviceconnectmarket.auth.api.dto.LoginRequest;
+import cm.odigital.serviceconnectmarket.auth.api.dto.PasswordResetConfirmationRequest;
+import cm.odigital.serviceconnectmarket.auth.api.dto.PasswordResetConfirmationResponse;
+import cm.odigital.serviceconnectmarket.auth.api.dto.PasswordResetRequest;
+import cm.odigital.serviceconnectmarket.auth.api.dto.PasswordResetRequestAcceptedResponse;
 import cm.odigital.serviceconnectmarket.auth.api.dto.RegistrationAcceptedResponse;
 import cm.odigital.serviceconnectmarket.auth.api.dto.RegistrationRequest;
+import cm.odigital.serviceconnectmarket.auth.domain.AuthException;
 import cm.odigital.serviceconnectmarket.auth.domain.AuthenticatedUtilisateur;
 import cm.odigital.serviceconnectmarket.auth.domain.PendingRegistration;
 import cm.odigital.serviceconnectmarket.auth.domain.RegistrationCommand;
 import cm.odigital.serviceconnectmarket.auth.service.AuthenticationService;
+import cm.odigital.serviceconnectmarket.auth.service.PasswordResetService;
 import cm.odigital.serviceconnectmarket.auth.service.RegistrationService;
 import cm.odigital.serviceconnectmarket.auth.session.AuthenticatedSession;
 import cm.odigital.serviceconnectmarket.auth.session.BrowserSession;
@@ -53,15 +59,18 @@ public class AuthController {
 
     private final RegistrationService registrationService;
     private final AuthenticationService authenticationService;
+    private final PasswordResetService passwordResetService;
     private final UserSessionService userSessionService;
 
     public AuthController(
         RegistrationService registrationService,
         AuthenticationService authenticationService,
+        PasswordResetService passwordResetService,
         UserSessionService userSessionService
     ) {
         this.registrationService = registrationService;
         this.authenticationService = authenticationService;
+        this.passwordResetService = passwordResetService;
         this.userSessionService = userSessionService;
     }
 
@@ -100,6 +109,41 @@ public class AuthController {
         return new ConfirmationResponse(
             "CONFIRMED",
             "Your CacaoMarket registration is confirmed. You can now sign in."
+        );
+    }
+
+    /**
+     * Always returns a generic accepted response so callers cannot determine whether an email
+     * belongs to a confirmed account. The service sends mail only for active accounts.
+     */
+    @PostMapping("/password-reset/request")
+    public ResponseEntity<PasswordResetRequestAcceptedResponse> requestPasswordReset(
+        @Valid @RequestBody PasswordResetRequest request
+    ) {
+        LOGGER.info("event=password-reset.request.accepted email={}", AuditValue.maskedEmail(request.email()));
+        try {
+            passwordResetService.requestPasswordReset(request.email(), request.language());
+        } catch (AuthException exception) {
+            // The service transaction has already rolled back. Keep the public response generic so
+            // a temporary SMTP/configuration failure cannot reveal a confirmed account's existence.
+            LOGGER.warn("event=password-reset.request.delivery-not-disclosed errorCode={}", exception.getCode());
+        }
+        LOGGER.info("event=password-reset.request.completed");
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(new PasswordResetRequestAcceptedResponse(
+            "If a confirmed CacaoMarket account uses this email address, a password reset link has been sent."
+        ));
+    }
+
+    @PostMapping("/password-reset/confirm")
+    public PasswordResetConfirmationResponse confirmPasswordReset(
+        @Valid @RequestBody PasswordResetConfirmationRequest request
+    ) {
+        LOGGER.info("event=password-reset.confirmation.request.accepted");
+        passwordResetService.completePasswordReset(request.token(), request.password());
+        LOGGER.info("event=password-reset.confirmation.request.completed");
+        return new PasswordResetConfirmationResponse(
+            "RESET",
+            "Your password has been reset. Sign in with your new password."
         );
     }
 

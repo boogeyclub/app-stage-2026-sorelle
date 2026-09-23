@@ -11,7 +11,9 @@ export const TRANSLATIONS = {
       administratorDashboardTitle: 'CacaoMarket | Administrator workspace',
       sellerDashboardTitle: 'CacaoMarket | Seller workspace',
       userDashboardTitle: 'CacaoMarket | User workspace',
-      accountTitle: 'CacaoMarket | Account settings'
+      accountTitle: 'CacaoMarket | Account settings',
+      passwordResetRequestTitle: 'CacaoMarket | Reset your password',
+      passwordResetConfirmationTitle: 'CacaoMarket | Choose a new password'
     },
     common: {
       brandName: 'CacaoMarket',
@@ -57,6 +59,12 @@ export const TRANSLATIONS = {
       login: {
         starting: 'Checking your credentials…',
         success: 'You are signed in.'
+      },
+      passwordReset: {
+        requesting: 'Preparing your secure password reset link…',
+        requestAccepted: 'If your confirmed account uses this email address, a reset link is on its way.',
+        completing: 'Updating your password securely…',
+        completed: 'Your password has been reset. Redirecting you to sign in…'
       },
       session: {
         signingOut: 'Signing you out securely…',
@@ -208,6 +216,57 @@ export const TRANSLATIONS = {
         identityRequired: 'Enter your email address or login.',
         passwordRequired: 'Enter your password.',
         passwordMin: 'Your password must contain at least 8 characters.'
+      },
+      passwordReset: {
+        request: {
+          eyebrow: 'Password recovery',
+          title: 'Reset your password securely.',
+          description: 'Enter the email address of your confirmed CacaoMarket account. If it is eligible, we will send a single-use reset link.',
+          emailLabel: 'Account email address',
+          emailPlaceholder: 'you@example.com',
+          emailRequired: 'Enter your email address.',
+          emailInvalid: 'Enter a valid email address.',
+          submit: 'Send reset link',
+          submitting: 'Sending secure link…',
+          successTitle: 'Check your email inbox.',
+          successDescription: 'For security, we only send a link when this email belongs to a confirmed CacaoMarket account. Check the email for its expiry time.',
+          backToSignIn: 'Back to sign in',
+          errors: {
+            deliveryUnavailable: 'We could not send a reset email right now. Please try again later.',
+            requestFailed: 'We could not start your password reset request. Please try again.'
+          }
+        },
+        confirmation: {
+          eyebrow: 'Choose a new password',
+          title: 'Create a fresh, secure password.',
+          description: 'This personal reset link can be used once. Resetting your password signs this account out on every browser.',
+          missingToken: 'This reset link is incomplete. Open the complete link from your email or request a new one.',
+          passwordLabel: 'New password',
+          passwordPlaceholder: 'At least 8 characters',
+          confirmPasswordLabel: 'Confirm new password',
+          confirmPasswordPlaceholder: 'Repeat your new password',
+          passwordRequired: 'Create a new password.',
+          passwordMin: 'Your new password must contain at least 8 characters.',
+          confirmPasswordRequired: 'Confirm your new password.',
+          passwordMismatch: 'The password confirmation does not match.',
+          submit: 'Reset password',
+          submitting: 'Resetting password…',
+          loadingTitle: 'Checking your secure reset link…',
+          successTitle: 'Your password was reset.',
+          successDescription: 'All browser sessions for this account have been signed out. You can now sign in with your new password.',
+          redirecting: 'Redirecting to sign in in {{seconds}} seconds.',
+          signInNow: 'Sign in now',
+          requestNewLink: 'Request a new reset link',
+          errorTitle: 'We could not reset your password.',
+          errors: {
+            invalid: 'This reset link is invalid. Request a new link and use the newest email.',
+            expired: 'This reset link has expired. Request a new one.',
+            used: 'This reset link was already used. Request a new one if you still need help.',
+            unavailable: 'This account is not available for password reset.',
+            passwordInvalid: 'This password is not supported. Use at most 72 characters.',
+            requestFailed: 'We could not reset your password right now. Please try again.'
+          }
+        }
       },
       confirmation: {
         eyebrow: 'Email verification',
@@ -392,7 +451,9 @@ export const TRANSLATIONS = {
       administratorDashboardTitle: 'CacaoMarket | Espace administrateur',
       sellerDashboardTitle: 'CacaoMarket | Espace vendeur',
       userDashboardTitle: 'CacaoMarket | Espace utilisateur',
-      accountTitle: 'CacaoMarket | Paramètres du compte'
+      accountTitle: 'CacaoMarket | Paramètres du compte',
+      passwordResetRequestTitle: 'CacaoMarket | Réinitialiser votre mot de passe',
+      passwordResetConfirmationTitle: 'CacaoMarket | Choisir un nouveau mot de passe'
     },
     common: {
       brandName: 'CacaoMarket',
@@ -438,6 +499,12 @@ export const TRANSLATIONS = {
       login: {
         starting: 'Vérification de vos identifiants…',
         success: 'Vous êtes connecté(e).'
+      },
+      passwordReset: {
+        requesting: 'Préparation de votre lien sécurisé de réinitialisation…',
+        requestAccepted: 'Si votre compte confirmé utilise cette adresse e-mail, un lien de réinitialisation est en cours d’envoi.',
+        completing: 'Mise à jour sécurisée de votre mot de passe…',
+        completed: 'Votre mot de passe a été réinitialisé. Redirection vers la connexion…'
       },
       session: {
         signingOut: 'Déconnexion sécurisée en cours…',
@@ -589,6 +656,57 @@ export const TRANSLATIONS = {
         identityRequired: 'Saisissez votre adresse e-mail ou votre identifiant.',
         passwordRequired: 'Saisissez votre mot de passe.',
         passwordMin: 'Votre mot de passe doit contenir au moins 8 caractères.'
+      },
+      passwordReset: {
+        request: {
+          eyebrow: 'Récupération du mot de passe',
+          title: 'Réinitialisez votre mot de passe en toute sécurité.',
+          description: 'Saisissez l’adresse e-mail de votre compte CacaoMarket confirmé. Si elle est éligible, nous vous enverrons un lien de réinitialisation à usage unique.',
+          emailLabel: 'Adresse e-mail du compte',
+          emailPlaceholder: 'vous@exemple.com',
+          emailRequired: 'Saisissez votre adresse e-mail.',
+          emailInvalid: 'Saisissez une adresse e-mail valide.',
+          submit: 'Envoyer le lien de réinitialisation',
+          submitting: 'Envoi du lien sécurisé…',
+          successTitle: 'Consultez votre boîte e-mail.',
+          successDescription: 'Pour votre sécurité, un lien est envoyé uniquement si cette adresse e-mail appartient à un compte CacaoMarket confirmé. Consultez l’e-mail pour connaître son heure d’expiration.',
+          backToSignIn: 'Retour à la connexion',
+          errors: {
+            deliveryUnavailable: 'Nous ne pouvons pas envoyer l’e-mail de réinitialisation pour le moment. Réessayez plus tard.',
+            requestFailed: 'Nous ne pouvons pas démarrer votre demande de réinitialisation. Réessayez.'
+          }
+        },
+        confirmation: {
+          eyebrow: 'Choisissez un nouveau mot de passe',
+          title: 'Créez un nouveau mot de passe sécurisé.',
+          description: 'Ce lien personnel ne peut être utilisé qu’une seule fois. La réinitialisation déconnecte ce compte de tous les navigateurs.',
+          missingToken: 'Ce lien de réinitialisation est incomplet. Ouvrez le lien complet reçu par e-mail ou demandez-en un nouveau.',
+          passwordLabel: 'Nouveau mot de passe',
+          passwordPlaceholder: 'Au moins 8 caractères',
+          confirmPasswordLabel: 'Confirmez le nouveau mot de passe',
+          confirmPasswordPlaceholder: 'Répétez votre nouveau mot de passe',
+          passwordRequired: 'Créez un nouveau mot de passe.',
+          passwordMin: 'Votre nouveau mot de passe doit contenir au moins 8 caractères.',
+          confirmPasswordRequired: 'Confirmez votre nouveau mot de passe.',
+          passwordMismatch: 'La confirmation du mot de passe ne correspond pas.',
+          submit: 'Réinitialiser le mot de passe',
+          submitting: 'Réinitialisation du mot de passe…',
+          loadingTitle: 'Vérification de votre lien sécurisé…',
+          successTitle: 'Votre mot de passe a été réinitialisé.',
+          successDescription: 'Toutes les sessions navigateur de ce compte ont été déconnectées. Vous pouvez maintenant vous connecter avec votre nouveau mot de passe.',
+          redirecting: 'Redirection vers la connexion dans {{seconds}} secondes.',
+          signInNow: 'Se connecter maintenant',
+          requestNewLink: 'Demander un nouveau lien',
+          errorTitle: 'Nous n’avons pas pu réinitialiser votre mot de passe.',
+          errors: {
+            invalid: 'Ce lien de réinitialisation est invalide. Demandez un nouveau lien et utilisez le dernier e-mail reçu.',
+            expired: 'Ce lien de réinitialisation a expiré. Demandez-en un nouveau.',
+            used: 'Ce lien de réinitialisation a déjà été utilisé. Demandez-en un nouveau si vous avez encore besoin d’aide.',
+            unavailable: 'Ce compte n’est pas disponible pour la réinitialisation du mot de passe.',
+            passwordInvalid: 'Ce mot de passe n’est pas pris en charge. Utilisez au maximum 72 caractères.',
+            requestFailed: 'Nous ne pouvons pas réinitialiser votre mot de passe pour le moment. Réessayez.'
+          }
+        }
       },
       confirmation: {
         eyebrow: 'Vérification de l’e-mail',

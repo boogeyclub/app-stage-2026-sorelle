@@ -12,6 +12,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login').then((module) => module.LoginComponent)
   },
   {
+    path: 'password-reset/confirm',
+    loadComponent: () => import('./pages/password-reset-confirmation/password-reset-confirmation').then((module) => module.PasswordResetConfirmationComponent)
+  },
+  {
+    path: 'password-reset',
+    loadComponent: () => import('./pages/password-reset-request/password-reset-request').then((module) => module.PasswordResetRequestComponent)
+  },
+  {
     path: 'registration/confirm',
     loadComponent: () => import('./pages/registration-confirmation/registration-confirmation').then((module) => module.RegistrationConfirmationComponent)
   },
