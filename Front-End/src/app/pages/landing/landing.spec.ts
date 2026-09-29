@@ -25,6 +25,12 @@ describe('LandingComponent', () => {
     const heading = fixture.nativeElement.querySelector('[data-testid="landing-title"]') as HTMLElement;
 
     expect(heading.textContent).toContain('Where cocoa harvests meet');
+
+    const volumeVisibilityCard = fixture.nativeElement.querySelector(
+      '[data-testid="hero-volume-visibility-card"]'
+    ) as HTMLElement;
+    expect(volumeVisibilityCard.textContent).toContain('Trade begins with');
+    expect(volumeVisibilityCard.classList).not.toContain('absolute');
   });
 
   it('switches visible landing content to French from the language selector', async () => {
