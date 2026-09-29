@@ -64,10 +64,10 @@ describe('RegistrationComponent', () => {
     const login = nativeElement.querySelector('#registration-login') as HTMLInputElement;
 
     expect(nativeElement.textContent).toContain('Préparez votre prochaine transaction cacao avec clarté.');
-    expect(nativeElement.textContent).toContain('Comment allez-vous utiliser CacaoMarket ?');
+    expect(nativeElement.textContent).toContain('Comment allez-vous utiliser CacaoMarketCM ?');
     expect(nativeElement.textContent).toContain('Confirmez votre mot de passe.');
     expect(email.placeholder).toBe('vous@exemple.com');
     expect(login.placeholder).toBe('Votre identifiant préféré');
-    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Créer votre compte');
+    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarketCM | Créer votre compte');
   });
 });

@@ -10,7 +10,7 @@ To start a local development server, run:
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/CacaoMarket/`. The application will automatically reload whenever you modify any of the source files.
+Once the server is running, open your browser and navigate to `http://localhost:4200/CacaoMarketCM/`. The application will automatically reload whenever you modify any of the source files.
 
 ## Authentication API connection
 
@@ -30,9 +30,9 @@ mvnw.cmd spring-boot:run
 | Build configuration | Environment file | Browser API base |
 | --- | --- | --- |
 | Development (`ng serve`) | [`src/environments/environment.development.ts`](./src/environments/environment.development.ts) | `http://localhost:8080/api` (direct cross-origin request) |
-| Production (`ng build`) | [`src/environments/environment.production.ts`](./src/environments/environment.production.ts) | `/CacaoMarket/api` on the deployed origin |
+| Production (`ng build`) | [`src/environments/environment.production.ts`](./src/environments/environment.production.ts) | `/CacaoMarketCM/api` on the deployed origin |
 
-The production server must make `/CacaoMarket/api/...` available from the Spring backend. This is server/deployment routing, not an Angular development proxy.
+The production server must make `/CacaoMarketCM/api/...` available from the Spring backend. This is server/deployment routing, not an Angular development proxy.
 
 ### Verify the connection
 
@@ -52,9 +52,9 @@ The Angular app makes its API requests directly to this Spring origin. The backe
 
 ## Password reset
 
-The sign-in form has a **Forgot password?** action that opens `/CacaoMarket/password-reset`. The request page accepts an account email and calls `POST /api/auth/password-reset/request`; it deliberately shows the same success message whether or not a link can be sent, so it does not disclose account existence.
+The sign-in form has a **Forgot password?** action that opens `/CacaoMarketCM/password-reset`. The request page accepts an account email and calls `POST /api/auth/password-reset/request`; it deliberately shows the same success message whether or not a link can be sent, so it does not disclose account existence.
 
-Only confirmed (`ACTIF`) accounts receive a Gmail reset link at their stored email address. The link targets `/CacaoMarket/password-reset/confirm?token=...`, where the Angular confirmation page accepts a new password and calls `POST /api/auth/password-reset/confirm`. The page never renders the raw token, directs the user back to sign-in after success, and supports English and French like the rest of the public authentication flow.
+Only confirmed (`ACTIF`) accounts receive a Gmail reset link at their stored email address. The link targets `/CacaoMarketCM/password-reset/confirm?token=...`, where the Angular confirmation page accepts a new password and calls `POST /api/auth/password-reset/confirm`. The page never renders the raw token, directs the user back to sign-in after success, and supports English and French like the rest of the public authentication flow.
 
 The backend defaults the single-use link lifetime to one hour. Set `PASSWORD_RESET_URL` and, if needed, `PASSWORD_RESET_TOKEN_TTL` in the backend's local `src/main/resources/.env`; see the [backend Gmail and reset configuration](../Back-End/service-connectmarket/README.md#google-gmail-smtp-configuration). A successful reset invalidates all persistent browser sessions, so the user must sign in again.
 
@@ -64,13 +64,13 @@ A successful login routes each user type to its own protected workspace:
 
 | Database user type | Angular route | Workspace |
 | --- | --- | --- |
-| `ADMINISTRATEUR` | `/CacaoMarket/dashboard/admin` | Administrator dashboard |
-| `VENDEUR` | `/CacaoMarket/dashboard/vendeur` | Seller dashboard |
-| `CLIENT` | `/CacaoMarket/dashboard/client` | User/client dashboard |
+| `ADMINISTRATEUR` | `/CacaoMarketCM/dashboard/admin` | Administrator dashboard |
+| `VENDEUR` | `/CacaoMarketCM/dashboard/vendeur` | Seller dashboard |
+| `CLIENT` | `/CacaoMarketCM/dashboard/client` | User/client dashboard |
 
-Dashboard routes first call `GET /api/auth/session`, so refreshing a page verifies both the browser cookie and the persistent `gu.sessions_utilisateur` record. The professional dashboard header contains the CacaoMarket logo, account menu, language selector, account settings link, and secure sign-out action.
+Dashboard routes first call `GET /api/auth/session`, so refreshing a page verifies both the browser cookie and the persistent `gu.sessions_utilisateur` record. The professional dashboard header contains the CacaoMarketCM logo, account menu, language selector, account settings link, and secure sign-out action.
 
-`/CacaoMarket/dashboard/account` lists the current account's active browser sessions and can disconnect an unused browser. Apply the latest [`database/gu.sql`](../database/gu.sql) before using these features, because the login flow writes a session record after each successful sign-in.
+`/CacaoMarketCM/dashboard/account` lists the current account's active browser sessions and can disconnect an unused browser. Apply the latest [`database/gu.sql`](../database/gu.sql) before using these features, because the login flow writes a session record after each successful sign-in.
 
 ## Code scaffolding
 

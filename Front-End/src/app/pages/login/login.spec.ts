@@ -50,6 +50,6 @@ describe('LoginComponent', () => {
     expect((nativeElement.querySelector('a[href$="password-reset"]') as HTMLAnchorElement).getAttribute('href')).toContain('password-reset');
     expect(identity.placeholder).toBe('vous@exemple.com ou votre identifiant');
     expect(password.placeholder).toBe('Saisissez votre mot de passe');
-    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Connexion');
+    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarketCM | Connexion');
   });
 });

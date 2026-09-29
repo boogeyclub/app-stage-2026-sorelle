@@ -56,7 +56,7 @@ class SmtpRegistrationMessagingServiceTest {
         verify(mailSender).send(email.capture());
         assertEquals("cacaomarket.sender@gmail.com", email.getValue().getFrom());
         assertEquals("buyer@example.com", email.getValue().getTo()[0]);
-        assertEquals("Confirm your CacaoMarket registration", email.getValue().getSubject());
+        assertEquals("Confirm your CacaoMarketCM registration", email.getValue().getSubject());
         assertTrue(email.getValue().getText().contains("single-use-token"));
     }
 
@@ -68,7 +68,7 @@ class SmtpRegistrationMessagingServiceTest {
         service.sendPasswordReset(new PasswordResetMessage(
             "buyer@example.com",
             "Noah",
-            "https://frontend.example.test/CacaoMarket/password-reset/confirm?token=single-use-token",
+            "https://frontend.example.test/CacaoMarketCM/password-reset/confirm?token=single-use-token",
             Instant.parse("2026-09-23T13:00:00Z"),
             RegistrationLanguage.EN
         ));
@@ -76,7 +76,7 @@ class SmtpRegistrationMessagingServiceTest {
         ArgumentCaptor<SimpleMailMessage> email = ArgumentCaptor.forClass(SimpleMailMessage.class);
         verify(mailSender).send(email.capture());
         assertEquals("buyer@example.com", email.getValue().getTo()[0]);
-        assertEquals("Reset your CacaoMarket password", email.getValue().getSubject());
+        assertEquals("Reset your CacaoMarketCM password", email.getValue().getSubject());
         assertTrue(email.getValue().getText().contains("single-use-token"));
         assertTrue(email.getValue().getText().contains("23 September 2026 at 13:00 UTC"));
     }

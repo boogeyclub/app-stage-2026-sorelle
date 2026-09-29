@@ -20,7 +20,7 @@ describe('LandingComponent', () => {
     return { fixture, i18n };
   }
 
-  it('renders the CacaoMarket landing heading', async () => {
+  it('renders the CacaoMarketCM landing heading', async () => {
     const { fixture } = await createComponent();
     const heading = fixture.nativeElement.querySelector('[data-testid="landing-title"]') as HTMLElement;
 
@@ -37,6 +37,6 @@ describe('LandingComponent', () => {
 
     const heading = fixture.nativeElement.querySelector('[data-testid="landing-title"]') as HTMLElement;
     expect(heading.textContent).toContain('Là où les récoltes de cacao rencontrent');
-    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Le commerce du cacao en toute confiance');
+    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarketCM | Le commerce du cacao en toute confiance');
   });
 });

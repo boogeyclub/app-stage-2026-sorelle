@@ -58,7 +58,7 @@ class PasswordResetServiceTest {
     @BeforeEach
     void setUp() {
         PasswordResetProperties properties = new PasswordResetProperties();
-        properties.setResetUrl("https://frontend.example.test/CacaoMarket/password-reset/confirm");
+        properties.setResetUrl("https://frontend.example.test/CacaoMarketCM/password-reset/confirm");
         properties.setTokenTtl(Duration.ofHours(1));
         passwordResetService = new PasswordResetService(
             authRepository,
@@ -92,7 +92,7 @@ class PasswordResetServiceTest {
         assertEquals(RegistrationLanguage.FR, message.getValue().language());
         assertEquals(NOW.plus(Duration.ofHours(1)), message.getValue().expiresAt());
         assertEquals(
-            "https://frontend.example.test/CacaoMarket/password-reset/confirm?token=raw-reset-token",
+            "https://frontend.example.test/CacaoMarketCM/password-reset/confirm?token=raw-reset-token",
             message.getValue().resetUrl()
         );
     }

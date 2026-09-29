@@ -36,6 +36,6 @@ describe('PasswordResetRequestComponent', () => {
     const email = nativeElement.querySelector('#password-reset-email') as HTMLInputElement;
     expect(nativeElement.textContent).toContain('Réinitialisez votre mot de passe en toute sécurité.');
     expect(email.placeholder).toBe('vous@exemple.com');
-    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarket | Réinitialiser votre mot de passe');
+    expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarketCM | Réinitialiser votre mot de passe');
   });
 });

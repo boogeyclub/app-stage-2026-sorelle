@@ -147,7 +147,7 @@ public class UserSessionService {
     private AuthException notAuthenticated() {
         return AuthException.unauthorized(
             "SESSION_NOT_AUTHENTICATED",
-            "An active CacaoMarket session is required."
+            "An active CacaoMarketCM session is required."
         );
     }
 }

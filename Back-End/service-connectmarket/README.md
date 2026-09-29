@@ -1,4 +1,4 @@
-# CacaoMarket authentication service
+# CacaoMarketCM authentication service
 
 This Spring service owns registration, authentication, browser sessions, and password recovery for `CLIENT`, `VENDEUR`, and `ADMINISTRATEUR` rows in the PostgreSQL `gu` schema.
 
@@ -14,10 +14,10 @@ Raw confirmation tokens are never persisted or returned by the registration API.
 
 ## Password-reset flow
 
-1. The Angular sign-in page links to `/CacaoMarket/password-reset`, where the user enters their account email address.
+1. The Angular sign-in page links to `/CacaoMarketCM/password-reset`, where the user enters their account email address.
 2. `POST /api/auth/password-reset/request` sends a reset message only when that email belongs to an `ACTIF` account. Pending/unconfirmed, inactive, and unknown accounts receive the same generic accepted response and never receive a link.
 3. The backend stores only a SHA-256 hash of a fresh single-use token in `gu.password_reset`. A later request replaces the older unused token. Links are valid for **one hour** by default.
-4. The Gmail messaging service sends the link to the Angular reset page at `/CacaoMarket/password-reset/confirm?token=...`; the raw token is never logged or persisted.
+4. The Gmail messaging service sends the link to the Angular reset page at `/CacaoMarketCM/password-reset/confirm?token=...`; the raw token is never logged or persisted.
 5. That page posts the token and a new password to `POST /api/auth/password-reset/confirm`. A valid completion writes a new BCrypt `password_history` row, consumes the reset token, and invalidates every active browser session for that account. The user must then sign in again.
 
 ## API
@@ -200,7 +200,7 @@ Do **not** put the App Password in `application.properties`, commit `.env`, or u
 
 ### Create the Google App Password
 
-1. Enable **2-Step Verification** for the Google account that will send CacaoMarket mail.
+1. Enable **2-Step Verification** for the Google account that will send CacaoMarketCM mail.
 2. Open [Google App Passwords](https://myaccount.google.com/apppasswords), create an App Password, and copy the generated 16-character value.
 3. Paste that generated value into `MAIL_PASSWORD` in `Back-End/service-connectmarket/src/main/resources/.env`. If Google displays it in groups, paste it without spaces. For the IntelliJ run configuration shown in the logs, restart the backend after saving the file so Spring reloads it.
 4. Set `REGISTRATION_MAIL_FROM` to the same Gmail/Google Workspace mailbox or to an alias verified by that account. You may leave it blank to use `MAIL_USERNAME` automatically.
@@ -210,7 +210,7 @@ For Google Workspace accounts, App Password availability can be disabled by the 
 Set `REGISTRATION_CONFIRMATION_URL` in the same `.env` file to the public **Angular confirmation page**, for example:
 
 ```properties
-REGISTRATION_CONFIRMATION_URL=http://localhost:4200/CacaoMarket/registration/confirm
+REGISTRATION_CONFIRMATION_URL=http://localhost:4200/CacaoMarketCM/registration/confirm
 ```
 
 For production, replace `localhost:4200` with the public frontend host/domain. Do not include a token in that environment variable; the service appends a fresh secure token, and the Angular page sends it safely to the backend confirmation endpoint.
@@ -218,7 +218,7 @@ For production, replace `localhost:4200` with the public frontend host/domain. D
 Configure the password-reset destination and optional lifetime in the same file:
 
 ```properties
-PASSWORD_RESET_URL=http://localhost:4200/CacaoMarket/password-reset/confirm
+PASSWORD_RESET_URL=http://localhost:4200/CacaoMarketCM/password-reset/confirm
 PASSWORD_RESET_TOKEN_TTL=PT1H
 ```
 

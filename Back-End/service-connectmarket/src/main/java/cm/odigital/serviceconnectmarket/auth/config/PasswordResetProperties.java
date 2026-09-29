@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "app.password-reset")
 public class PasswordResetProperties {
 
-    private String resetUrl = "http://localhost:4200/CacaoMarket/password-reset/confirm";
+    private String resetUrl = "http://localhost:4200/CacaoMarketCM/password-reset/confirm";
     private Duration tokenTtl = Duration.ofHours(1);
 
     public String getResetUrl() {

@@ -1,4 +1,4 @@
-# CacaoMarket localization
+# CacaoMarketCM localization
 
 Use the built-in `TranslationService` for all user-visible text in current and future Angular components, including page titles, form labels, placeholders, error messages, image alternative text, button labels, language-selector accessibility labels, and branded UI labels.
 

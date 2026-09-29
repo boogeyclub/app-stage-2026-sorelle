@@ -108,7 +108,7 @@ public class AuthController {
         LOGGER.info("event=registration.confirmation.request.completed");
         return new ConfirmationResponse(
             "CONFIRMED",
-            "Your CacaoMarket registration is confirmed. You can now sign in."
+            "Your CacaoMarketCM registration is confirmed. You can now sign in."
         );
     }
 
@@ -130,7 +130,7 @@ public class AuthController {
         }
         LOGGER.info("event=password-reset.request.completed");
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(new PasswordResetRequestAcceptedResponse(
-            "If a confirmed CacaoMarket account uses this email address, a password reset link has been sent."
+            "If a confirmed CacaoMarketCM account uses this email address, a password reset link has been sent."
         ));
     }
 

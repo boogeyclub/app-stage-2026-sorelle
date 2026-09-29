@@ -4,20 +4,20 @@ export type TranslationDictionary = Record<string, TranslationNode>;
 export const TRANSLATIONS = {
   en: {
     meta: {
-      landingTitle: 'CacaoMarket | Cocoa trade with confidence',
-      loginTitle: 'CacaoMarket | Sign in',
-      registrationTitle: 'CacaoMarket | Create your account',
-      confirmationTitle: 'CacaoMarket | Confirm your account',
-      administratorDashboardTitle: 'CacaoMarket | Administrator workspace',
-      sellerDashboardTitle: 'CacaoMarket | Seller workspace',
-      userDashboardTitle: 'CacaoMarket | User workspace',
-      accountTitle: 'CacaoMarket | Account settings',
-      passwordResetRequestTitle: 'CacaoMarket | Reset your password',
-      passwordResetConfirmationTitle: 'CacaoMarket | Choose a new password'
+      landingTitle: 'CacaoMarketCM | Cocoa trade with confidence',
+      loginTitle: 'CacaoMarketCM | Sign in',
+      registrationTitle: 'CacaoMarketCM | Create your account',
+      confirmationTitle: 'CacaoMarketCM | Confirm your account',
+      administratorDashboardTitle: 'CacaoMarketCM | Administrator workspace',
+      sellerDashboardTitle: 'CacaoMarketCM | Seller workspace',
+      userDashboardTitle: 'CacaoMarketCM | User workspace',
+      accountTitle: 'CacaoMarketCM | Account settings',
+      passwordResetRequestTitle: 'CacaoMarketCM | Reset your password',
+      passwordResetConfirmationTitle: 'CacaoMarketCM | Choose a new password'
     },
     common: {
-      brandName: 'CacaoMarket',
-      homeAria: 'CacaoMarket home',
+      brandName: 'CacaoMarketCM',
+      homeAria: 'CacaoMarketCM home',
       primaryNavigation: 'Primary navigation',
       languageSelector: 'Choose language',
       switchToLanguage: 'Switch to {{language}}',
@@ -51,7 +51,7 @@ export const TRANSLATIONS = {
         success: 'Your registration request was accepted. Check your email to confirm it.'
       },
       confirmation: {
-        starting: 'Confirming your CacaoMarket account…',
+        starting: 'Confirming your CacaoMarketCM account…',
         success: 'Your account is confirmed. Redirecting you to sign in…',
         alreadyConfirmed: 'This account was already confirmed. Redirecting you to sign in…',
         missingToken: 'This confirmation link is incomplete. Please use the complete link from your email.'
@@ -85,7 +85,7 @@ export const TRANSLATIONS = {
         howItWorks: 'How it works',
         forFarmers: 'For farmers',
         forBuyers: 'For buyers',
-        whyCacaoMarket: 'Why CacaoMarket'
+        whyCacaoMarketCM: 'Why CacaoMarketCM'
       },
       actions: {
         joinMarket: 'Join the market',
@@ -100,7 +100,7 @@ export const TRANSLATIONS = {
         badge: 'Built for serious cocoa trade',
         titleStart: 'Where cocoa harvests meet',
         titleAccent: 'serious demand.',
-        description: 'CacaoMarket helps farmers present large, market-ready cocoa lots and helps committed buyers find the volumes, origin, and timing they need.',
+        description: 'CacaoMarketCM helps farmers present large, market-ready cocoa lots and helps committed buyers find the volumes, origin, and timing they need.',
         largeBatchFocus: 'Large-batch focus',
         betterBriefings: 'Better briefings',
         directDialogue: 'Direct dialogue',
@@ -124,7 +124,7 @@ export const TRANSLATIONS = {
       value: {
         eyebrow: 'A marketplace with a purpose',
         title: 'Less noise. Better cocoa conversations.',
-        description: 'CacaoMarket is designed around the information that makes a bulk cocoa conversation worth having — before time is spent on either side.',
+        description: 'CacaoMarketCM is designed around the information that makes a bulk cocoa conversation worth having — before time is spent on either side.',
         designedForTrade: 'Designed for the trade',
         advantages: {
           volume: {
@@ -144,7 +144,7 @@ export const TRANSLATIONS = {
       process: {
         eyebrow: 'How it works',
         title: 'A better route from cocoa lot to commercial conversation.',
-        description: 'CacaoMarket gives each side a structured way to show what they have and what they are looking for.',
+        description: 'CacaoMarketCM gives each side a structured way to show what they have and what they are looking for.',
         steps: {
           publish: {
             title: 'Publish your cocoa lot',
@@ -175,7 +175,7 @@ export const TRANSLATIONS = {
       finalCta: {
         eyebrow: 'A more connected cocoa market',
         title: 'Bring your next cocoa conversation into focus.',
-        description: 'Whether you are preparing a major lot or sourcing one, CacaoMarket gives you a more intentional place to begin.'
+        description: 'Whether you are preparing a major lot or sourcing one, CacaoMarketCM gives you a more intentional place to begin.'
       },
       footer: {
         description: 'Helping cocoa producers and buyers find a clearer path to trade.',
@@ -187,8 +187,8 @@ export const TRANSLATIONS = {
     auth: {
       shared: {
         secureAccess: 'Secure access for the cocoa market',
-        backToMarket: 'Back to CacaoMarket',
-        footer: 'CacaoMarket — cocoa trade with confidence',
+        backToMarket: 'Back to CacaoMarketCM',
+        footer: 'CacaoMarketCM — cocoa trade with confidence',
         profileProtection: 'Your account information is protected and used only to create your market profile.',
         showPassword: 'Show password',
         hidePassword: 'Hide password'
@@ -196,7 +196,7 @@ export const TRANSLATIONS = {
       login: {
         eyebrow: 'Welcome back',
         title: 'Sign in to move cocoa trade forward.',
-        description: 'Access your CacaoMarket workspace to manage your profile, market activity, and conversations.',
+        description: 'Access your CacaoMarketCM workspace to manage your profile, market activity, and conversations.',
         identityLabel: 'Email address or login',
         identityPlaceholder: 'you@example.com or your login',
         passwordLabel: 'Password',
@@ -211,7 +211,7 @@ export const TRANSLATIONS = {
           pendingConfirmation: 'Confirm the email sent during registration before signing in.',
           requestFailed: 'We could not sign you in right now. Please try again.'
         },
-        noAccount: 'New to CacaoMarket?',
+        noAccount: 'New to CacaoMarketCM?',
         createAccount: 'Create an account',
         identityRequired: 'Enter your email address or login.',
         passwordRequired: 'Enter your password.',
@@ -221,7 +221,7 @@ export const TRANSLATIONS = {
         request: {
           eyebrow: 'Password recovery',
           title: 'Reset your password securely.',
-          description: 'Enter the email address of your confirmed CacaoMarket account. If it is eligible, we will send a single-use reset link.',
+          description: 'Enter the email address of your confirmed CacaoMarketCM account. If it is eligible, we will send a single-use reset link.',
           emailLabel: 'Account email address',
           emailPlaceholder: 'you@example.com',
           emailRequired: 'Enter your email address.',
@@ -229,7 +229,7 @@ export const TRANSLATIONS = {
           submit: 'Send reset link',
           submitting: 'Sending secure link…',
           successTitle: 'Check your email inbox.',
-          successDescription: 'For security, we only send a link when this email belongs to a confirmed CacaoMarket account. Check the email for its expiry time.',
+          successDescription: 'For security, we only send a link when this email belongs to a confirmed CacaoMarketCM account. Check the email for its expiry time.',
           backToSignIn: 'Back to sign in',
           errors: {
             deliveryUnavailable: 'We could not send a reset email right now. Please try again later.',
@@ -270,12 +270,12 @@ export const TRANSLATIONS = {
       },
       confirmation: {
         eyebrow: 'Email verification',
-        title: 'Confirming your CacaoMarket account',
+        title: 'Confirming your CacaoMarketCM account',
         description: 'We are securely verifying your personal confirmation link.',
         loadingTitle: 'Confirming your email address…',
         loadingDescription: 'Please keep this page open while we activate your account.',
         successTitle: 'Your account is confirmed.',
-        successDescription: 'You can now sign in and begin using CacaoMarket.',
+        successDescription: 'You can now sign in and begin using CacaoMarketCM.',
         redirecting: 'Redirecting to sign in in {{seconds}} seconds.',
         signInNow: 'Sign in now',
         errorTitle: 'We could not confirm your account.',
@@ -293,7 +293,7 @@ export const TRANSLATIONS = {
         eyebrow: 'Create your market profile',
         title: 'Start your next cocoa trade with clarity.',
         description: 'Create an account to present your interest in selling or sourcing commercial cocoa lots.',
-        chooseRole: 'How will you use CacaoMarket?',
+        chooseRole: 'How will you use CacaoMarketCM?',
         sellerTitle: 'I want to sell cocoa',
         sellerDescription: 'For farmers, cooperatives, and sellers with cocoa lots to present.',
         buyerTitle: 'I want to source cocoa',
@@ -310,7 +310,7 @@ export const TRANSLATIONS = {
         passwordPlaceholder: 'At least 8 characters',
         confirmPasswordLabel: 'Confirm password',
         confirmPasswordPlaceholder: 'Repeat your password',
-        agreement: 'I agree to create a CacaoMarket account for market-related communication.',
+        agreement: 'I agree to create a CacaoMarketCM account for market-related communication.',
         submit: 'Create my account',
         submitting: 'Sending confirmation email…',
         confirmationSent: 'A confirmation email was sent to {{email}}.',
@@ -322,7 +322,7 @@ export const TRANSLATIONS = {
         },
         alreadyAccount: 'Already have an account?',
         signIn: 'Sign in',
-        roleRequired: 'Choose how you will use CacaoMarket.',
+        roleRequired: 'Choose how you will use CacaoMarketCM.',
         firstNameRequired: 'Enter your first name.',
         lastNameRequired: 'Enter your last name.',
         emailRequired: 'Enter your email address.',
@@ -351,7 +351,7 @@ export const TRANSLATIONS = {
         openAccountMenu: 'Open account menu'
       },
       shared: {
-        workspace: 'CacaoMarket workspace',
+        workspace: 'CacaoMarketCM workspace',
         ready: 'Ready for your next step',
         nextStep: 'Suggested next step',
         viewAccount: 'View account settings',
@@ -359,7 +359,7 @@ export const TRANSLATIONS = {
       },
       admin: {
         eyebrow: 'Administrator workspace',
-        title: 'Keep the CacaoMarket ecosystem moving with confidence.',
+        title: 'Keep the CacaoMarketCM ecosystem moving with confidence.',
         description: 'Your operational home for supervising access, trade activity, and the platform experience.',
         accessCard: {
           title: 'Access governance',
@@ -444,20 +444,20 @@ export const TRANSLATIONS = {
   },
   fr: {
     meta: {
-      landingTitle: 'CacaoMarket | Le commerce du cacao en toute confiance',
-      loginTitle: 'CacaoMarket | Connexion',
-      registrationTitle: 'CacaoMarket | Créer votre compte',
-      confirmationTitle: 'CacaoMarket | Confirmer votre compte',
-      administratorDashboardTitle: 'CacaoMarket | Espace administrateur',
-      sellerDashboardTitle: 'CacaoMarket | Espace vendeur',
-      userDashboardTitle: 'CacaoMarket | Espace utilisateur',
-      accountTitle: 'CacaoMarket | Paramètres du compte',
-      passwordResetRequestTitle: 'CacaoMarket | Réinitialiser votre mot de passe',
-      passwordResetConfirmationTitle: 'CacaoMarket | Choisir un nouveau mot de passe'
+      landingTitle: 'CacaoMarketCM | Le commerce du cacao en toute confiance',
+      loginTitle: 'CacaoMarketCM | Connexion',
+      registrationTitle: 'CacaoMarketCM | Créer votre compte',
+      confirmationTitle: 'CacaoMarketCM | Confirmer votre compte',
+      administratorDashboardTitle: 'CacaoMarketCM | Espace administrateur',
+      sellerDashboardTitle: 'CacaoMarketCM | Espace vendeur',
+      userDashboardTitle: 'CacaoMarketCM | Espace utilisateur',
+      accountTitle: 'CacaoMarketCM | Paramètres du compte',
+      passwordResetRequestTitle: 'CacaoMarketCM | Réinitialiser votre mot de passe',
+      passwordResetConfirmationTitle: 'CacaoMarketCM | Choisir un nouveau mot de passe'
     },
     common: {
-      brandName: 'CacaoMarket',
-      homeAria: 'Accueil CacaoMarket',
+      brandName: 'CacaoMarketCM',
+      homeAria: 'Accueil CacaoMarketCM',
       primaryNavigation: 'Navigation principale',
       languageSelector: 'Choisir la langue',
       switchToLanguage: 'Passer en {{language}}',
@@ -491,7 +491,7 @@ export const TRANSLATIONS = {
         success: 'Votre demande d’inscription a été acceptée. Consultez votre e-mail pour la confirmer.'
       },
       confirmation: {
-        starting: 'Confirmation de votre compte CacaoMarket…',
+        starting: 'Confirmation de votre compte CacaoMarketCM…',
         success: 'Votre compte est confirmé. Redirection vers la connexion…',
         alreadyConfirmed: 'Ce compte était déjà confirmé. Redirection vers la connexion…',
         missingToken: 'Ce lien de confirmation est incomplet. Utilisez le lien complet reçu par e-mail.'
@@ -525,7 +525,7 @@ export const TRANSLATIONS = {
         howItWorks: 'Comment ça marche',
         forFarmers: 'Pour les producteurs',
         forBuyers: 'Pour les acheteurs',
-        whyCacaoMarket: 'Pourquoi CacaoMarket'
+        whyCacaoMarketCM: 'Pourquoi CacaoMarketCM'
       },
       actions: {
         joinMarket: 'Rejoindre le marché',
@@ -540,7 +540,7 @@ export const TRANSLATIONS = {
         badge: 'Pensé pour le commerce sérieux du cacao',
         titleStart: 'Là où les récoltes de cacao rencontrent',
         titleAccent: 'une demande sérieuse.',
-        description: 'CacaoMarket aide les producteurs à présenter de grands lots de cacao prêts pour le marché et les acheteurs engagés à trouver les volumes, l’origine et le calendrier dont ils ont besoin.',
+        description: 'CacaoMarketCM aide les producteurs à présenter de grands lots de cacao prêts pour le marché et les acheteurs engagés à trouver les volumes, l’origine et le calendrier dont ils ont besoin.',
         largeBatchFocus: 'Des lots importants',
         betterBriefings: 'Des offres plus claires',
         directDialogue: 'Un dialogue direct',
@@ -564,7 +564,7 @@ export const TRANSLATIONS = {
       value: {
         eyebrow: 'Une place de marché utile',
         title: 'Moins de bruit. De meilleures conversations autour du cacao.',
-        description: 'CacaoMarket repose sur les informations qui rendent une discussion autour d’un lot de cacao réellement pertinente — avant que l’une ou l’autre partie n’y consacre du temps.',
+        description: 'CacaoMarketCM repose sur les informations qui rendent une discussion autour d’un lot de cacao réellement pertinente — avant que l’une ou l’autre partie n’y consacre du temps.',
         designedForTrade: 'Pensé pour le commerce',
         advantages: {
           volume: {
@@ -584,7 +584,7 @@ export const TRANSLATIONS = {
       process: {
         eyebrow: 'Comment ça marche',
         title: 'Un meilleur chemin du lot de cacao à la discussion commerciale.',
-        description: 'CacaoMarket donne à chaque partie une manière structurée de présenter ce qu’elle a et ce qu’elle recherche.',
+        description: 'CacaoMarketCM donne à chaque partie une manière structurée de présenter ce qu’elle a et ce qu’elle recherche.',
         steps: {
           publish: {
             title: 'Publiez votre lot de cacao',
@@ -615,7 +615,7 @@ export const TRANSLATIONS = {
       finalCta: {
         eyebrow: 'Un marché du cacao plus connecté',
         title: 'Donnez de la clarté à votre prochaine discussion cacao.',
-        description: 'Que vous prépariez un lot important ou cherchiez à vous approvisionner, CacaoMarket vous offre un point de départ plus intentionnel.'
+        description: 'Que vous prépariez un lot important ou cherchiez à vous approvisionner, CacaoMarketCM vous offre un point de départ plus intentionnel.'
       },
       footer: {
         description: 'Aider les producteurs et les acheteurs de cacao à trouver un chemin plus clair vers le commerce.',
@@ -627,8 +627,8 @@ export const TRANSLATIONS = {
     auth: {
       shared: {
         secureAccess: 'Accès sécurisé au marché du cacao',
-        backToMarket: 'Retour à CacaoMarket',
-        footer: 'CacaoMarket — le commerce du cacao en toute confiance',
+        backToMarket: 'Retour à CacaoMarketCM',
+        footer: 'CacaoMarketCM — le commerce du cacao en toute confiance',
         profileProtection: 'Vos informations sont protégées et utilisées uniquement pour créer votre profil de marché.',
         showPassword: 'Afficher le mot de passe',
         hidePassword: 'Masquer le mot de passe'
@@ -636,7 +636,7 @@ export const TRANSLATIONS = {
       login: {
         eyebrow: 'Bienvenue',
         title: 'Connectez-vous pour faire avancer votre commerce du cacao.',
-        description: 'Accédez à votre espace CacaoMarket pour gérer votre profil, votre activité de marché et vos conversations.',
+        description: 'Accédez à votre espace CacaoMarketCM pour gérer votre profil, votre activité de marché et vos conversations.',
         identityLabel: 'Adresse e-mail ou identifiant',
         identityPlaceholder: 'vous@exemple.com ou votre identifiant',
         passwordLabel: 'Mot de passe',
@@ -651,7 +651,7 @@ export const TRANSLATIONS = {
           pendingConfirmation: 'Confirmez l’e-mail reçu lors de votre inscription avant de vous connecter.',
           requestFailed: 'Nous ne pouvons pas vous connecter pour le moment. Réessayez.'
         },
-        noAccount: 'Nouveau sur CacaoMarket ?',
+        noAccount: 'Nouveau sur CacaoMarketCM ?',
         createAccount: 'Créer un compte',
         identityRequired: 'Saisissez votre adresse e-mail ou votre identifiant.',
         passwordRequired: 'Saisissez votre mot de passe.',
@@ -661,7 +661,7 @@ export const TRANSLATIONS = {
         request: {
           eyebrow: 'Récupération du mot de passe',
           title: 'Réinitialisez votre mot de passe en toute sécurité.',
-          description: 'Saisissez l’adresse e-mail de votre compte CacaoMarket confirmé. Si elle est éligible, nous vous enverrons un lien de réinitialisation à usage unique.',
+          description: 'Saisissez l’adresse e-mail de votre compte CacaoMarketCM confirmé. Si elle est éligible, nous vous enverrons un lien de réinitialisation à usage unique.',
           emailLabel: 'Adresse e-mail du compte',
           emailPlaceholder: 'vous@exemple.com',
           emailRequired: 'Saisissez votre adresse e-mail.',
@@ -669,7 +669,7 @@ export const TRANSLATIONS = {
           submit: 'Envoyer le lien de réinitialisation',
           submitting: 'Envoi du lien sécurisé…',
           successTitle: 'Consultez votre boîte e-mail.',
-          successDescription: 'Pour votre sécurité, un lien est envoyé uniquement si cette adresse e-mail appartient à un compte CacaoMarket confirmé. Consultez l’e-mail pour connaître son heure d’expiration.',
+          successDescription: 'Pour votre sécurité, un lien est envoyé uniquement si cette adresse e-mail appartient à un compte CacaoMarketCM confirmé. Consultez l’e-mail pour connaître son heure d’expiration.',
           backToSignIn: 'Retour à la connexion',
           errors: {
             deliveryUnavailable: 'Nous ne pouvons pas envoyer l’e-mail de réinitialisation pour le moment. Réessayez plus tard.',
@@ -710,12 +710,12 @@ export const TRANSLATIONS = {
       },
       confirmation: {
         eyebrow: 'Vérification de l’e-mail',
-        title: 'Confirmation de votre compte CacaoMarket',
+        title: 'Confirmation de votre compte CacaoMarketCM',
         description: 'Nous vérifions de manière sécurisée votre lien personnel de confirmation.',
         loadingTitle: 'Confirmation de votre adresse e-mail…',
         loadingDescription: 'Gardez cette page ouverte pendant l’activation de votre compte.',
         successTitle: 'Votre compte est confirmé.',
-        successDescription: 'Vous pouvez maintenant vous connecter et commencer à utiliser CacaoMarket.',
+        successDescription: 'Vous pouvez maintenant vous connecter et commencer à utiliser CacaoMarketCM.',
         redirecting: 'Redirection vers la connexion dans {{seconds}} secondes.',
         signInNow: 'Se connecter maintenant',
         errorTitle: 'Nous n’avons pas pu confirmer votre compte.',
@@ -733,7 +733,7 @@ export const TRANSLATIONS = {
         eyebrow: 'Créez votre profil de marché',
         title: 'Préparez votre prochaine transaction cacao avec clarté.',
         description: 'Créez un compte pour présenter votre intérêt à vendre ou à rechercher des lots de cacao commerciaux.',
-        chooseRole: 'Comment allez-vous utiliser CacaoMarket ?',
+        chooseRole: 'Comment allez-vous utiliser CacaoMarketCM ?',
         sellerTitle: 'Je souhaite vendre du cacao',
         sellerDescription: 'Pour les producteurs, coopératives et vendeurs ayant des lots de cacao à présenter.',
         buyerTitle: 'Je souhaite rechercher du cacao',
@@ -750,7 +750,7 @@ export const TRANSLATIONS = {
         passwordPlaceholder: 'Au moins 8 caractères',
         confirmPasswordLabel: 'Confirmez le mot de passe',
         confirmPasswordPlaceholder: 'Répétez votre mot de passe',
-        agreement: 'J’accepte de créer un compte CacaoMarket pour des échanges liés au marché.',
+        agreement: 'J’accepte de créer un compte CacaoMarketCM pour des échanges liés au marché.',
         submit: 'Créer mon compte',
         submitting: 'Envoi de l’e-mail de confirmation…',
         confirmationSent: 'Un e-mail de confirmation a été envoyé à {{email}}.',
@@ -762,7 +762,7 @@ export const TRANSLATIONS = {
         },
         alreadyAccount: 'Vous avez déjà un compte ?',
         signIn: 'Se connecter',
-        roleRequired: 'Choisissez comment vous utiliserez CacaoMarket.',
+        roleRequired: 'Choisissez comment vous utiliserez CacaoMarketCM.',
         firstNameRequired: 'Saisissez votre prénom.',
         lastNameRequired: 'Saisissez votre nom.',
         emailRequired: 'Saisissez votre adresse e-mail.',
@@ -791,7 +791,7 @@ export const TRANSLATIONS = {
         openAccountMenu: 'Ouvrir le menu du compte'
       },
       shared: {
-        workspace: 'Espace CacaoMarket',
+        workspace: 'Espace CacaoMarketCM',
         ready: 'Prêt pour votre prochaine étape',
         nextStep: 'Prochaine étape suggérée',
         viewAccount: 'Voir les paramètres du compte',
@@ -799,7 +799,7 @@ export const TRANSLATIONS = {
       },
       admin: {
         eyebrow: 'Espace administrateur',
-        title: 'Faites avancer l’écosystème CacaoMarket en toute confiance.',
+        title: 'Faites avancer l’écosystème CacaoMarketCM en toute confiance.',
         description: 'Votre espace opérationnel pour superviser les accès, l’activité commerciale et l’expérience de la plateforme.',
         accessCard: {
           title: 'Gouvernance des accès',

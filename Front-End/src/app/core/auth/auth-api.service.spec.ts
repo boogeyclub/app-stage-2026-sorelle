@@ -68,7 +68,7 @@ describe('AuthApiService', () => {
     expect(requestReset.request.method).toBe('POST');
     expect(requestReset.request.withCredentials).toBe(true);
     expect(requestReset.request.body).toEqual(requestPayload);
-    requestReset.flush({ message: 'If a confirmed CacaoMarket account uses this email address, a password reset link has been sent.' });
+    requestReset.flush({ message: 'If a confirmed CacaoMarketCM account uses this email address, a password reset link has been sent.' });
 
     const confirmationPayload = {
       token: 'single-use-reset-token',

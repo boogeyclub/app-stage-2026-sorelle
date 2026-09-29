@@ -164,8 +164,8 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
 
     private String subjectFor(RegistrationLanguage language) {
         return language == RegistrationLanguage.FR
-            ? "Confirmez votre inscription CacaoMarket"
-            : "Confirm your CacaoMarket registration";
+            ? "Confirmez votre inscription CacaoMarketCM"
+            : "Confirm your CacaoMarketCM registration";
     }
 
     private String bodyFor(RegistrationConfirmationMessage confirmation) {
@@ -173,7 +173,7 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
             return """
                 Bonjour %s,
 
-                Merci de vous inscrire sur CacaoMarket. Confirmez votre adresse e-mail en ouvrant le lien ci-dessous :
+                Merci de vous inscrire sur CacaoMarketCM. Confirmez votre adresse e-mail en ouvrant le lien ci-dessous :
 
                 %s
 
@@ -186,7 +186,7 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
         return """
             Hello %s,
 
-            Thank you for registering with CacaoMarket. Confirm your email address by opening the link below:
+            Thank you for registering with CacaoMarketCM. Confirm your email address by opening the link below:
 
             %s
 
@@ -198,8 +198,8 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
 
     private String passwordResetSubjectFor(RegistrationLanguage language) {
         return language == RegistrationLanguage.FR
-            ? "Réinitialisez votre mot de passe CacaoMarket"
-            : "Reset your CacaoMarket password";
+            ? "Réinitialisez votre mot de passe CacaoMarketCM"
+            : "Reset your CacaoMarketCM password";
     }
 
     private String passwordResetBodyFor(PasswordResetMessage reset) {
@@ -207,7 +207,7 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
             return """
                 Bonjour %s,
 
-                Une demande de réinitialisation du mot de passe de votre compte CacaoMarket a été reçue. Pour choisir un nouveau mot de passe, ouvrez le lien ci-dessous :
+                Une demande de réinitialisation du mot de passe de votre compte CacaoMarketCM a été reçue. Pour choisir un nouveau mot de passe, ouvrez le lien ci-dessous :
 
                 %s
 
@@ -220,7 +220,7 @@ public class SmtpRegistrationMessagingService implements RegistrationMessagingSe
         return """
             Hello %s,
 
-            A password reset was requested for your CacaoMarket account. To choose a new password, open the link below:
+            A password reset was requested for your CacaoMarketCM account. To choose a new password, open the link below:
 
             %s
 

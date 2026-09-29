@@ -43,7 +43,7 @@ Email and login identities also have case-insensitive unique indexes so that `bu
 
 ## Connected browser sessions
 
-`gu.sessions_utilisateur` records every successful browser login for a user. One user can have several active rows at the same time, allowing CacaoMarket to manage each browser/device connection independently.
+`gu.sessions_utilisateur` records every successful browser login for a user. One user can have several active rows at the same time, allowing CacaoMarketCM to manage each browser/device connection independently.
 
 | Column | Purpose |
 | --- | --- |
