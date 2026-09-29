@@ -1,7 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
-import { dashboardPathForRole } from '../../core/auth/auth-role';
-import { AuthSessionService } from '../../core/auth/auth-session.service';
+import { dashboardPathForRole } from '../../../core/auth/auth-role';
+import { AuthSessionService } from '../../../core/auth/auth-session.service';
 
 @Component({
   selector: 'app-dashboard-redirect',

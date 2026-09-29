@@ -78,6 +78,27 @@ The administrator dashboard contains one card for each `gu` table and opens a pr
 
 Configuration and account records expose controlled create/update/removal workflows. `sessions_utilisateur`, `registration_confirmation`, and `password_reset` remain audit-oriented with only revocation or pending-registration cancellation actions; `password_history` is read-only. The UI deliberately has no column or form field for password hashes, session hashes, confirmation hashes, or reset-token hashes. The server enforces the same allow-list and safety rules.
 
+### Dashboard component layout
+
+Role-specific dashboard components are grouped beneath `src/app/pages/dashboard` so future features stay close to the role that owns them:
+
+```text
+pages/dashboard/
+├── admin/
+│   ├── overview/
+│   └── table-management/
+├── seller/
+│   └── overview/
+├── client/
+│   └── overview/
+└── shared/
+    ├── account-settings/
+    ├── dashboard-redirect.ts
+    └── dashboard-shell.*
+```
+
+Routes stay unchanged; only the lazy-import locations follow this organisation.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

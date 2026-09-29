@@ -35,36 +35,36 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [authenticatedGuard],
-    loadComponent: () => import('./pages/dashboard/dashboard-shell').then((module) => module.DashboardShellComponent),
+    loadComponent: () => import('./pages/dashboard/shared/dashboard-shell').then((module) => module.DashboardShellComponent),
     children: [
       {
         path: '',
         pathMatch: 'full',
-        loadComponent: () => import('./pages/dashboard/dashboard-redirect').then((module) => module.DashboardRedirectComponent)
+        loadComponent: () => import('./pages/dashboard/shared/dashboard-redirect').then((module) => module.DashboardRedirectComponent)
       },
       {
         path: 'admin/tables/:table',
         canActivate: [roleGuard('ADMINISTRATEUR')],
-        loadComponent: () => import('./pages/dashboard/admin-table-management/admin-table-management').then((module) => module.AdminTableManagementComponent)
+        loadComponent: () => import('./pages/dashboard/admin/table-management/admin-table-management').then((module) => module.AdminTableManagementComponent)
       },
       {
         path: 'admin',
         canActivate: [roleGuard('ADMINISTRATEUR')],
-        loadComponent: () => import('./pages/dashboard/admin-dashboard/admin-dashboard').then((module) => module.AdminDashboardComponent)
+        loadComponent: () => import('./pages/dashboard/admin/overview/admin-dashboard').then((module) => module.AdminDashboardComponent)
       },
       {
         path: 'vendeur',
         canActivate: [roleGuard('VENDEUR')],
-        loadComponent: () => import('./pages/dashboard/seller-dashboard/seller-dashboard').then((module) => module.SellerDashboardComponent)
+        loadComponent: () => import('./pages/dashboard/seller/overview/seller-dashboard').then((module) => module.SellerDashboardComponent)
       },
       {
         path: 'client',
         canActivate: [roleGuard('CLIENT')],
-        loadComponent: () => import('./pages/dashboard/user-dashboard/user-dashboard').then((module) => module.UserDashboardComponent)
+        loadComponent: () => import('./pages/dashboard/client/overview/client-dashboard').then((module) => module.ClientDashboardComponent)
       },
       {
         path: 'account',
-        loadComponent: () => import('./pages/dashboard/account-settings/account-settings').then((module) => module.AccountSettingsComponent)
+        loadComponent: () => import('./pages/dashboard/shared/account-settings/account-settings').then((module) => module.AccountSettingsComponent)
       }
     ]
   },

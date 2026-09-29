@@ -1,8 +1,8 @@
 import { Component, effect, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { ADMIN_TABLE_CATALOG } from '../../../core/admin/admin-table-catalog';
-import { TranslationService } from '../../../core/i18n/translation.service';
+import { ADMIN_TABLE_CATALOG } from '../../../../core/admin/admin-table-catalog';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   selector: 'app-admin-dashboard',

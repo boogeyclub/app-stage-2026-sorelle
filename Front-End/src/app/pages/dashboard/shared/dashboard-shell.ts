@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { DashboardHeaderComponent } from '../../shared/dashboard-header/dashboard-header';
+import { DashboardHeaderComponent } from '../../../shared/dashboard-header/dashboard-header';
 
 @Component({
   selector: 'app-dashboard-shell',

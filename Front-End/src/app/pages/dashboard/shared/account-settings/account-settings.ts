@@ -2,11 +2,11 @@ import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs';
-import { AuthApiService, BrowserSession } from '../../../core/auth/auth-api.service';
-import { roleTranslationKeyFor } from '../../../core/auth/auth-role';
-import { AuthSessionService } from '../../../core/auth/auth-session.service';
-import { TranslationService } from '../../../core/i18n/translation.service';
-import { NotificationService } from '../../../core/notifications/notification.service';
+import { AuthApiService, BrowserSession } from '../../../../core/auth/auth-api.service';
+import { roleTranslationKeyFor } from '../../../../core/auth/auth-role';
+import { AuthSessionService } from '../../../../core/auth/auth-session.service';
+import { TranslationService } from '../../../../core/i18n/translation.service';
+import { NotificationService } from '../../../../core/notifications/notification.service';
 
 @Component({
   selector: 'app-account-settings',

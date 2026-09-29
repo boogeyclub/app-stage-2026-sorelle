@@ -3,16 +3,16 @@ import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, ValidatorFn,
 import { Title } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
-import { AdminApiService, AdminRecord } from '../../../core/admin/admin-api.service';
+import { AdminApiService, AdminRecord } from '../../../../core/admin/admin-api.service';
 import {
   AdminEditorControl,
   AdminTableColumn,
   AdminTableDefinition,
   AdminTableField,
   adminTableForKey
-} from '../../../core/admin/admin-table-catalog';
-import { TranslationService } from '../../../core/i18n/translation.service';
-import { NotificationService } from '../../../core/notifications/notification.service';
+} from '../../../../core/admin/admin-table-catalog';
+import { TranslationService } from '../../../../core/i18n/translation.service';
+import { NotificationService } from '../../../../core/notifications/notification.service';
 
 interface EditorOption {
   value: string;

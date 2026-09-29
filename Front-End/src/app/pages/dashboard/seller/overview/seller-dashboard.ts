@@ -1,7 +1,7 @@
 import { Component, effect, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
-import { TranslationService } from '../../../core/i18n/translation.service';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 
 @Component({
   selector: 'app-seller-dashboard',

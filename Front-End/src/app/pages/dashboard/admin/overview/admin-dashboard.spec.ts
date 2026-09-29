@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
-import { TranslationService } from '../../../core/i18n/translation.service';
+import { TranslationService } from '../../../../core/i18n/translation.service';
 import { AdminDashboardComponent } from './admin-dashboard';
 
 describe('AdminDashboardComponent', () => {
