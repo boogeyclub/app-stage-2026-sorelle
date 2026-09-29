@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { RuntimeConfigurationService } from '../config/runtime-configuration.service';
 
 export type RegistrableUserRole = 'VENDEUR' | 'CLIENT';
 export type AuthenticatedUserRole = RegistrableUserRole | 'ADMINISTRATEUR';
@@ -83,10 +83,11 @@ export interface ApiErrorResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
   private readonly http = inject(HttpClient);
+  private readonly runtimeConfiguration = inject(RuntimeConfigurationService);
 
-  // Browser requests go directly to the configured Spring API; the backend
-  // must allow this frontend origin through CORS.
-  private readonly apiRoot = environment.apiBaseUrl;
+  private get apiRoot(): string {
+    return this.runtimeConfiguration.apiBaseUrl;
+  }
 
   register(payload: RegistrationPayload): Observable<RegistrationAcceptedResponse> {
     return this.http.post<RegistrationAcceptedResponse>(`${this.apiRoot}/auth/registration`, payload, { withCredentials: true });

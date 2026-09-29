@@ -48,7 +48,7 @@ export const TRANSLATIONS = {
       },
       admin: {
         loadFailed: 'We could not load the protected table records right now.',
-        connectionFailed: 'The browser could not reach the configured API. Check that the backend is running, the /cacaomarketcm context is used, and the development proxy or CORS configuration is correct.',
+        connectionFailed: 'The browser could not reach the configured API. Check that the backend is running, the /cacaomarketcm context is used, and config.json or CORS is configured correctly.',
         sessionExpired: 'Your administrator session is no longer active. Sign in again, then retry.',
         accessDenied: 'Your active account is not allowed to read administrator table records.',
         backendDataFailed: 'The API was reached but could not complete the protected table operation. Verify the database connection and that the current gu schema has been applied.',
@@ -632,7 +632,7 @@ export const TRANSLATIONS = {
       },
       admin: {
         loadFailed: 'Nous ne pouvons pas charger les enregistrements protégés pour le moment.',
-        connectionFailed: 'Le navigateur ne peut pas joindre l’API configurée. Vérifiez que le backend est démarré, que le contexte /cacaomarketcm est utilisé et que le proxy de développement ou la configuration CORS est correct.',
+        connectionFailed: 'Le navigateur ne peut pas joindre l’API configurée. Vérifiez que le backend est démarré, que le contexte /cacaomarketcm est utilisé, puis vérifiez config.json et, pour une origine différente, CORS.',
         sessionExpired: 'Votre session administrateur n’est plus active. Connectez-vous de nouveau puis réessayez.',
         accessDenied: 'Votre compte actif n’est pas autorisé à lire les enregistrements des tables administrateur.',
         backendDataFailed: 'L’API a été jointe mais ne peut pas terminer l’opération protégée sur la table. Vérifiez la connexion à la base et l’application du schéma gu actuel.',

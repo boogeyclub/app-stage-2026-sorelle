@@ -14,7 +14,25 @@ Once the server is running, open your browser and navigate to `http://localhost:
 
 ## Authentication API connection
 
-The development front-end calls the same-origin `/cacaomarketcm/api` path. `ng serve` uses [`proxy.conf.json`](./proxy.conf.json) to forward that path to Spring at `http://localhost:8080`, so the browser never calls a second localhost origin directly. The backend must be running below its lower-case `/cacaomarketcm` context. CORS remains configured for any direct external frontend origin; set `APP_CORS_ALLOWED_ORIGINS` to that exact origin when needed.
+Angular loads [`public/config.json`](./public/config.json) **before** it bootstraps. The file is copied unchanged into the application build output and is the single browser-visible source of the API base URL:
+
+```json
+{
+  "apiBaseUrl": "/cacaomarketcm/api"
+}
+```
+
+The default origin-relative value expects the web server to make `/cacaomarketcm/api/...` available from Spring, whose servlet context is lower-case `/cacaomarketcm`. Because the file is fetched relative to Angular's `/CacaoMarketCM/` base path, the built asset is available as `/CacaoMarketCM/config.json`. It is not content-hashed, so a deployment can replace that one JSON file without rebuilding the JavaScript bundles.
+
+There is **no Angular development proxy**. When the frontend and backend have different origins, set `apiBaseUrl` in `public/config.json` to the complete Spring URL before building or deploying, for example:
+
+```json
+{
+  "apiBaseUrl": "http://localhost:8080/cacaomarketcm/api"
+}
+```
+
+A direct cross-origin URL requires Spring CORS to allow the exact frontend origin through `APP_CORS_ALLOWED_ORIGINS`. Keep credentials enabled; browser session cookies are used by the authenticated routes. Invalid or missing runtime configuration stops Angular from bootstrapping rather than silently calling an unintended API.
 
 Start the backend service separately before submitting a registration:
 
@@ -23,16 +41,7 @@ cd ..\Back-End\service-connectmarket
 mvnw.cmd spring-boot:run
 ```
 
-`mvnw.cmd install` only builds the backend; it does not keep the API running. The API URL is configured in [`src/environments/environment.development.ts`](./src/environments/environment.development.ts).
-
-### Build environments
-
-| Build configuration | Environment file | Browser API base |
-| --- | --- | --- |
-| Development (`ng serve`) | [`src/environments/environment.development.ts`](./src/environments/environment.development.ts) | `/cacaomarketcm/api` through [`proxy.conf.json`](./proxy.conf.json) |
-| Production (`ng build`) | [`src/environments/environment.production.ts`](./src/environments/environment.production.ts) | `/cacaomarketcm/api` on the deployed origin |
-
-The production server must make `/cacaomarketcm/api/...` available from the Spring backend. This is server/deployment routing; the Angular development proxy is only used by `ng serve`.
+`mvnw.cmd install` only builds the backend; it does not keep the API running.
 
 ### Verify the connection
 
@@ -56,9 +65,9 @@ http://localhost:8080/cacaomarketcm/api/health/database
 
 It returns `200` with `"database":"UP"` only when Spring can read `gu.type_utilisateur.code` and `gu.type_utilisateur.tu_name`. If either check fails, repair Spring/the PostgreSQL schema before debugging the Angular UI.
 
-The Angular app makes same-origin requests to `/cacaomarketcm/api/...`; in development the Angular proxy forwards them to Spring. The backend logs each request without logging request bodies, passwords, or registration/reset-token query values.
+The Angular app sends requests to the `apiBaseUrl` loaded from `config.json`. The backend logs each request without logging request bodies, passwords, or registration/reset-token query values.
 
-A browser response with HTTP `500` or `503` means the frontend successfully reached Spring; inspect the safe `X-Request-Id` displayed by the administrator-table error and match it in the backend log. A browser response with status `0` instead indicates a proxy/network/CORS/API-base-URL problem.
+A browser response with HTTP `500` or `503` means the frontend successfully reached Spring; inspect the safe `X-Request-Id` displayed by the administrator-table error and match it in the backend log. A browser response with status `0` instead indicates a network/CORS/API-base-URL problem.
 
 ## Password reset
 

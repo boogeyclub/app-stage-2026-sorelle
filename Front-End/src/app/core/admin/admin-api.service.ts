@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { RuntimeConfigurationService } from '../config/runtime-configuration.service';
 
 /** Values are intentionally treated as unknown until a whitelisted UI column formats them. */
 export type AdminRecord = Record<string, unknown>;
@@ -19,7 +19,11 @@ export interface AdminMutationResponse {
 @Injectable({ providedIn: 'root' })
 export class AdminApiService {
   private readonly http = inject(HttpClient);
-  private readonly apiRoot = environment.apiBaseUrl;
+  private readonly runtimeConfiguration = inject(RuntimeConfigurationService);
+
+  private get apiRoot(): string {
+    return this.runtimeConfiguration.apiBaseUrl;
+  }
 
   tableRows(table: string): Observable<AdminTableRowsResponse> {
     return this.http.get<AdminTableRowsResponse>(this.tableUrl(table), { withCredentials: true });
