@@ -43,6 +43,11 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/dashboard-redirect').then((module) => module.DashboardRedirectComponent)
       },
       {
+        path: 'admin/tables/:table',
+        canActivate: [roleGuard('ADMINISTRATEUR')],
+        loadComponent: () => import('./pages/dashboard/admin-table-management/admin-table-management').then((module) => module.AdminTableManagementComponent)
+      },
+      {
         path: 'admin',
         canActivate: [roleGuard('ADMINISTRATEUR')],
         loadComponent: () => import('./pages/dashboard/admin-dashboard/admin-dashboard').then((module) => module.AdminDashboardComponent)

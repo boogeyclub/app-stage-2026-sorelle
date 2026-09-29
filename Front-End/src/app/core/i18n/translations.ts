@@ -46,6 +46,16 @@ export const TRANSLATIONS = {
       api: {
         requestFailed: 'We could not complete the request. Please try again.'
       },
+      admin: {
+        loadFailed: 'We could not load the protected table records right now.',
+        lookupFailed: 'We could not load one of the safe lookup lists. Refresh and try again.',
+        saving: 'Saving the protected table change…',
+        saved: 'The protected table change was completed.',
+        saveFailed: 'We could not save this protected table change. Review the values and try again.',
+        removing: 'Completing the protected action…',
+        removed: 'The protected action was completed.',
+        removeFailed: 'We could not complete this protected action. Refresh and try again.'
+      },
       registration: {
         starting: 'Creating your account…',
         success: 'Your registration request was accepted. Check your email to confirm it.'
@@ -375,7 +385,136 @@ export const TRANSLATIONS = {
         },
         nextTitle: 'Set the operational rhythm',
         nextDescription: 'Your administrator dashboard is ready for user management, role controls, and future market oversight modules.',
-        accountAction: 'Open my account settings'
+        accountAction: 'Open my account settings',
+        tableManagement: {
+          eyebrow: 'Schema controls',
+          title: 'Manage the protected gu data tables',
+          description: 'Open a purpose-built management screen for each schema table. Security records stay auditable and use only narrowly scoped safe actions.',
+          tablesAvailable: 'tables available',
+          manage: 'Manage table',
+          audit: 'Audit safe'
+        },
+        tables: {
+          userTypes: {
+            title: 'User types',
+            description: 'Maintain the role catalogue used by accounts.',
+            securityNote: 'Built-in CLIENT, VENDEUR, and ADMINISTRATEUR roles are protected from deletion and unsafe code changes.'
+          },
+          users: {
+            title: 'Users',
+            description: 'Create, update, suspend, or remove application accounts.',
+            securityNote: 'Passwords are accepted only when creating a controlled account and are never shown, edited, or returned by this screen.'
+          },
+          sessions: {
+            title: 'Browser sessions',
+            description: 'Audit signed-in browsers and revoke access when needed.',
+            securityNote: 'This is an audit and revocation view. Session hashes and browser cookies are never displayed.'
+          },
+          confirmations: {
+            title: 'Registration confirmations',
+            description: 'Audit account-confirmation lifecycle records.',
+            securityNote: 'This is an audit view. Confirmation tokens and token hashes are never displayed; only an unconfirmed pending registration can be cancelled.'
+          },
+          passwordResets: {
+            title: 'Password reset requests',
+            description: 'Audit reset-link lifecycle records and revoke unused links.',
+            securityNote: 'This is an audit and revocation view. Reset tokens and token hashes are never displayed.'
+          },
+          basicRights: {
+            title: 'Basic rights',
+            description: 'Maintain named application capabilities.',
+            securityNote: 'The required APP-CONN capability remains protected. Rights are assigned to types from the separate assignment table.'
+          },
+          rightAssignments: {
+            title: 'Type-to-right assignments',
+            description: 'Grant a basic right to a user type or remove a safe assignment.',
+            securityNote: 'Administrator assignments are protected by the database and cannot be removed from this screen.'
+          },
+          passwordHistory: {
+            title: 'Password history',
+            description: 'Audit password lifecycle metadata without security material.',
+            securityNote: 'This table is strictly read-only. Password values and password hashes are never displayed or editable.'
+          }
+        },
+        management: {
+          eyebrow: 'Administrator table management',
+          auditOnly: 'Audit-safe view',
+          back: 'Back to administrator dashboard',
+          createEyebrow: 'New controlled record',
+          editEyebrow: 'Controlled update',
+          createTitle: 'Create a record',
+          editTitle: 'Update a record',
+          temporaryPasswordNotice: 'The temporary password is sent only to the secure server for one-time hashing. It is never displayed again.',
+          selectOption: 'Select an option',
+          invalidField: 'Enter a valid value for this field.',
+          confirmActionTitle: 'Confirm protected action',
+          confirmActionDescription: 'Confirm this action for record #{{id}}. This action is logged and may revoke access immediately.',
+          recordsTitle: 'Safe record view',
+          recordsDescription: 'Only approved metadata fields are visible here.',
+          recordsCount: 'records',
+          loading: 'Loading protected records…',
+          loadError: 'Protected records could not be loaded right now.',
+          noRecords: 'No approved records are available for this table.'
+        },
+        actions: {
+          add: 'Add record',
+          refresh: 'Refresh',
+          edit: 'Edit',
+          delete: 'Delete',
+          revoke: 'Revoke session',
+          cancelPending: 'Cancel registration',
+          revokeReset: 'Revoke reset link',
+          removeAssignment: 'Remove assignment',
+          cancel: 'Cancel',
+          createRecord: 'Create record',
+          saveChanges: 'Save changes',
+          tryAgain: 'Try again'
+        },
+        columns: {
+          id: 'ID',
+          code: 'Code',
+          name: 'Name',
+          firstName: 'First name',
+          lastName: 'Last name',
+          email: 'Email',
+          login: 'Login',
+          userType: 'User type',
+          status: 'Status',
+          createdAt: 'Created',
+          browser: 'Browser',
+          extended: 'Extended',
+          lastSeenAt: 'Last active',
+          expiresAt: 'Expires',
+          revokedAt: 'Revoked',
+          confirmedAt: 'Confirmed',
+          usedAt: 'Used',
+          basicRight: 'Basic right',
+          currentPassword: 'Current',
+          recordedAt: 'Recorded',
+          changedAt: 'Changed',
+          actions: 'Actions'
+        },
+        fields: {
+          code: 'Code',
+          name: 'Name',
+          userType: 'User type',
+          firstName: 'First name',
+          lastName: 'Last name',
+          email: 'Email address',
+          login: 'Login',
+          status: 'Status',
+          temporaryPassword: 'Temporary password',
+          basicRight: 'Basic right'
+        },
+        statuses: {
+          active: 'Active',
+          suspended: 'Suspended',
+          pending: 'Pending confirmation'
+        },
+        values: {
+          yes: 'Yes',
+          no: 'No'
+        }
       },
       seller: {
         eyebrow: 'Seller workspace',
@@ -485,6 +624,16 @@ export const TRANSLATIONS = {
       },
       api: {
         requestFailed: 'Nous n’avons pas pu terminer la demande. Réessayez.'
+      },
+      admin: {
+        loadFailed: 'Nous ne pouvons pas charger les enregistrements protégés pour le moment.',
+        lookupFailed: 'Nous ne pouvons pas charger une des listes de référence sûres. Actualisez puis réessayez.',
+        saving: 'Enregistrement de la modification protégée…',
+        saved: 'La modification protégée a été effectuée.',
+        saveFailed: 'Nous ne pouvons pas enregistrer cette modification protégée. Vérifiez les valeurs puis réessayez.',
+        removing: 'Exécution de l’action protégée…',
+        removed: 'L’action protégée a été effectuée.',
+        removeFailed: 'Nous ne pouvons pas effectuer cette action protégée. Actualisez puis réessayez.'
       },
       registration: {
         starting: 'Création de votre compte…',
@@ -815,7 +964,136 @@ export const TRANSLATIONS = {
         },
         nextTitle: 'Donnez le rythme opérationnel',
         nextDescription: 'Votre tableau de bord administrateur est prêt pour la gestion des utilisateurs, les contrôles de rôles et les futurs modules de supervision du marché.',
-        accountAction: 'Ouvrir mes paramètres de compte'
+        accountAction: 'Ouvrir mes paramètres de compte',
+        tableManagement: {
+          eyebrow: 'Contrôles du schéma',
+          title: 'Gérer les tables de données gu protégées',
+          description: 'Ouvrez un écran de gestion dédié pour chaque table du schéma. Les enregistrements de sécurité restent auditables et proposent uniquement des actions sûres et limitées.',
+          tablesAvailable: 'tables disponibles',
+          manage: 'Gérer la table',
+          audit: 'Audit sécurisé'
+        },
+        tables: {
+          userTypes: {
+            title: 'Types d’utilisateur',
+            description: 'Gérez le catalogue des rôles utilisés par les comptes.',
+            securityNote: 'Les rôles intégrés CLIENT, VENDEUR et ADMINISTRATEUR sont protégés contre la suppression et les modifications de code risquées.'
+          },
+          users: {
+            title: 'Utilisateurs',
+            description: 'Créez, modifiez, suspendez ou supprimez des comptes applicatifs.',
+            securityNote: 'Les mots de passe sont acceptés uniquement lors de la création contrôlée d’un compte et ne sont jamais affichés, modifiés ou renvoyés par cet écran.'
+          },
+          sessions: {
+            title: 'Sessions navigateur',
+            description: 'Auditez les navigateurs connectés et révoquez un accès si nécessaire.',
+            securityNote: 'Il s’agit d’une vue d’audit et de révocation. Les empreintes de session et les cookies navigateur ne sont jamais affichés.'
+          },
+          confirmations: {
+            title: 'Confirmations d’inscription',
+            description: 'Auditez le cycle de vie des confirmations de compte.',
+            securityNote: 'Il s’agit d’une vue d’audit. Les jetons et empreintes de jeton ne sont jamais affichés ; seule une inscription en attente non confirmée peut être annulée.'
+          },
+          passwordResets: {
+            title: 'Demandes de réinitialisation',
+            description: 'Auditez les liens de réinitialisation et révoquez les liens inutilisés.',
+            securityNote: 'Il s’agit d’une vue d’audit et de révocation. Les jetons de réinitialisation et leurs empreintes ne sont jamais affichés.'
+          },
+          basicRights: {
+            title: 'Droits de base',
+            description: 'Gérez les capacités nommées de l’application.',
+            securityNote: 'La capacité obligatoire APP-CONN reste protégée. Les droits sont attribués aux types dans la table d’association distincte.'
+          },
+          rightAssignments: {
+            title: 'Attributions type-droit',
+            description: 'Attribuez un droit de base à un type d’utilisateur ou supprimez une attribution autorisée.',
+            securityNote: 'Les attributions de l’administrateur sont protégées par la base de données et ne peuvent pas être supprimées depuis cet écran.'
+          },
+          passwordHistory: {
+            title: 'Historique des mots de passe',
+            description: 'Auditez les métadonnées du cycle de vie des mots de passe sans donnée de sécurité.',
+            securityNote: 'Cette table est strictement en lecture seule. Les valeurs et empreintes de mots de passe ne sont jamais affichées ni modifiables.'
+          }
+        },
+        management: {
+          eyebrow: 'Gestion des tables administrateur',
+          auditOnly: 'Vue audit sécurisée',
+          back: 'Retour au tableau de bord administrateur',
+          createEyebrow: 'Nouvel enregistrement contrôlé',
+          editEyebrow: 'Mise à jour contrôlée',
+          createTitle: 'Créer un enregistrement',
+          editTitle: 'Mettre à jour un enregistrement',
+          temporaryPasswordNotice: 'Le mot de passe temporaire est envoyé uniquement au serveur sécurisé pour être haché une seule fois. Il ne sera jamais affiché de nouveau.',
+          selectOption: 'Sélectionnez une option',
+          invalidField: 'Saisissez une valeur valide pour ce champ.',
+          confirmActionTitle: 'Confirmer l’action protégée',
+          confirmActionDescription: 'Confirmez cette action pour l’enregistrement n°{{id}}. Cette action est journalisée et peut révoquer immédiatement un accès.',
+          recordsTitle: 'Vue sûre des enregistrements',
+          recordsDescription: 'Seuls les champs de métadonnées approuvés sont visibles ici.',
+          recordsCount: 'enregistrements',
+          loading: 'Chargement des enregistrements protégés…',
+          loadError: 'Les enregistrements protégés ne peuvent pas être chargés pour le moment.',
+          noRecords: 'Aucun enregistrement approuvé n’est disponible pour cette table.'
+        },
+        actions: {
+          add: 'Ajouter un enregistrement',
+          refresh: 'Actualiser',
+          edit: 'Modifier',
+          delete: 'Supprimer',
+          revoke: 'Révoquer la session',
+          cancelPending: 'Annuler l’inscription',
+          revokeReset: 'Révoquer le lien',
+          removeAssignment: 'Supprimer l’attribution',
+          cancel: 'Annuler',
+          createRecord: 'Créer l’enregistrement',
+          saveChanges: 'Enregistrer les modifications',
+          tryAgain: 'Réessayer'
+        },
+        columns: {
+          id: 'ID',
+          code: 'Code',
+          name: 'Nom',
+          firstName: 'Prénom',
+          lastName: 'Nom',
+          email: 'E-mail',
+          login: 'Identifiant',
+          userType: 'Type d’utilisateur',
+          status: 'Statut',
+          createdAt: 'Créé le',
+          browser: 'Navigateur',
+          extended: 'Prolongée',
+          lastSeenAt: 'Dernière activité',
+          expiresAt: 'Expire le',
+          revokedAt: 'Révoquée le',
+          confirmedAt: 'Confirmée le',
+          usedAt: 'Utilisé le',
+          basicRight: 'Droit de base',
+          currentPassword: 'Actuel',
+          recordedAt: 'Enregistré le',
+          changedAt: 'Modifié le',
+          actions: 'Actions'
+        },
+        fields: {
+          code: 'Code',
+          name: 'Nom',
+          userType: 'Type d’utilisateur',
+          firstName: 'Prénom',
+          lastName: 'Nom',
+          email: 'Adresse e-mail',
+          login: 'Identifiant',
+          status: 'Statut',
+          temporaryPassword: 'Mot de passe temporaire',
+          basicRight: 'Droit de base'
+        },
+        statuses: {
+          active: 'Actif',
+          suspended: 'Suspendu',
+          pending: 'En attente de confirmation'
+        },
+        values: {
+          yes: 'Oui',
+          no: 'Non'
+        }
       },
       seller: {
         eyebrow: 'Espace vendeur',

@@ -72,6 +72,12 @@ Dashboard routes first call `GET /api/auth/session`, so refreshing a page verifi
 
 `/CacaoMarketCM/dashboard/account` lists the current account's active browser sessions and can disconnect an unused browser. Apply the latest [`database/gu.sql`](../database/gu.sql) before using these features, because the login flow writes a session record after each successful sign-in.
 
+### Administrator `gu` table management
+
+The administrator dashboard contains one card for each `gu` table and opens a protected route under `/CacaoMarketCM/dashboard/admin/tables/{table}`. The Angular route guard improves navigation, while the Spring API independently checks the persisted active browser session and `ADMINISTRATEUR` role for every request.
+
+Configuration and account records expose controlled create/update/removal workflows. `sessions_utilisateur`, `registration_confirmation`, and `password_reset` remain audit-oriented with only revocation or pending-registration cancellation actions; `password_history` is read-only. The UI deliberately has no column or form field for password hashes, session hashes, confirmation hashes, or reset-token hashes. The server enforces the same allow-list and safety rules.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

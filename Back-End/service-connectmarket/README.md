@@ -116,6 +116,23 @@ All endpoints below require the credentialed browser session cookie except logou
 
 Expired browser-session records are marked invalid every five minutes by default. Set `SESSION_CLEANUP_INTERVAL` to change that schedule (for example `PT1M`). Apply the latest `database/gu.sql` before starting this version of the API, because successful login now writes to `gu.sessions_utilisateur`.
 
+### Administrator `gu` table API
+
+The Angular administrator workspace uses the explicitly whitelisted routes below. Every route requires both a validated, active browser session and the `ADMINISTRATEUR` role; the browser-only route guard is not treated as authorization.
+
+| Method | Route | Safe scope |
+| --- | --- | --- |
+| `GET` | `/api/admin/tables/{table}` | Returns a safe, table-specific projection for one of the eight approved `gu` tables. |
+| `POST` | `/api/admin/tables/{table}` | Creates only supported user-type, user, basic-right, or type/right-assignment records. |
+| `PUT` | `/api/admin/tables/{table}/{recordId}` | Updates only supported user-type, user, or basic-right records. |
+| `DELETE` | `/api/admin/tables/{table}/{recordId}` | Applies the table-specific safe action: controlled removal, session/reset revocation, pending-registration cancellation, or right-assignment removal. |
+
+Approved table keys are `type_utilisateur`, `utilisateurs`, `sessions_utilisateur`, `registration_confirmation`, `password_reset`, `basic_rights`, `type_utilisateur_basic_right`, and `password_history`. They are an enum allow-list, not SQL identifiers supplied by a caller.
+
+`password_history` is read-only. Browser sessions, registration confirmations, and password resets are audit-safe views with narrowly scoped revocation/cancellation actions. Raw passwords, password hashes, browser session hashes, confirmation token hashes, and password-reset token hashes are never accepted for display or returned by these routes. The service protects built-in roles, the `APP-CONN` capability, administrator assignments, self-removal, and the final active administrator account.
+
+The browser frontend uses `PUT`, so the configured credentialed CORS policy explicitly permits `GET`, `POST`, `PUT`, and `DELETE` from the configured frontend origins.
+
 ## Run and verify the API connection
 
 From `Back-End/service-connectmarket`, start the backend process (building with `mvnw.cmd install` alone does not start it):

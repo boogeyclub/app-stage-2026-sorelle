@@ -1,6 +1,7 @@
 import { Component, effect, inject } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { ADMIN_TABLE_CATALOG } from '../../../core/admin/admin-table-catalog';
 import { TranslationService } from '../../../core/i18n/translation.service';
 
 @Component({
@@ -18,6 +19,7 @@ export class AdminDashboardComponent {
     { icon: 'monitor', titleKey: 'dashboard.admin.sessionsCard.title', descriptionKey: 'dashboard.admin.sessionsCard.description' },
     { icon: 'chart', titleKey: 'dashboard.admin.marketCard.title', descriptionKey: 'dashboard.admin.marketCard.description' }
   ] as const;
+  protected readonly tableCards = ADMIN_TABLE_CATALOG;
 
   constructor() {
     effect(() => this.title.setTitle(this.i18n.t('meta.administratorDashboardTitle')));

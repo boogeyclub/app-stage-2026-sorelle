@@ -52,9 +52,11 @@ public class AuthExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
-        logRejection(HttpStatus.CONFLICT, "REGISTRATION_IDENTITY_ALREADY_EXISTS");
+        // Used by several protected workflows, including administrator configuration records.
+        // Do not expose database constraint names or imply that an account identity was involved.
+        logRejection(HttpStatus.CONFLICT, "PROTECTED_DATA_CONFLICT");
         return ResponseEntity.status(HttpStatus.CONFLICT)
-            .body(error("REGISTRATION_IDENTITY_ALREADY_EXISTS", "An account already uses this email address or login."));
+            .body(error("PROTECTED_DATA_CONFLICT", "The requested change conflicts with existing protected data."));
     }
 
     @ExceptionHandler(Exception.class)

@@ -23,7 +23,7 @@ public class ApiCorsConfiguration implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
             .allowedOrigins(allowedOrigins)
-            .allowedMethods("GET", "POST", "DELETE", "OPTIONS")
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("Content-Type", "X-Requested-With")
             .allowCredentials(true)
             .maxAge(3600);
