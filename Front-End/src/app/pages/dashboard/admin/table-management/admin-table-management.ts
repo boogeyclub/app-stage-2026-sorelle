@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, effect, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
@@ -12,7 +13,7 @@ import {
   adminTableForKey
 } from '../../../../core/admin/admin-table-catalog';
 import { TranslationService } from '../../../../core/i18n/translation.service';
-import { NotificationService } from '../../../../core/notifications/notification.service';
+import { NotificationMessage, NotificationService } from '../../../../core/notifications/notification.service';
 
 interface EditorOption {
   value: string;
@@ -33,6 +34,7 @@ export class AdminTableManagementComponent implements OnInit {
   protected readonly records = signal<readonly AdminRecord[]>([]);
   protected readonly isLoading = signal(false);
   protected readonly loadFailed = signal(false);
+  protected readonly loadError = signal<NotificationMessage>({ key: 'dashboard.admin.management.loadError' });
   protected readonly isLoadingLookups = signal(false);
   protected readonly isSaving = signal(false);
   protected readonly removingRecordId = signal<string | null>(null);
@@ -80,14 +82,17 @@ export class AdminTableManagementComponent implements OnInit {
 
     this.isLoading.set(true);
     this.loadFailed.set(false);
+    this.loadError.set({ key: 'dashboard.admin.management.loadError' });
     this.adminApi.tableRows(definition.key).pipe(
       finalize(() => this.isLoading.set(false))
     ).subscribe({
       next: (response) => this.records.set(response.records),
-      error: () => {
+      error: (error: unknown) => {
+        const message = this.tableRequestFailureMessage(error);
         this.records.set([]);
         this.loadFailed.set(true);
-        this.notifications.error({ key: 'notifications.admin.loadFailed' });
+        this.loadError.set(message);
+        this.notifications.error(message);
       }
     });
   }
@@ -147,7 +152,7 @@ export class AdminTableManagementComponent implements OnInit {
       this.notifications.trackApiCall({
         start: { key: 'notifications.admin.saving' },
         success: { key: 'notifications.admin.saved' },
-        error: { key: 'notifications.admin.saveFailed' }
+        error: (error: unknown) => this.tableRequestFailureMessage(error)
       }),
       finalize(() => this.isSaving.set(false))
     ).subscribe({
@@ -185,7 +190,7 @@ export class AdminTableManagementComponent implements OnInit {
       this.notifications.trackApiCall({
         start: { key: 'notifications.admin.removing' },
         success: { key: 'notifications.admin.removed' },
-        error: { key: 'notifications.admin.removeFailed' }
+        error: (error: unknown) => this.tableRequestFailureMessage(error)
       }),
       finalize(() => this.removingRecordId.set(null))
     ).subscribe({
@@ -366,6 +371,34 @@ export class AdminTableManagementComponent implements OnInit {
       }
       return [{ value: String(id), label: `${code} — ${name}` }];
     });
+  }
+
+  /**
+   * A non-zero HTTP status proves the browser reached Spring. Distinguishing that from a status-0
+   * CORS/network failure keeps administrators from treating a server-side schema error as a
+   * frontend connectivity problem. The request ID is safe to display and can be matched in logs.
+   * The same classification is used for reads and controlled administrator mutations.
+   */
+  private tableRequestFailureMessage(error: unknown): NotificationMessage {
+    if (!(error instanceof HttpErrorResponse)) {
+      return { key: 'notifications.admin.loadFailed' };
+    }
+    if (error.status === 0) {
+      return { key: 'notifications.admin.connectionFailed' };
+    }
+    if (error.status === 401) {
+      return { key: 'notifications.admin.sessionExpired' };
+    }
+    if (error.status === 403) {
+      return { key: 'notifications.admin.accessDenied' };
+    }
+    if (error.status >= 500) {
+      const requestId = error.headers.get('X-Request-Id');
+      return requestId
+        ? { key: 'notifications.admin.backendDataFailedWithRequestId', params: { requestId } }
+        : { key: 'notifications.admin.backendDataFailed' };
+    }
+    return { key: 'notifications.admin.loadFailed' };
   }
 
   private formatDate(value: unknown): string {

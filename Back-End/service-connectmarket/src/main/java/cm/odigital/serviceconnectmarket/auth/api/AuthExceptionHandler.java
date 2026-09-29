@@ -1,9 +1,12 @@
 package cm.odigital.serviceconnectmarket.auth.api;
 
+import java.sql.SQLException;
 import java.time.Clock;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -59,11 +62,30 @@ public class AuthExceptionHandler {
             .body(error("PROTECTED_DATA_CONFLICT", "The requested change conflicts with existing protected data."));
     }
 
+    /**
+     * Keeps JDBC failures out of the browser while retaining enough non-sensitive diagnostics in
+     * the server log to identify a missing/outdated gu schema, an unavailable database, or a
+     * database permission issue. SQL values and exception messages are intentionally not logged.
+     */
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<ApiErrorResponse> handleDataAccessException(DataAccessException exception) {
+        LOGGER.error(
+            "event=api.request.data-access-failed errorCode=DATA_ACCESS_UNAVAILABLE exceptionType={} sqlState={} origin={}",
+            exception.getClass().getName(),
+            sqlStateFor(exception),
+            applicationOrigin(exception)
+        );
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+            .body(error("DATA_ACCESS_UNAVAILABLE", "The protected data service is temporarily unavailable."));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnexpectedException(Exception exception) {
         LOGGER.error(
-            "event=api.request.failed errorCode=UNEXPECTED_ERROR exceptionType={}",
-            exception.getClass().getName()
+            "event=api.request.failed errorCode=UNEXPECTED_ERROR exceptionType={} rootCauseType={} origin={}",
+            exception.getClass().getName(),
+            rootCause(exception).getClass().getName(),
+            applicationOrigin(exception)
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
             .body(error("UNEXPECTED_ERROR", "The request could not be completed."));
@@ -71,6 +93,29 @@ public class AuthExceptionHandler {
 
     private void logRejection(HttpStatus status, String errorCode) {
         LOGGER.warn("event=api.request.rejected status={} errorCode={}", status.value(), errorCode);
+    }
+
+    private String sqlStateFor(DataAccessException exception) {
+        Throwable specificCause = exception.getMostSpecificCause();
+        return specificCause instanceof SQLException sqlException && sqlException.getSQLState() != null
+            ? sqlException.getSQLState()
+            : "[unavailable]";
+    }
+
+    private Throwable rootCause(Throwable exception) {
+        Throwable current = exception;
+        while (current.getCause() != null && current.getCause() != current) {
+            current = current.getCause();
+        }
+        return current;
+    }
+
+    private String applicationOrigin(Throwable exception) {
+        return Arrays.stream(exception.getStackTrace())
+            .filter(element -> element.getClassName().startsWith("cm.odigital.serviceconnectmarket"))
+            .findFirst()
+            .map(element -> element.getClassName() + "." + element.getMethodName() + ":" + element.getLineNumber())
+            .orElse("[external]");
     }
 
     private ApiErrorResponse error(String code, String message) {

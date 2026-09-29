@@ -24,7 +24,7 @@ describe('AuthSessionService', () => {
     service.ensureSession().subscribe((user) => firstUserRole = user?.role ?? '');
     service.ensureSession().subscribe((user) => secondUserRole = user?.role ?? '');
 
-    const request = httpTesting.expectOne('http://localhost:8080/api/auth/session');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/session');
     request.flush({
       id: 1,
       email: 'root@cacaomarket.local',
@@ -42,7 +42,7 @@ describe('AuthSessionService', () => {
   it('clears the profile when the server session cannot be restored', () => {
     service.ensureSession().subscribe((user) => expect(user).toBeNull());
 
-    const request = httpTesting.expectOne('http://localhost:8080/api/auth/session');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/session');
     request.flush({ code: 'SESSION_NOT_AUTHENTICATED' }, { status: 401, statusText: 'Unauthorized' });
 
     expect(service.user()).toBeNull();

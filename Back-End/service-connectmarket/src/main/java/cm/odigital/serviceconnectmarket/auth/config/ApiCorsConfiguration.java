@@ -25,6 +25,8 @@ public class ApiCorsConfiguration implements WebMvcConfigurer {
             .allowedOrigins(allowedOrigins)
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("Content-Type", "X-Requested-With")
+            // Lets the Angular error UI show the safe correlation ID returned by ApiRequestLoggingFilter.
+            .exposedHeaders("X-Request-Id")
             .allowCredentials(true)
             .maxAge(3600);
     }

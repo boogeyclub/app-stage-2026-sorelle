@@ -2,12 +2,14 @@
 
 This Spring service owns registration, authentication, browser sessions, and password recovery for `CLIENT`, `VENDEUR`, and `ADMINISTRATEUR` rows in the PostgreSQL `gu` schema.
 
+The service runs beneath the lower-case `/cacaomarketcm` servlet context by default, so its API base is `/cacaomarketcm/api`. Override the context only when a deployment requires it through `SERVER_SERVLET_CONTEXT_PATH`, and keep the Angular API base URL aligned.
+
 ## Registration and confirmation flow
 
-1. `POST /api/auth/registration` validates a `CLIENT` or `VENDEUR` registration.
+1. `POST /cacaomarketcm/api/auth/registration` validates a `CLIENT` or `VENDEUR` registration.
 2. The service writes an `EN_ATTENTE_CONFIRMATION` row in `gu.utilisateurs`, stores a BCrypt password hash in `gu.password_history`, and stores only the SHA-256 hash of a cryptographically random confirmation token in `gu.registration_confirmation`.
 3. The messaging module sends a single-use URL to the Angular confirmation page through Google Gmail SMTP. The URL is valid for exactly **3 hours**.
-4. The Angular page captures the token, calls `GET /api/auth/registration/confirm?token=...`, shows the localized result, and redirects the user to sign in after confirmation. The backend activates the user (`ACTIF`) when the token is valid.
+4. The Angular page captures the token, calls `GET /cacaomarketcm/api/auth/registration/confirm?token=...`, shows the localized result, and redirects the user to sign in after confirmation. The backend activates the user (`ACTIF`) when the token is valid.
 5. A scheduler runs every minute, and registration/authentication requests also perform cleanup. Any unconfirmed expired registration is denied and its `utilisateurs`, `password_history`, and confirmation rows are removed transactionally.
 
 Raw confirmation tokens are never persisted or returned by the registration API.
@@ -15,17 +17,17 @@ Raw confirmation tokens are never persisted or returned by the registration API.
 ## Password-reset flow
 
 1. The Angular sign-in page links to `/CacaoMarketCM/password-reset`, where the user enters their account email address.
-2. `POST /api/auth/password-reset/request` sends a reset message only when that email belongs to an `ACTIF` account. Pending/unconfirmed, inactive, and unknown accounts receive the same generic accepted response and never receive a link.
+2. `POST /cacaomarketcm/api/auth/password-reset/request` sends a reset message only when that email belongs to an `ACTIF` account. Pending/unconfirmed, inactive, and unknown accounts receive the same generic accepted response and never receive a link.
 3. The backend stores only a SHA-256 hash of a fresh single-use token in `gu.password_reset`. A later request replaces the older unused token. Links are valid for **one hour** by default.
 4. The Gmail messaging service sends the link to the Angular reset page at `/CacaoMarketCM/password-reset/confirm?token=...`; the raw token is never logged or persisted.
-5. That page posts the token and a new password to `POST /api/auth/password-reset/confirm`. A valid completion writes a new BCrypt `password_history` row, consumes the reset token, and invalidates every active browser session for that account. The user must then sign in again.
+5. That page posts the token and a new password to `POST /cacaomarketcm/api/auth/password-reset/confirm`. A valid completion writes a new BCrypt `password_history` row, consumes the reset token, and invalidates every active browser session for that account. The user must then sign in again.
 
 ## API
 
 ### Start registration
 
 ```http
-POST /api/auth/registration
+POST /cacaomarketcm/api/auth/registration
 Content-Type: application/json
 ```
 
@@ -48,7 +50,7 @@ A successful request returns `202 Accepted` with the destination email and expir
 ### Confirm registration
 
 ```http
-GET /api/auth/registration/confirm?token=<token-from-email>
+GET /cacaomarketcm/api/auth/registration/confirm?token=<token-from-email>
 ```
 
 A link presented at or after its deadline is denied with `410 Gone` and `REGISTRATION_CONFIRMATION_EXPIRED` when its pending record is still present; after the scheduled purge it is treated as an invalid link. In either case, the pending account is removed and cannot be activated.
@@ -56,7 +58,7 @@ A link presented at or after its deadline is denied with `410 Gone` and `REGISTR
 ### Request a password reset
 
 ```http
-POST /api/auth/password-reset/request
+POST /cacaomarketcm/api/auth/password-reset/request
 Content-Type: application/json
 ```
 
@@ -72,7 +74,7 @@ After email-format validation, the endpoint returns `202 Accepted` with generic 
 ### Complete a password reset
 
 ```http
-POST /api/auth/password-reset/confirm
+POST /cacaomarketcm/api/auth/password-reset/confirm
 Content-Type: application/json
 ```
 
@@ -89,7 +91,7 @@ A successful request returns `200 OK` with a `RESET` status message. Invalid, ex
 ### Login
 
 ```http
-POST /api/auth/login
+POST /cacaomarketcm/api/auth/login
 Content-Type: application/json
 ```
 
@@ -109,10 +111,10 @@ All endpoints below require the credentialed browser session cookie except logou
 
 | Method | Route | Purpose |
 | --- | --- | --- |
-| `GET` | `/api/auth/session` | Restores the currently authenticated profile after a browser refresh; checks both the servlet session and its active database row. |
-| `GET` | `/api/auth/sessions` | Lists the current user's active browser sessions with safe browser labels, timestamps, and a `current` flag. |
-| `DELETE` | `/api/auth/sessions/{sessionId}` | Disconnects one session owned by the current user. Disconnecting the current row immediately signs out that browser. |
-| `POST` | `/api/auth/logout` | Invalidates the active servlet session and marks its browser-session record invalid. |
+| `GET` | `/cacaomarketcm/api/auth/session` | Restores the currently authenticated profile after a browser refresh; checks both the servlet session and its active database row. |
+| `GET` | `/cacaomarketcm/api/auth/sessions` | Lists the current user's active browser sessions with safe browser labels, timestamps, and a `current` flag. |
+| `DELETE` | `/cacaomarketcm/api/auth/sessions/{sessionId}` | Disconnects one session owned by the current user. Disconnecting the current row immediately signs out that browser. |
+| `POST` | `/cacaomarketcm/api/auth/logout` | Invalidates the active servlet session and marks its browser-session record invalid. |
 
 Expired browser-session records are marked invalid every five minutes by default. Set `SESSION_CLEANUP_INTERVAL` to change that schedule (for example `PT1M`). Apply the latest `database/gu.sql` before starting this version of the API, because successful login now writes to `gu.sessions_utilisateur`.
 
@@ -122,10 +124,10 @@ The Angular administrator workspace uses the explicitly whitelisted routes below
 
 | Method | Route | Safe scope |
 | --- | --- | --- |
-| `GET` | `/api/admin/tables/{table}` | Returns a safe, table-specific projection for one of the eight approved `gu` tables. |
-| `POST` | `/api/admin/tables/{table}` | Creates only supported user-type, user, basic-right, or type/right-assignment records. |
-| `PUT` | `/api/admin/tables/{table}/{recordId}` | Updates only supported user-type, user, or basic-right records. |
-| `DELETE` | `/api/admin/tables/{table}/{recordId}` | Applies the table-specific safe action: controlled removal, session/reset revocation, pending-registration cancellation, or right-assignment removal. |
+| `GET` | `/cacaomarketcm/api/admin/tables/{table}` | Returns a safe, table-specific projection for one of the eight approved `gu` tables. |
+| `POST` | `/cacaomarketcm/api/admin/tables/{table}` | Creates only supported user-type, user, basic-right, or type/right-assignment records. |
+| `PUT` | `/cacaomarketcm/api/admin/tables/{table}/{recordId}` | Updates only supported user-type, user, or basic-right records. |
+| `DELETE` | `/cacaomarketcm/api/admin/tables/{table}/{recordId}` | Applies the table-specific safe action: controlled removal, session/reset revocation, pending-registration cancellation, or right-assignment removal. |
 
 Approved table keys are `type_utilisateur`, `utilisateurs`, `sessions_utilisateur`, `registration_confirmation`, `password_reset`, `basic_rights`, `type_utilisateur_basic_right`, and `password_history`. They are an enum allow-list, not SQL identifiers supplied by a caller.
 
@@ -144,7 +146,7 @@ mvnw.cmd spring-boot:run
 Wait for Spring Boot to report that it has started on port `8080`, then open:
 
 ```text
-http://localhost:8080/api/health
+http://localhost:8080/cacaomarketcm/api/health
 ```
 
 A running service returns:
@@ -153,9 +155,17 @@ A running service returns:
 {"status":"UP","service":"service-connectmarket"}
 ```
 
+Then verify the database projection used by the administrator user-type table without exposing a database row:
+
+```text
+http://localhost:8080/cacaomarketcm/api/health/database
+```
+
+A healthy schema returns `200` with `{"status":"UP","database":"UP",...}`. A `503` response with `DATA_ACCESS_UNAVAILABLE` means Spring is running but cannot read `gu.type_utilisateur` and its `code`/`tu_name` columns; apply the current [`database/gu.sql`](../../database/gu.sql) or correct the PostgreSQL connection/permissions before testing administrator tables.
+
 ## Structured API-call logs
 
-Every `/api/...` call receives an `X-Request-Id` response header. That identifier is included on every ordered log entry made during the request, so one registration, confirmation, login, or logout flow can be followed from start to finish.
+Every `/cacaomarketcm/api/...` call receives an `X-Request-Id` response header. That identifier is included on every ordered log entry made during the request, so one registration, confirmation, login, or logout flow can be followed from start to finish.
 
 The logs are written to both the service console/IntelliJ Run view and, by default, to:
 
@@ -166,20 +176,22 @@ Back-End/service-connectmarket/logs/cacaomarket-api.log
 A successful registration produces a sequence similar to:
 
 ```text
-event=api.request.received method=POST path=/api/auth/registration ...
+event=api.request.received method=POST path=/cacaomarketcm/api/auth/registration ...
 event=registration.request.accepted role=VENDEUR email=d***@example.com login=ro***
 event=registration.identity.available
 event=registration.pending.persisted utilisateurId=42 expiresAt=...
 event=registration.mail.smtp-send.completed
 event=registration.workflow.completed expiresAt=...
-event=api.request.completed method=POST path=/api/auth/registration status=202 outcome=success durationMs=...
+event=api.request.completed method=POST path=/cacaomarketcm/api/auth/registration status=202 outcome=success durationMs=...
 ```
 
 Rejected requests also expose the safe API error code, for example `REGISTRATION_MAIL_DELIVERY_UNAVAILABLE`, `REGISTRATION_CONFIRMATION_EXPIRED`, `PASSWORD_RESET_TOKEN_EXPIRED`, or `INVALID_CREDENTIALS`. Request bodies, passwords, password hashes, raw registration or reset tokens, mail credentials, and token query values are intentionally never written to the logs.
 
+A database failure is returned safely as `503 DATA_ACCESS_UNAVAILABLE` and logs only an exception type, safe SQLSTATE, and application origin. For example, SQLSTATE `42P01` points to a missing relation, `42703` to an outdated/missing column, and `42501` to a database-permission problem. Apply the tracked [`database/gu.sql`](../../database/gu.sql) and verify the configured PostgreSQL account when one of these appears.
+
 The optional `APP_LOG_FILE` environment variable can move the log file to a different location.
 
-When the Angular app is started with `ng serve`, it calls the configured Spring API origin directly with credentialed CORS requests. See the [frontend API connection instructions](../../Front-End/README.md#authentication-api-connection) and ensure `APP_CORS_ALLOWED_ORIGINS` includes the exact Angular origin.
+When the Angular app is started with `ng serve`, its same-origin `/cacaomarketcm/api` requests are forwarded to Spring by the tracked development proxy. Direct deployed frontend origins still require credentialed CORS; see the [frontend API connection instructions](../../Front-End/README.md#authentication-api-connection) and ensure `APP_CORS_ALLOWED_ORIGINS` includes each exact direct origin.
 
 ## Google Gmail SMTP configuration
 

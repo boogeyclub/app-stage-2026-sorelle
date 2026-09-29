@@ -37,7 +37,7 @@ describe('AuthApiService', () => {
       expect(response.email).toBe(payload.email);
     });
 
-    const request = httpTesting.expectOne('http://localhost:8080/api/auth/registration');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/registration');
     expect(request.request.method).toBe('POST');
     expect(request.request.withCredentials).toBe(true);
     expect(request.request.body).toEqual(payload);
@@ -50,7 +50,7 @@ describe('AuthApiService', () => {
     });
 
     const request = httpTesting.expectOne((candidate) =>
-      candidate.url === 'http://localhost:8080/api/auth/registration/confirm'
+      candidate.url === '/cacaomarketcm/api/auth/registration/confirm'
       && candidate.params.get('token') === 'single-use-token'
     );
     expect(request.request.method).toBe('GET');
@@ -64,7 +64,7 @@ describe('AuthApiService', () => {
       expect(response.message).toContain('confirmed');
     });
 
-    const requestReset = httpTesting.expectOne('http://localhost:8080/api/auth/password-reset/request');
+    const requestReset = httpTesting.expectOne('/cacaomarketcm/api/auth/password-reset/request');
     expect(requestReset.request.method).toBe('POST');
     expect(requestReset.request.withCredentials).toBe(true);
     expect(requestReset.request.body).toEqual(requestPayload);
@@ -79,7 +79,7 @@ describe('AuthApiService', () => {
       expect(response.status).toBe('RESET');
     });
 
-    const confirmReset = httpTesting.expectOne('http://localhost:8080/api/auth/password-reset/confirm');
+    const confirmReset = httpTesting.expectOne('/cacaomarketcm/api/auth/password-reset/confirm');
     expect(confirmReset.request.method).toBe('POST');
     expect(confirmReset.request.withCredentials).toBe(true);
     expect(confirmReset.request.body).toEqual(confirmationPayload);
@@ -91,7 +91,7 @@ describe('AuthApiService', () => {
       expect(user.role).toBe('VENDEUR');
     });
 
-    const request = httpTesting.expectOne('http://localhost:8080/api/auth/login');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/login');
     expect(request.request.method).toBe('POST');
     expect(request.request.withCredentials).toBe(true);
     request.flush({
@@ -109,7 +109,7 @@ describe('AuthApiService', () => {
       expect(user.role).toBe('CLIENT');
     });
 
-    const request = httpTesting.expectOne('http://localhost:8080/api/auth/session');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/session');
     expect(request.request.method).toBe('GET');
     expect(request.request.withCredentials).toBe(true);
     request.flush({
@@ -127,7 +127,7 @@ describe('AuthApiService', () => {
       expect(sessions[0].current).toBe(true);
     });
 
-    const listRequest = httpTesting.expectOne('http://localhost:8080/api/auth/sessions');
+    const listRequest = httpTesting.expectOne('/cacaomarketcm/api/auth/sessions');
     expect(listRequest.request.method).toBe('GET');
     expect(listRequest.request.withCredentials).toBe(true);
     listRequest.flush([{
@@ -141,7 +141,7 @@ describe('AuthApiService', () => {
     }]);
 
     service.disconnectBrowserSession(31).subscribe();
-    const disconnectRequest = httpTesting.expectOne('http://localhost:8080/api/auth/sessions/31');
+    const disconnectRequest = httpTesting.expectOne('/cacaomarketcm/api/auth/sessions/31');
     expect(disconnectRequest.request.method).toBe('DELETE');
     expect(disconnectRequest.request.withCredentials).toBe(true);
     disconnectRequest.flush(null);
@@ -150,7 +150,7 @@ describe('AuthApiService', () => {
   it('posts to the configured direct API when logging out', () => {
     service.logout().subscribe();
 
-    const request = httpTesting.expectOne('http://localhost:8080/api/auth/logout');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/logout');
     expect(request.request.method).toBe('POST');
     expect(request.request.withCredentials).toBe(true);
     request.flush(null);

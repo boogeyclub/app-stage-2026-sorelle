@@ -1,4 +1,4 @@
-import { provideHttpClient } from '@angular/common/http';
+import { HttpHeaders, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
@@ -32,7 +32,7 @@ describe('AdminTableManagementComponent', () => {
     const fixture = TestBed.createComponent(AdminTableManagementComponent);
     fixture.detectChanges();
 
-    const request = httpTesting.expectOne('http://localhost:8080/api/admin/tables/sessions_utilisateur');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/admin/tables/sessions_utilisateur');
     request.flush({
       table: 'sessions_utilisateur',
       records: [{
@@ -55,5 +55,48 @@ describe('AdminTableManagementComponent', () => {
     expect(nativeElement.textContent).not.toContain('must-not-render');
     expect(nativeElement.querySelector('input')).toBeNull();
     expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarketCM | Browser sessions');
+  });
+
+  it('distinguishes a reached-but-failing backend from a browser connection failure', () => {
+    TestBed.inject(TranslationService).setLanguage('en');
+    const fixture = TestBed.createComponent(AdminTableManagementComponent);
+    fixture.detectChanges();
+
+    const request = httpTesting.expectOne('/cacaomarketcm/api/admin/tables/sessions_utilisateur');
+    request.flush(
+      { code: 'DATA_ACCESS_UNAVAILABLE', message: 'The protected data service is temporarily unavailable.' },
+      {
+        status: 503,
+        statusText: 'Service Unavailable',
+        headers: new HttpHeaders({ 'X-Request-Id': 'admin-table-503' })
+      }
+    );
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('request ID admin-table-503');
+  });
+
+  it('shows a connection-specific message when the browser cannot reach the API', () => {
+    TestBed.inject(TranslationService).setLanguage('en');
+    const fixture = TestBed.createComponent(AdminTableManagementComponent);
+    fixture.detectChanges();
+
+    const request = httpTesting.expectOne('/cacaomarketcm/api/admin/tables/sessions_utilisateur');
+    request.error(new ProgressEvent('error'));
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('could not reach the configured API');
+  });
+
+  it('asks the administrator to sign in again after an authentication response', () => {
+    TestBed.inject(TranslationService).setLanguage('en');
+    const fixture = TestBed.createComponent(AdminTableManagementComponent);
+    fixture.detectChanges();
+
+    const request = httpTesting.expectOne('/cacaomarketcm/api/admin/tables/sessions_utilisateur');
+    request.flush({ code: 'AUTHENTICATION_REQUIRED' }, { status: 401, statusText: 'Unauthorized' });
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('session is no longer active');
   });
 });

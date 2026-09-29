@@ -15,7 +15,8 @@ class ApiRequestLoggingFilterTest {
     @Test
     void assignsACorrelationIdAndReturnsItToTheCaller() throws Exception {
         ApiRequestLoggingFilter filter = new ApiRequestLoggingFilter();
-        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/api/auth/registration");
+        MockHttpServletRequest request = new MockHttpServletRequest("POST", "/cacaomarketcm/api/auth/registration");
+        request.setContextPath("/cacaomarketcm");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         filter.doFilter(request, response, (servletRequest, servletResponse) -> {
@@ -30,9 +31,24 @@ class ApiRequestLoggingFilterTest {
     }
 
     @Test
+    void filtersApiRequestsBelowTheConfiguredServletContext() throws Exception {
+        ApiRequestLoggingFilter filter = new ApiRequestLoggingFilter();
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/cacaomarketcm/api/health");
+        request.setContextPath("/cacaomarketcm");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        filter.doFilter(request, response, (servletRequest, servletResponse) -> {
+            ((MockHttpServletResponse) servletResponse).setStatus(200);
+        });
+
+        assertNotNull(response.getHeader(ApiRequestLoggingFilter.REQUEST_ID_HEADER));
+    }
+
+    @Test
     void preservesASafeCallerSuppliedCorrelationId() throws Exception {
         ApiRequestLoggingFilter filter = new ApiRequestLoggingFilter();
-        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/health");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "/cacaomarketcm/api/health");
+        request.setContextPath("/cacaomarketcm");
         request.addHeader(ApiRequestLoggingFilter.REQUEST_ID_HEADER, "frontend-12345");
         MockHttpServletResponse response = new MockHttpServletResponse();
 

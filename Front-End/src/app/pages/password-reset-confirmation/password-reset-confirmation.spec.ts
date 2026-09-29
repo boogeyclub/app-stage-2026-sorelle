@@ -41,7 +41,7 @@ describe('PasswordResetConfirmationComponent', () => {
     component.submit();
 
     const httpTesting = TestBed.inject(HttpTestingController);
-    const request = httpTesting.expectOne('http://localhost:8080/api/auth/password-reset/confirm');
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/password-reset/confirm');
     expect(request.request.body).toEqual({
       token: 'single-use-reset-token',
       password: 'new-secure-password',

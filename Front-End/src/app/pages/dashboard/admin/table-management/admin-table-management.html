@@ -168,7 +168,7 @@
           </div>
         } @else if (loadFailed()) {
           <div class="px-6 py-12 text-center sm:px-8">
-            <p class="font-bold text-cacao-brown">{{ i18n.t('dashboard.admin.management.loadError') }}</p>
+            <p class="font-bold text-cacao-brown">{{ i18n.t(loadError().key, loadError().params ?? {}) }}</p>
             <button class="mt-4 rounded-xl bg-cacao-ink px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-cacao-roast" type="button" (click)="loadRecords()">{{ i18n.t('dashboard.admin.actions.tryAgain') }}</button>
           </div>
         } @else if (records().length === 0) {
