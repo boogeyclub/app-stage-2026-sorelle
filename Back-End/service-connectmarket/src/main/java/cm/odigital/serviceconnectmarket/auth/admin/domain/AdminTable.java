@@ -11,6 +11,8 @@ import cm.odigital.serviceconnectmarket.auth.domain.AuthException;
 public enum AdminTable {
     TYPE_UTILISATEUR("type_utilisateur"),
     UTILISATEURS("utilisateurs"),
+    CLIENT_PARTICULIER("client_particulier"),
+    CLIENT_ENTREPRISE("client_entreprise"),
     SESSIONS_UTILISATEUR("sessions_utilisateur"),
     REGISTRATION_CONFIRMATION("registration_confirmation"),
     PASSWORD_RESET("password_reset"),

@@ -20,8 +20,8 @@ describe('AdminDashboardComponent', () => {
     const cards = nativeElement.querySelectorAll('[data-testid="admin-table-card"]');
     const links = nativeElement.querySelectorAll('a[href*="/dashboard/admin/tables/"]');
 
-    expect(cards.length).toBe(8);
-    expect(links.length).toBe(8);
+    expect(cards.length).toBe(10);
+    expect(links.length).toBe(10);
     expect(nativeElement.textContent).toContain('Manage the protected gu data tables');
     expect(TestBed.inject(Title).getTitle()).toBe('CacaoMarketCM | Administrator workspace');
   });

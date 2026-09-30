@@ -84,6 +84,10 @@ public class AuthController {
         );
         PendingRegistration registration = registrationService.startRegistration(new RegistrationCommand(
             request.role(),
+            request.clientProfileType(),
+            request.raisonSociale(),
+            request.niu(),
+            request.rccm(),
             request.prenom(),
             request.nom(),
             request.email(),

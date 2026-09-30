@@ -12,7 +12,7 @@ This directory keeps database SQL under version control before it is executed.
 
 | Schema | Script | Tables |
 | --- | --- | --- |
-| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `sessions_utilisateur`, `registration_confirmation`, `password_reset`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
+| `gu` | [`gu.sql`](./gu.sql) | `type_utilisateur`, `utilisateurs`, `client_particulier`, `client_entreprise`, `sessions_utilisateur`, `registration_confirmation`, `password_reset`, `basic_rights`, `type_utilisateur_basic_right`, `password_history` |
 
 ## User types
 
@@ -40,6 +40,17 @@ This directory keeps database SQL under version control before it is executed.
 | `dateCreation` | Timestamp set when the row is created |
 
 Email and login identities also have case-insensitive unique indexes so that `buyer@example.com` and `BUYER@example.com` cannot become separate accounts.
+
+## Buyer legal profiles
+
+Only `CLIENT` accounts have a buyer legal profile. `VENDEUR` accounts continue to use only the common `gu.utilisateurs` record.
+
+- `gu.client_particulier` has one column, `utilisateur_id`, which is both its primary key and a cascading reference to a `CLIENT` account.
+- `gu.client_entreprise` has `utilisateur_id`, `raison_sociale`, `niu`, and `rccm`. The first is the primary key/cascading account reference; the other three values are required.
+- `prenom` and `nom` remain on `gu.utilisateurs`. For an enterprise they identify its legal representative or primary contact, rather than replacing the legal company name.
+- Case-insensitive unique indexes enforce that an NIU and an RCCM can each belong to only one enterprise profile. The application normalizes both identifiers to upper case before persistence.
+
+Database triggers ensure that profile rows belong only to `CLIENT` accounts and that an account cannot have both profile types. A deferred database constraint also prevents a `CLIENT` transaction from committing with zero or two profiles, while still allowing the account and its profile to be created atomically. When the latest script is applied to an existing deployment, every existing `CLIENT` without an enterprise profile is safely backfilled into `client_particulier`; it is not guessed to be an enterprise. The migration stops with a clear error instead of guessing if it finds an existing dual profile or a profile attached to a non-`CLIENT` account. Delete or reclassify a profile deliberately before changing an account away from `CLIENT`.
 
 ## Connected browser sessions
 

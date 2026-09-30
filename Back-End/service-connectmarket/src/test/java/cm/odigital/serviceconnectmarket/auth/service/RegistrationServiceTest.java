@@ -82,6 +82,10 @@ class RegistrationServiceTest {
 
         PendingRegistration registration = registrationService.startRegistration(new RegistrationCommand(
             "VENDEUR",
+            null,
+            null,
+            null,
+            null,
             "Amina",
             "Ngono",
             "AMINA@example.com",
@@ -104,6 +108,130 @@ class RegistrationServiceTest {
             "https://api.example.test/api/auth/registration/confirm?token=raw-confirmation-token",
             message.getValue().confirmationUrl()
         );
+    }
+
+    @Test
+    void persistsTheParticulierProfileForAClientRegistration() {
+        when(authRepository.identityExists("buyer@example.com", "buyer-amina")).thenReturn(false);
+        when(authRepository.findUserTypeId("CLIENT")).thenReturn(Optional.of(9L));
+        when(authRepository.insertUtilisateur(
+            eq(9L), eq("Ngono"), eq("Amina"), eq("buyer@example.com"), eq("buyer-amina"),
+            eq(UtilisateurStatus.PENDING_CONFIRMATION.databaseValue()), eq(NOW)
+        )).thenReturn(45L);
+        when(passwordEncoder.encode("secure-passphrase")).thenReturn("bcrypt-password-hash");
+        when(tokenGenerator.generate()).thenReturn("raw-confirmation-token");
+        when(tokenGenerator.hash("raw-confirmation-token")).thenReturn("hashed-confirmation-token");
+
+        registrationService.startRegistration(new RegistrationCommand(
+            "CLIENT",
+            "PARTICULIER",
+            null,
+            null,
+            null,
+            "Amina",
+            "Ngono",
+            "buyer@example.com",
+            "buyer-amina",
+            "secure-passphrase",
+            "fr"
+        ));
+
+        verify(authRepository).insertClientParticulier(45L);
+    }
+
+    @Test
+    void persistsTheEnterpriseProfileWithNormalizedIdentifiersForAClientRegistration() {
+        when(authRepository.identityExists("buyer@example.com", "cacao-source")).thenReturn(false);
+        when(authRepository.enterpriseIdentifiersExist("M012345678901A", "RC/YAO/2026/B/123")).thenReturn(false);
+        when(authRepository.findUserTypeId("CLIENT")).thenReturn(Optional.of(9L));
+        when(authRepository.insertUtilisateur(
+            eq(9L), eq("Ngono"), eq("Amina"), eq("buyer@example.com"), eq("cacao-source"),
+            eq(UtilisateurStatus.PENDING_CONFIRMATION.databaseValue()), eq(NOW)
+        )).thenReturn(46L);
+        when(passwordEncoder.encode("secure-passphrase")).thenReturn("bcrypt-password-hash");
+        when(tokenGenerator.generate()).thenReturn("raw-confirmation-token");
+        when(tokenGenerator.hash("raw-confirmation-token")).thenReturn("hashed-confirmation-token");
+
+        registrationService.startRegistration(new RegistrationCommand(
+            "CLIENT",
+            "ENTREPRISE",
+            " Cacao Source Cameroun SARL ",
+            "m012345678901a",
+            "rc/yao/2026/b/123",
+            "Amina",
+            "Ngono",
+            "buyer@example.com",
+            "cacao-source",
+            "secure-passphrase",
+            "fr"
+        ));
+
+        verify(authRepository).insertClientEntreprise(
+            46L,
+            "Cacao Source Cameroun SARL",
+            "M012345678901A",
+            "RC/YAO/2026/B/123"
+        );
+    }
+
+    @Test
+    void rejectsAnEnterpriseRegistrationWhenAnIdentifierIsAlreadyRegistered() {
+        when(authRepository.identityExists("buyer@example.com", "cacao-source")).thenReturn(false);
+        when(authRepository.enterpriseIdentifiersExist("M012345678901A", "RC/YAO/2026/B/123")).thenReturn(true);
+
+        AuthException exception = assertThrows(AuthException.class, () -> registrationService.startRegistration(new RegistrationCommand(
+            "CLIENT",
+            "ENTREPRISE",
+            "Cacao Source Cameroun SARL",
+            "m012345678901a",
+            "rc/yao/2026/b/123",
+            "Amina",
+            "Ngono",
+            "buyer@example.com",
+            "cacao-source",
+            "secure-passphrase",
+            "fr"
+        )));
+
+        assertEquals("REGISTRATION_ENTERPRISE_IDENTIFIER_ALREADY_EXISTS", exception.getCode());
+    }
+
+    @Test
+    void requiresAProfileTypeForClientRegistration() {
+        AuthException exception = assertThrows(AuthException.class, () -> registrationService.startRegistration(new RegistrationCommand(
+            "CLIENT",
+            null,
+            null,
+            null,
+            null,
+            "Amina",
+            "Ngono",
+            "buyer@example.com",
+            "buyer-amina",
+            "secure-passphrase",
+            "fr"
+        )));
+
+        assertEquals("REGISTRATION_CLIENT_PROFILE_INVALID", exception.getCode());
+    }
+
+    @Test
+    void rejectsAnEnterpriseRegistrationWithoutAllRequiredCompanyDetails() {
+        AuthException exception = assertThrows(AuthException.class, () -> registrationService.startRegistration(new RegistrationCommand(
+            "CLIENT",
+            "ENTREPRISE",
+            "Cacao Source Cameroun SARL",
+            null,
+            "RC/YAO/2026/B/123",
+            "Amina",
+            "Ngono",
+            "buyer@example.com",
+            "cacao-source",
+            "secure-passphrase",
+            "fr"
+        )));
+
+        assertEquals("REGISTRATION_ENTERPRISE_DETAILS_INVALID", exception.getCode());
     }
 
     @Test

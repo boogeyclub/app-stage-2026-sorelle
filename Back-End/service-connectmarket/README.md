@@ -7,7 +7,7 @@ The service runs beneath the lower-case `/cacaomarketcm` servlet context by defa
 ## Registration and confirmation flow
 
 1. `POST /cacaomarketcm/api/auth/registration` validates a `CLIENT` or `VENDEUR` registration.
-2. The service writes an `EN_ATTENTE_CONFIRMATION` row in `gu.utilisateurs`, stores a BCrypt password hash in `gu.password_history`, and stores only the SHA-256 hash of a cryptographically random confirmation token in `gu.registration_confirmation`.
+2. The service writes an `EN_ATTENTE_CONFIRMATION` row in `gu.utilisateurs`. Every `CLIENT` registration also writes exactly one buyer profile in the same transaction: `gu.client_particulier` for `PARTICULIER`, or `gu.client_entreprise` for `ENTREPRISE`. It stores a BCrypt password hash in `gu.password_history`, and stores only the SHA-256 hash of a cryptographically random confirmation token in `gu.registration_confirmation`.
 3. The messaging module sends a single-use URL to the Angular confirmation page through Google Gmail SMTP. The URL is valid for exactly **3 hours**.
 4. The Angular page captures the token, calls `GET /cacaomarketcm/api/auth/registration/confirm?token=...`, shows the localized result, and redirects the user to sign in after confirmation. The backend activates the user (`ACTIF`) when the token is valid.
 5. A scheduler runs every minute, and registration/authentication requests also perform cleanup. Any unconfirmed expired registration is denied and its `utilisateurs`, `password_history`, and confirmation rows are removed transactionally.
@@ -46,6 +46,28 @@ Content-Type: application/json
 ```
 
 A successful request returns `202 Accepted` with the destination email and expiration timestamp. It does not return a token or password.
+
+`VENDEUR` registrations must not include buyer-profile fields. A `CLIENT` registration must include `clientProfileType` as either `PARTICULIER` or `ENTREPRISE`. A private-individual buyer has no additional legal fields. An enterprise buyer must include nonblank `raisonSociale`, `niu`, and `rccm`; `niu` and `rccm` are normalized to uppercase and are each unique across all enterprise buyer profiles. For an enterprise, `prenom` and `nom` identify the legal representative or primary contact.
+
+For example, an enterprise buyer sends:
+
+```json
+{
+  "role": "CLIENT",
+  "clientProfileType": "ENTREPRISE",
+  "raisonSociale": "Cacao Source Cameroun SARL",
+  "niu": "M012345678901A",
+  "rccm": "RC/YAO/2026/B/123",
+  "prenom": "Amina",
+  "nom": "Ngono",
+  "email": "amina@example.com",
+  "login": "cacao-source",
+  "password": "a secure password",
+  "confirmPassword": "a secure password",
+  "acceptTerms": true,
+  "language": "fr"
+}
+```
 
 ### Confirm registration
 
@@ -124,12 +146,14 @@ The Angular administrator workspace uses the explicitly whitelisted routes below
 
 | Method | Route | Safe scope |
 | --- | --- | --- |
-| `GET` | `/cacaomarketcm/api/admin/tables/{table}` | Returns a safe, table-specific projection for one of the eight approved `gu` tables. |
+| `GET` | `/cacaomarketcm/api/admin/tables/{table}` | Returns a safe, table-specific projection for one of the ten approved `gu` tables. |
 | `POST` | `/cacaomarketcm/api/admin/tables/{table}` | Creates only supported user-type, user, basic-right, or type/right-assignment records. |
-| `PUT` | `/cacaomarketcm/api/admin/tables/{table}/{recordId}` | Updates only supported user-type, user, or basic-right records. |
+| `PUT` | `/cacaomarketcm/api/admin/tables/{table}/{recordId}` | Updates only supported user-type, user, basic-right, or enterprise-profile records. |
 | `DELETE` | `/cacaomarketcm/api/admin/tables/{table}/{recordId}` | Applies the table-specific safe action: controlled removal, session/reset revocation, pending-registration cancellation, or right-assignment removal. |
 
-Approved table keys are `type_utilisateur`, `utilisateurs`, `sessions_utilisateur`, `registration_confirmation`, `password_reset`, `basic_rights`, `type_utilisateur_basic_right`, and `password_history`. They are an enum allow-list, not SQL identifiers supplied by a caller.
+Approved table keys are `type_utilisateur`, `utilisateurs`, `client_particulier`, `client_entreprise`, `sessions_utilisateur`, `registration_confirmation`, `password_reset`, `basic_rights`, `type_utilisateur_basic_right`, and `password_history`. They are an enum allow-list, not SQL identifiers supplied by a caller.
+
+`client_particulier` is an audit-safe profile relationship; it is created only by the buyer registration flow. `client_entreprise` exposes a tightly scoped update for `raisonSociale`, `niu`, and `rccm`, with identifier uniqueness preserved. Direct administrator creation of `CLIENT` accounts and role changes into or out of `CLIENT` are refused so an account cannot bypass or orphan its required buyer legal profile.
 
 `password_history` is read-only. Browser sessions, registration confirmations, and password resets are audit-safe views with narrowly scoped revocation/cancellation actions. Raw passwords, password hashes, browser session hashes, confirmation token hashes, and password-reset token hashes are never accepted for display or returned by these routes. The service protects built-in roles, the `APP-CONN` capability, administrator assignments, self-removal, and the final active administrator account.
 

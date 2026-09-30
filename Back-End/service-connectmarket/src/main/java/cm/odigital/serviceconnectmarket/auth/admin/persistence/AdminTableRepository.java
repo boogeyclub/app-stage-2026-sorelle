@@ -31,6 +31,8 @@ public class AdminTableRepository {
         return switch (table) {
             case TYPE_UTILISATEUR -> findUserTypes();
             case UTILISATEURS -> findUtilisateurs();
+            case CLIENT_PARTICULIER -> findClientParticuliers();
+            case CLIENT_ENTREPRISE -> findClientEntreprises();
             case SESSIONS_UTILISATEUR -> findSessions();
             case REGISTRATION_CONFIRMATION -> findRegistrationConfirmations();
             case PASSWORD_RESET -> findPasswordResets();
@@ -81,6 +83,66 @@ public class AdminTableRepository {
                 "email", resultSet.getString("email"),
                 "login", resultSet.getString("login"),
                 "statut", resultSet.getString("statut"),
+                "dateCreation", instant(resultSet, "date_creation")
+            )
+        );
+    }
+
+    public List<Map<String, Object>> findClientParticuliers() {
+        return jdbcTemplate.query(
+            """
+                SELECT
+                    cp.utilisateur_id AS id,
+                    u.login,
+                    u.email,
+                    u.prenom,
+                    u.nom,
+                    u.statut,
+                    u."dateCreation" AS date_creation
+                FROM gu.client_particulier cp
+                INNER JOIN gu.utilisateurs u ON u.id = cp.utilisateur_id
+                ORDER BY u."dateCreation" DESC, cp.utilisateur_id DESC
+                """,
+            (resultSet, rowNumber) -> row(
+                "id", resultSet.getLong("id"),
+                "login", resultSet.getString("login"),
+                "email", resultSet.getString("email"),
+                "prenom", resultSet.getString("prenom"),
+                "nom", resultSet.getString("nom"),
+                "statut", resultSet.getString("statut"),
+                "dateCreation", instant(resultSet, "date_creation")
+            )
+        );
+    }
+
+    public List<Map<String, Object>> findClientEntreprises() {
+        return jdbcTemplate.query(
+            """
+                SELECT
+                    ce.utilisateur_id AS id,
+                    u.login,
+                    u.email,
+                    u.prenom,
+                    u.nom,
+                    u.statut,
+                    ce.raison_sociale,
+                    ce.niu,
+                    ce.rccm,
+                    u."dateCreation" AS date_creation
+                FROM gu.client_entreprise ce
+                INNER JOIN gu.utilisateurs u ON u.id = ce.utilisateur_id
+                ORDER BY u."dateCreation" DESC, ce.utilisateur_id DESC
+                """,
+            (resultSet, rowNumber) -> row(
+                "id", resultSet.getLong("id"),
+                "login", resultSet.getString("login"),
+                "email", resultSet.getString("email"),
+                "prenom", resultSet.getString("prenom"),
+                "nom", resultSet.getString("nom"),
+                "statut", resultSet.getString("statut"),
+                "raisonSociale", resultSet.getString("raison_sociale"),
+                "niu", resultSet.getString("niu"),
+                "rccm", resultSet.getString("rccm"),
                 "dateCreation", instant(resultSet, "date_creation")
             )
         );
@@ -411,6 +473,38 @@ public class AdminTableRepository {
             login,
             statut,
             id
+        ) == 1;
+    }
+
+    public boolean enterpriseIdentifiersExist(String niu, String rccm, long excludingUtilisateurId) {
+        return exists(
+            """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM gu.client_entreprise
+                    WHERE utilisateur_id <> ?
+                      AND (UPPER(niu) = UPPER(?) OR UPPER(rccm) = UPPER(?))
+                )
+                """,
+            excludingUtilisateurId,
+            niu,
+            rccm
+        );
+    }
+
+    public boolean updateClientEntreprise(long utilisateurId, String raisonSociale, String niu, String rccm) {
+        return jdbcTemplate.update(
+            """
+                UPDATE gu.client_entreprise
+                SET raison_sociale = ?,
+                    niu = ?,
+                    rccm = ?
+                WHERE utilisateur_id = ?
+                """,
+            raisonSociale,
+            niu,
+            rccm,
+            utilisateurId
         ) == 1;
     }
 

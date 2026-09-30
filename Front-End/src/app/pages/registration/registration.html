@@ -81,16 +81,80 @@
             }
           </fieldset>
 
+          @if (isClientRegistration()) {
+            <fieldset class="mt-7">
+              <legend class="text-sm font-extrabold text-cacao-ink">{{ i18n.t('auth.registration.clientProfileTitle') }}</legend>
+              <p class="mt-1 text-sm leading-6 text-cacao-brown">{{ i18n.t('auth.registration.clientProfileDescription') }}</p>
+              <div class="mt-3 grid gap-3 sm:grid-cols-2">
+                <label class="group relative cursor-pointer rounded-2xl border p-4 transition" [class.border-cacao-ink]="registrationForm.controls.clientProfileType.value === 'PARTICULIER'" [class.bg-cacao-pale]="registrationForm.controls.clientProfileType.value === 'PARTICULIER'" [class.border-cacao-gold]="registrationForm.controls.clientProfileType.value !== 'PARTICULIER'" [class.bg-white]="registrationForm.controls.clientProfileType.value !== 'PARTICULIER'">
+                  <input class="sr-only" type="radio" formControlName="clientProfileType" value="PARTICULIER">
+                  <span class="grid size-10 place-items-center rounded-xl bg-cacao-sand text-cacao-amber">
+                    <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="8" r="3" stroke="currentColor" stroke-width="1.8"/><path d="M5.5 20c.7-3.5 3-5.3 6.5-5.3s5.8 1.8 6.5 5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </span>
+                  <span class="mt-4 block text-sm font-extrabold text-cacao-ink">{{ i18n.t('auth.registration.individualTitle') }}</span>
+                  <span class="mt-1 block text-sm leading-5 text-cacao-brown">{{ i18n.t('auth.registration.individualDescription') }}</span>
+                  <span class="absolute right-4 top-4 grid size-5 place-items-center rounded-full border border-cacao-gold bg-white" [class.border-cacao-ink]="registrationForm.controls.clientProfileType.value === 'PARTICULIER'">
+                    @if (registrationForm.controls.clientProfileType.value === 'PARTICULIER') {
+                      <span class="size-2.5 rounded-full bg-cacao-ink"></span>
+                    }
+                  </span>
+                </label>
+
+                <label class="group relative cursor-pointer rounded-2xl border p-4 transition" [class.border-cacao-ink]="registrationForm.controls.clientProfileType.value === 'ENTREPRISE'" [class.bg-cacao-pale]="registrationForm.controls.clientProfileType.value === 'ENTREPRISE'" [class.border-cacao-gold]="registrationForm.controls.clientProfileType.value !== 'ENTREPRISE'" [class.bg-white]="registrationForm.controls.clientProfileType.value !== 'ENTREPRISE'">
+                  <input class="sr-only" type="radio" formControlName="clientProfileType" value="ENTREPRISE">
+                  <span class="grid size-10 place-items-center rounded-xl bg-cacao-gold text-cacao-ink">
+                    <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20h16M6 20V8l6-4 6 4v12M9 20v-5h6v5M9 10h.01M12 10h.01M15 10h.01" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/></svg>
+                  </span>
+                  <span class="mt-4 block text-sm font-extrabold text-cacao-ink">{{ i18n.t('auth.registration.enterpriseTitle') }}</span>
+                  <span class="mt-1 block text-sm leading-5 text-cacao-brown">{{ i18n.t('auth.registration.enterpriseDescription') }}</span>
+                  <span class="absolute right-4 top-4 grid size-5 place-items-center rounded-full border border-cacao-gold bg-white" [class.border-cacao-ink]="registrationForm.controls.clientProfileType.value === 'ENTREPRISE'">
+                    @if (registrationForm.controls.clientProfileType.value === 'ENTREPRISE') {
+                      <span class="size-2.5 rounded-full bg-cacao-ink"></span>
+                    }
+                  </span>
+                </label>
+              </div>
+              @if (hasError('clientProfileType', 'required')) {
+                <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.clientProfileRequired') }}</p>
+              }
+            </fieldset>
+
+            @if (isEnterpriseRegistration()) {
+              <section class="mt-5 rounded-2xl border border-cacao-gold/35 bg-cacao-cream/45 p-5">
+                <h2 class="text-sm font-extrabold text-cacao-ink">{{ i18n.t('auth.registration.enterpriseDetailsTitle') }}</h2>
+                <p class="mt-1 text-sm leading-6 text-cacao-brown">{{ i18n.t('auth.registration.enterpriseDetailsDescription') }}</p>
+                <div class="mt-4">
+                  <label class="mb-2 block text-sm font-extrabold text-cacao-ink" for="registration-raison-sociale">{{ i18n.t('auth.registration.companyNameLabel') }}</label>
+                  <input id="registration-raison-sociale" class="w-full rounded-2xl border border-cacao-gold/35 bg-white px-4 py-3.5 text-cacao-ink outline-none transition placeholder:text-cacao-brown/50 focus:border-cacao-amber focus:ring-4 focus:ring-cacao-gold/15" [class.border-red-400]="hasError('raisonSociale', 'required')" type="text" formControlName="raisonSociale" autocomplete="organization" maxlength="150" [placeholder]="i18n.t('auth.registration.companyNamePlaceholder')">
+                  @if (hasError('raisonSociale', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.companyNameRequired') }}</p> }
+                </div>
+                <div class="mt-5 grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label class="mb-2 block text-sm font-extrabold text-cacao-ink" for="registration-niu">{{ i18n.t('auth.registration.niuLabel') }}</label>
+                    <input id="registration-niu" class="w-full rounded-2xl border border-cacao-gold/35 bg-white px-4 py-3.5 text-cacao-ink outline-none transition placeholder:text-cacao-brown/50 focus:border-cacao-amber focus:ring-4 focus:ring-cacao-gold/15" [class.border-red-400]="hasError('niu', 'required')" type="text" formControlName="niu" autocomplete="off" maxlength="50" [placeholder]="i18n.t('auth.registration.niuPlaceholder')">
+                    @if (hasError('niu', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.niuRequired') }}</p> }
+                  </div>
+                  <div>
+                    <label class="mb-2 block text-sm font-extrabold text-cacao-ink" for="registration-rccm">{{ i18n.t('auth.registration.rccmLabel') }}</label>
+                    <input id="registration-rccm" class="w-full rounded-2xl border border-cacao-gold/35 bg-white px-4 py-3.5 text-cacao-ink outline-none transition placeholder:text-cacao-brown/50 focus:border-cacao-amber focus:ring-4 focus:ring-cacao-gold/15" [class.border-red-400]="hasError('rccm', 'required')" type="text" formControlName="rccm" autocomplete="off" maxlength="50" [placeholder]="i18n.t('auth.registration.rccmPlaceholder')">
+                    @if (hasError('rccm', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.rccmRequired') }}</p> }
+                  </div>
+                </div>
+                <p class="mt-4 text-xs leading-5 text-cacao-brown/80">{{ i18n.t('auth.registration.representativeNotice') }}</p>
+              </section>
+            }
+          }
+
           <div class="mt-7 grid gap-5 sm:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-extrabold text-cacao-ink" for="registration-prenom">{{ i18n.t('auth.registration.firstNameLabel') }}</label>
-              <input id="registration-prenom" class="w-full rounded-2xl border border-cacao-gold/35 bg-cacao-cream/45 px-4 py-3.5 text-cacao-ink outline-none transition placeholder:text-cacao-brown/50 focus:border-cacao-amber focus:bg-white focus:ring-4 focus:ring-cacao-gold/15" [class.border-red-400]="hasError('prenom', 'required')" type="text" formControlName="prenom" autocomplete="given-name" [placeholder]="i18n.t('auth.registration.firstNamePlaceholder')">
-              @if (hasError('prenom', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.firstNameRequired') }}</p> }
+              <label class="mb-2 block text-sm font-extrabold text-cacao-ink" for="registration-prenom">{{ i18n.t(firstNameLabelKey()) }}</label>
+              <input id="registration-prenom" class="w-full rounded-2xl border border-cacao-gold/35 bg-cacao-cream/45 px-4 py-3.5 text-cacao-ink outline-none transition placeholder:text-cacao-brown/50 focus:border-cacao-amber focus:bg-white focus:ring-4 focus:ring-cacao-gold/15" [class.border-red-400]="hasError('prenom', 'required')" type="text" formControlName="prenom" autocomplete="given-name" [placeholder]="i18n.t(firstNamePlaceholderKey())">
+              @if (hasError('prenom', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t(isEnterpriseRegistration() ? 'auth.registration.representativeFirstNameRequired' : 'auth.registration.firstNameRequired') }}</p> }
             </div>
             <div>
-              <label class="mb-2 block text-sm font-extrabold text-cacao-ink" for="registration-nom">{{ i18n.t('auth.registration.lastNameLabel') }}</label>
-              <input id="registration-nom" class="w-full rounded-2xl border border-cacao-gold/35 bg-cacao-cream/45 px-4 py-3.5 text-cacao-ink outline-none transition placeholder:text-cacao-brown/50 focus:border-cacao-amber focus:bg-white focus:ring-4 focus:ring-cacao-gold/15" [class.border-red-400]="hasError('nom', 'required')" type="text" formControlName="nom" autocomplete="family-name" [placeholder]="i18n.t('auth.registration.lastNamePlaceholder')">
-              @if (hasError('nom', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t('auth.registration.lastNameRequired') }}</p> }
+              <label class="mb-2 block text-sm font-extrabold text-cacao-ink" for="registration-nom">{{ i18n.t(lastNameLabelKey()) }}</label>
+              <input id="registration-nom" class="w-full rounded-2xl border border-cacao-gold/35 bg-cacao-cream/45 px-4 py-3.5 text-cacao-ink outline-none transition placeholder:text-cacao-brown/50 focus:border-cacao-amber focus:bg-white focus:ring-4 focus:ring-cacao-gold/15" [class.border-red-400]="hasError('nom', 'required')" type="text" formControlName="nom" autocomplete="family-name" [placeholder]="i18n.t(lastNamePlaceholderKey())">
+              @if (hasError('nom', 'required')) { <p class="mt-2 text-sm font-medium text-red-700">{{ i18n.t(isEnterpriseRegistration() ? 'auth.registration.representativeLastNameRequired' : 'auth.registration.lastNameRequired') }}</p> }
             </div>
           </div>
 

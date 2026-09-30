@@ -11,6 +11,10 @@ import jakarta.validation.constraints.Size;
 
 public record RegistrationRequest(
     @NotBlank @Pattern(regexp = "(?i)VENDEUR|CLIENT") String role,
+    @Pattern(regexp = "(?i)PARTICULIER|ENTREPRISE") String clientProfileType,
+    @Size(max = 150) String raisonSociale,
+    @Size(max = 50) String niu,
+    @Size(max = 50) String rccm,
     @NotBlank @Size(max = 100) String prenom,
     @NotBlank @Size(max = 100) String nom,
     @NotBlank @Email @Size(max = 255) String email,

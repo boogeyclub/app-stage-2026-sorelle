@@ -48,6 +48,241 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_utilisateurs_email_lower
 CREATE UNIQUE INDEX IF NOT EXISTS uq_utilisateurs_login_lower
     ON gu.utilisateurs (LOWER(login));
 
+-- Buyer profiles are separated from the common account table. A CLIENT either represents a
+-- private individual or an enterprise; prenom/nom on utilisateurs remain the person creating the
+-- account (the legal representative/contact for an enterprise).
+CREATE TABLE IF NOT EXISTS gu.client_particulier (
+    utilisateur_id BIGINT PRIMARY KEY REFERENCES gu.utilisateurs(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS gu.client_entreprise (
+    utilisateur_id BIGINT PRIMARY KEY REFERENCES gu.utilisateurs(id) ON DELETE CASCADE,
+    raison_sociale VARCHAR(150) NOT NULL,
+    niu VARCHAR(50) NOT NULL,
+    rccm VARCHAR(50) NOT NULL,
+    CONSTRAINT chk_client_entreprise_raison_sociale_not_blank CHECK (BTRIM(raison_sociale) <> ''),
+    CONSTRAINT chk_client_entreprise_niu_not_blank CHECK (BTRIM(niu) <> ''),
+    CONSTRAINT chk_client_entreprise_rccm_not_blank CHECK (BTRIM(rccm) <> '')
+);
+
+-- NIU and RCCM are stored in a normalized upper-case form by the API. Case-insensitive indexes
+-- keep direct database writes from creating a conflicting spelling of the same identifier.
+CREATE UNIQUE INDEX IF NOT EXISTS uq_client_entreprise_niu_upper
+    ON gu.client_entreprise (UPPER(niu));
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_client_entreprise_rccm_upper
+    ON gu.client_entreprise (UPPER(rccm));
+
+-- Stop rather than guessing if a previously partial/manual rollout has already created
+-- contradictory profile data. The later backfill handles only unambiguous legacy CLIENT rows.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM gu.client_particulier AS cp
+        INNER JOIN gu.client_entreprise AS ce ON ce.utilisateur_id = cp.utilisateur_id
+    ) THEN
+        RAISE EXCEPTION 'A CLIENT account cannot have both buyer profile types; resolve the conflicting rows before applying this migration.';
+    END IF;
+
+    IF EXISTS (
+        SELECT 1
+        FROM (
+            SELECT utilisateur_id FROM gu.client_particulier
+            UNION ALL
+            SELECT utilisateur_id FROM gu.client_entreprise
+        ) AS profile
+        INNER JOIN gu.utilisateurs AS u ON u.id = profile.utilisateur_id
+        INNER JOIN gu.type_utilisateur AS tu ON tu.id = u.type_utilisateur_id
+        WHERE tu.code <> 'CLIENT'
+    ) THEN
+        RAISE EXCEPTION 'Only CLIENT accounts can have buyer profiles; resolve the invalid rows before applying this migration.';
+    END IF;
+END;
+$$;
+
+-- Both profile tables reference only CLIENT accounts and are mutually exclusive. Locking the
+-- account row makes concurrent profile inserts deterministic rather than allowing two profile
+-- types to be created simultaneously.
+CREATE OR REPLACE FUNCTION gu.enforce_client_profile()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    is_client BOOLEAN;
+BEGIN
+    IF TG_OP = 'UPDATE' AND NEW.utilisateur_id IS DISTINCT FROM OLD.utilisateur_id THEN
+        RAISE EXCEPTION 'A client profile cannot be moved to another utilisateur.';
+    END IF;
+
+    PERFORM 1
+    FROM gu.utilisateurs
+    WHERE id = NEW.utilisateur_id
+    FOR UPDATE;
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'A client profile requires an existing utilisateur.';
+    END IF;
+
+    SELECT EXISTS (
+        SELECT 1
+        FROM gu.utilisateurs AS u
+        INNER JOIN gu.type_utilisateur AS tu ON tu.id = u.type_utilisateur_id
+        WHERE u.id = NEW.utilisateur_id
+          AND tu.code = 'CLIENT'
+    )
+    INTO is_client;
+
+    IF NOT is_client THEN
+        RAISE EXCEPTION 'Only CLIENT accounts can have a buyer profile.';
+    END IF;
+
+    IF TG_TABLE_NAME = 'client_particulier' THEN
+        IF EXISTS (SELECT 1 FROM gu.client_entreprise WHERE utilisateur_id = NEW.utilisateur_id) THEN
+            RAISE EXCEPTION 'A CLIENT account cannot have both buyer profile types.';
+        END IF;
+    ELSIF EXISTS (SELECT 1 FROM gu.client_particulier WHERE utilisateur_id = NEW.utilisateur_id) THEN
+        RAISE EXCEPTION 'A CLIENT account cannot have both buyer profile types.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_client_particulier_enforce_profile ON gu.client_particulier;
+
+CREATE TRIGGER trg_client_particulier_enforce_profile
+BEFORE INSERT OR UPDATE ON gu.client_particulier
+FOR EACH ROW
+EXECUTE FUNCTION gu.enforce_client_profile();
+
+DROP TRIGGER IF EXISTS trg_client_entreprise_enforce_profile ON gu.client_entreprise;
+
+CREATE TRIGGER trg_client_entreprise_enforce_profile
+BEFORE INSERT OR UPDATE ON gu.client_entreprise
+FOR EACH ROW
+EXECUTE FUNCTION gu.enforce_client_profile();
+
+-- A profile cannot remain attached to a non-CLIENT account after a direct administrative role
+-- change. Delete/reclassify the profile deliberately before changing the account's role.
+CREATE OR REPLACE FUNCTION gu.prevent_client_profile_role_change()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+BEGIN
+    IF NEW.type_utilisateur_id IS DISTINCT FROM OLD.type_utilisateur_id
+        AND (EXISTS (SELECT 1 FROM gu.client_particulier WHERE utilisateur_id = OLD.id)
+            OR EXISTS (SELECT 1 FROM gu.client_entreprise WHERE utilisateur_id = OLD.id))
+        AND NOT EXISTS (
+            SELECT 1
+            FROM gu.type_utilisateur
+            WHERE id = NEW.type_utilisateur_id
+              AND code = 'CLIENT'
+        ) THEN
+        RAISE EXCEPTION 'A buyer profile cannot be attached to a non-CLIENT account.';
+    END IF;
+
+    RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_utilisateurs_preserve_client_profile_role ON gu.utilisateurs;
+
+CREATE TRIGGER trg_utilisateurs_preserve_client_profile_role
+BEFORE UPDATE OF type_utilisateur_id ON gu.utilisateurs
+FOR EACH ROW
+EXECUTE FUNCTION gu.prevent_client_profile_role_change();
+
+-- A deferred constraint closes the remaining gap: a CLIENT can be inserted together with its
+-- profile in one transaction, but cannot commit with zero or two profiles. The deferred timing
+-- also permits a deliberate particular-to-enterprise reclassification in a future controlled
+-- workflow without exposing an intermediate invalid state.
+CREATE OR REPLACE FUNCTION gu.enforce_exactly_one_client_profile()
+RETURNS TRIGGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    profile_utilisateur_id BIGINT;
+    is_client BOOLEAN;
+    has_particulier_profile BOOLEAN;
+    has_entreprise_profile BOOLEAN;
+BEGIN
+    IF TG_TABLE_NAME = 'utilisateurs' THEN
+        profile_utilisateur_id := CASE
+            WHEN TG_OP = 'DELETE' THEN OLD.id
+            ELSE NEW.id
+        END;
+    ELSE
+        profile_utilisateur_id := CASE
+            WHEN TG_OP = 'DELETE' THEN OLD.utilisateur_id
+            ELSE NEW.utilisateur_id
+        END;
+    END IF;
+
+    SELECT EXISTS (
+        SELECT 1
+        FROM gu.utilisateurs AS u
+        INNER JOIN gu.type_utilisateur AS tu ON tu.id = u.type_utilisateur_id
+        WHERE u.id = profile_utilisateur_id
+          AND tu.code = 'CLIENT'
+    )
+    INTO is_client;
+
+    IF NOT is_client THEN
+        RETURN NULL;
+    END IF;
+
+    SELECT EXISTS (SELECT 1 FROM gu.client_particulier WHERE utilisateur_id = profile_utilisateur_id)
+    INTO has_particulier_profile;
+    SELECT EXISTS (SELECT 1 FROM gu.client_entreprise WHERE utilisateur_id = profile_utilisateur_id)
+    INTO has_entreprise_profile;
+
+    IF has_particulier_profile = has_entreprise_profile THEN
+        RAISE EXCEPTION 'A CLIENT account must have exactly one buyer profile.';
+    END IF;
+
+    RETURN NULL;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_utilisateurs_require_client_profile ON gu.utilisateurs;
+
+CREATE CONSTRAINT TRIGGER trg_utilisateurs_require_client_profile
+AFTER INSERT OR UPDATE OR DELETE ON gu.utilisateurs
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW
+EXECUTE FUNCTION gu.enforce_exactly_one_client_profile();
+
+DROP TRIGGER IF EXISTS trg_client_particulier_require_exactly_one_profile ON gu.client_particulier;
+
+CREATE CONSTRAINT TRIGGER trg_client_particulier_require_exactly_one_profile
+AFTER INSERT OR UPDATE OR DELETE ON gu.client_particulier
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW
+EXECUTE FUNCTION gu.enforce_exactly_one_client_profile();
+
+DROP TRIGGER IF EXISTS trg_client_entreprise_require_exactly_one_profile ON gu.client_entreprise;
+
+CREATE CONSTRAINT TRIGGER trg_client_entreprise_require_exactly_one_profile
+AFTER INSERT OR UPDATE OR DELETE ON gu.client_entreprise
+DEFERRABLE INITIALLY DEFERRED
+FOR EACH ROW
+EXECUTE FUNCTION gu.enforce_exactly_one_client_profile();
+
+-- Existing CLIENT accounts predate the explicit buyer-profile model. Classify them safely as
+-- private individuals until an administrator deliberately records an enterprise profile.
+INSERT INTO gu.client_particulier (utilisateur_id)
+SELECT u.id
+FROM gu.utilisateurs AS u
+INNER JOIN gu.type_utilisateur AS tu ON tu.id = u.type_utilisateur_id
+WHERE tu.code = 'CLIENT'
+  AND NOT EXISTS (
+      SELECT 1
+      FROM gu.client_entreprise AS ce
+      WHERE ce.utilisateur_id = u.id
+  )
+ON CONFLICT (utilisateur_id) DO NOTHING;
+
 -- Table: Connected browser sessions
 -- One row is created after each successful login. The raw servlet/JSESSIONID value is never
 -- stored; session_hash is a SHA-256 hash so several browser sessions can be managed safely.

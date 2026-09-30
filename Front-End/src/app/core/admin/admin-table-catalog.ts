@@ -3,6 +3,8 @@ import { AdminRecord } from './admin-api.service';
 export type AdminTableKey =
   | 'type_utilisateur'
   | 'utilisateurs'
+  | 'client_particulier'
+  | 'client_entreprise'
   | 'sessions_utilisateur'
   | 'registration_confirmation'
   | 'password_reset'
@@ -81,6 +83,12 @@ const BASIC_RIGHT_FIELDS: readonly AdminTableField[] = [
   { key: 'name', labelKey: 'dashboard.admin.fields.name', control: 'text', required: true, maxLength: 150 }
 ];
 
+const ENTERPRISE_PROFILE_FIELDS: readonly AdminTableField[] = [
+  { key: 'raisonSociale', labelKey: 'dashboard.admin.fields.companyName', control: 'text', required: true, maxLength: 150, autocomplete: 'organization' },
+  { key: 'niu', labelKey: 'dashboard.admin.fields.niu', control: 'text', required: true, maxLength: 50, autocomplete: 'off' },
+  { key: 'rccm', labelKey: 'dashboard.admin.fields.rccm', control: 'text', required: true, maxLength: 50, autocomplete: 'off' }
+];
+
 const RIGHT_ASSIGNMENT_FIELDS: readonly AdminTableField[] = [
   { key: 'typeUtilisateurId', labelKey: 'dashboard.admin.fields.userType', control: 'select', required: true, lookup: 'userTypes' },
   { key: 'basicRightId', labelKey: 'dashboard.admin.fields.basicRight', control: 'select', required: true, lookup: 'basicRights' }
@@ -127,6 +135,43 @@ export const ADMIN_TABLE_CATALOG: readonly AdminTableDefinition[] = [
     createFields: USER_CREATE_FIELDS,
     editFields: USER_EDIT_FIELDS,
     removeActionKey: 'dashboard.admin.actions.delete'
+  },
+  {
+    key: 'client_particulier',
+    schemaName: 'gu.client_particulier',
+    titleKey: 'dashboard.admin.tables.individualClients.title',
+    descriptionKey: 'dashboard.admin.tables.individualClients.description',
+    securityNoteKey: 'dashboard.admin.tables.individualClients.securityNote',
+    icon: 'person',
+    isAuditOnly: true,
+    columns: [
+      { key: 'id', labelKey: 'dashboard.admin.columns.id', compact: true },
+      { key: 'prenom', labelKey: 'dashboard.admin.columns.firstName' },
+      { key: 'nom', labelKey: 'dashboard.admin.columns.lastName' },
+      { key: 'email', labelKey: 'dashboard.admin.columns.email' },
+      { key: 'login', labelKey: 'dashboard.admin.columns.login', compact: true },
+      { key: 'statut', labelKey: 'dashboard.admin.columns.status', format: 'status', compact: true },
+      { key: 'dateCreation', labelKey: 'dashboard.admin.columns.createdAt', format: 'date' }
+    ]
+  },
+  {
+    key: 'client_entreprise',
+    schemaName: 'gu.client_entreprise',
+    titleKey: 'dashboard.admin.tables.enterpriseClients.title',
+    descriptionKey: 'dashboard.admin.tables.enterpriseClients.description',
+    securityNoteKey: 'dashboard.admin.tables.enterpriseClients.securityNote',
+    icon: 'users',
+    columns: [
+      { key: 'id', labelKey: 'dashboard.admin.columns.id', compact: true },
+      { key: 'raisonSociale', labelKey: 'dashboard.admin.columns.companyName' },
+      { key: 'niu', labelKey: 'dashboard.admin.columns.niu', compact: true },
+      { key: 'rccm', labelKey: 'dashboard.admin.columns.rccm', compact: true },
+      { key: 'prenom', labelKey: 'dashboard.admin.columns.representativeFirstName' },
+      { key: 'nom', labelKey: 'dashboard.admin.columns.representativeLastName' },
+      { key: 'email', labelKey: 'dashboard.admin.columns.email' },
+      { key: 'statut', labelKey: 'dashboard.admin.columns.status', format: 'status', compact: true }
+    ],
+    editFields: ENTERPRISE_PROFILE_FIELDS
   },
   {
     key: 'sessions_utilisateur',

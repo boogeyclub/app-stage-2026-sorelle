@@ -41,6 +41,7 @@ public class AdminTableService {
     );
     private static final Set<String> BASIC_RIGHT_FIELDS = Set.of("code", "name");
     private static final Set<String> RIGHT_ASSIGNMENT_FIELDS = Set.of("typeUtilisateurId", "basicRightId");
+    private static final Set<String> ENTERPRISE_PROFILE_FIELDS = Set.of("raisonSociale", "niu", "rccm");
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$");
     private static final Pattern CODE_PATTERN = Pattern.compile("^[A-Z][A-Z0-9_-]{0,99}$");
 
@@ -82,8 +83,8 @@ public class AdminTableService {
                 allowOnly(values, RIGHT_ASSIGNMENT_FIELDS);
                 createTypeUserBasicRight(values);
             }
-            case SESSIONS_UTILISATEUR, REGISTRATION_CONFIRMATION, PASSWORD_RESET, PASSWORD_HISTORY ->
-                throw readOnlyTable(table);
+            case CLIENT_PARTICULIER, CLIENT_ENTREPRISE, SESSIONS_UTILISATEUR, REGISTRATION_CONFIRMATION,
+                PASSWORD_RESET, PASSWORD_HISTORY -> throw readOnlyTable(table);
         }
     }
 
@@ -99,11 +100,15 @@ public class AdminTableService {
                 allowOnly(values, USER_UPDATE_FIELDS);
                 updateUtilisateur(id, values, administratorId);
             }
+            case CLIENT_ENTREPRISE -> {
+                allowOnly(values, ENTERPRISE_PROFILE_FIELDS);
+                updateClientEntreprise(id, values);
+            }
             case BASIC_RIGHTS -> {
                 allowOnly(values, BASIC_RIGHT_FIELDS);
                 updateBasicRight(id, values);
             }
-            case SESSIONS_UTILISATEUR, REGISTRATION_CONFIRMATION, PASSWORD_RESET,
+            case CLIENT_PARTICULIER, SESSIONS_UTILISATEUR, REGISTRATION_CONFIRMATION, PASSWORD_RESET,
                 TYPE_UTILISATEUR_BASIC_RIGHT, PASSWORD_HISTORY -> throw immutableTable(table);
         }
     }
@@ -117,7 +122,7 @@ public class AdminTableService {
             case REGISTRATION_CONFIRMATION -> cancelPendingRegistration(numericRecordId(recordId));
             case PASSWORD_RESET -> revokePasswordReset(numericRecordId(recordId));
             case TYPE_UTILISATEUR_BASIC_RIGHT -> removeTypeUserBasicRight(recordId);
-            case BASIC_RIGHTS, PASSWORD_HISTORY -> throw immutableTable(table);
+            case CLIENT_PARTICULIER, CLIENT_ENTREPRISE, BASIC_RIGHTS, PASSWORD_HISTORY -> throw immutableTable(table);
         }
     }
 
@@ -170,6 +175,12 @@ public class AdminTableService {
     private void createUtilisateur(Map<String, Object> values, long administratorId) {
         AdminUserTypeRecord type = requireUserType(identifier(values, "typeUtilisateurId"));
         requireLoginCapableType(type);
+        if ("CLIENT".equals(type.code())) {
+            throw AuthException.conflict(
+                "ADMIN_CLIENT_CREATION_REQUIRES_REGISTRATION",
+                "Create buyer accounts through the registration workflow so their required legal profile is recorded."
+            );
+        }
         String nom = text(values, "nom", 100);
         String prenom = text(values, "prenom", 100);
         String email = email(values, "email");
@@ -195,6 +206,7 @@ public class AdminTableService {
         AdminUserRecord existing = requireUtilisateur(id);
         AdminUserTypeRecord type = requireUserType(identifier(values, "typeUtilisateurId"));
         requireLoginCapableType(type);
+        ensureClientProfileRoleIsPreserved(existing, type.code());
         String nom = text(values, "nom", 100);
         String prenom = text(values, "prenom", 100);
         String email = email(values, "email");
@@ -207,6 +219,31 @@ public class AdminTableService {
             repository.updateUtilisateur(id, type.id(), nom, prenom, email, login, status),
             "utilisateur"
         );
+    }
+
+    private void updateClientEntreprise(long utilisateurId, Map<String, Object> values) {
+        String raisonSociale = text(values, "raisonSociale", 150);
+        String niu = enterpriseIdentifier(values, "niu");
+        String rccm = enterpriseIdentifier(values, "rccm");
+        if (repository.enterpriseIdentifiersExist(niu, rccm, utilisateurId)) {
+            throw AuthException.conflict(
+                "ADMIN_ENTERPRISE_IDENTIFIER_ALREADY_EXISTS",
+                "Another enterprise profile already uses one of these registered identifiers."
+            );
+        }
+        requireUpdated(
+            repository.updateClientEntreprise(utilisateurId, raisonSociale, niu, rccm),
+            "enterprise client profile"
+        );
+    }
+
+    private void ensureClientProfileRoleIsPreserved(AdminUserRecord existing, String nextTypeCode) {
+        if ("CLIENT".equals(existing.typeCode()) != "CLIENT".equals(nextTypeCode)) {
+            throw AuthException.conflict(
+                "ADMIN_CLIENT_ROLE_CHANGE_REQUIRES_PROFILE_WORKFLOW",
+                "Changing a CLIENT account's role requires a deliberate buyer-profile workflow."
+            );
+        }
     }
 
     private void deleteUtilisateur(long id, long administratorId) {
@@ -409,6 +446,10 @@ public class AdminTableService {
             throw invalid(field);
         }
         return status;
+    }
+
+    private String enterpriseIdentifier(Map<String, Object> values, String field) {
+        return text(values, field, 50).toUpperCase(Locale.ROOT);
     }
 
     private String password(Map<String, Object> values, String field) {

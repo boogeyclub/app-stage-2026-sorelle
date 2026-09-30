@@ -69,6 +69,10 @@ The Angular app sends requests to the `apiBaseUrl` loaded from `config.json`. Th
 
 A browser response with HTTP `500` or `503` means the frontend successfully reached Spring; inspect the safe `X-Request-Id` displayed by the administrator-table error and match it in the backend log. A browser response with status `0` instead indicates a network/CORS/API-base-URL problem.
 
+## Buyer registration profiles
+
+The public registration form asks only a `CLIENT` buyer to select a legal profile. `PARTICULIER` creates a private-individual buyer profile. `ENTREPRISE` additionally requires the company’s `raisonSociale`, `NIU`, and `RCCM`; the existing first and last name fields are labeled as the legal representative or primary contact. `NIU` and `RCCM` conflicts are reported without exposing another company’s data. `VENDEUR` registration remains unchanged and never sends buyer-profile fields.
+
 ## Password reset
 
 The sign-in form has a **Forgot password?** action that opens `/CacaoMarketCM/password-reset`. The request page accepts an account email and calls `POST /cacaomarketcm/api/auth/password-reset/request`; it deliberately shows the same success message whether or not a link can be sent, so it does not disclose account existence.
@@ -95,7 +99,7 @@ Dashboard routes first call `GET /cacaomarketcm/api/auth/session`, so refreshing
 
 The administrator dashboard contains one card for each `gu` table and opens a protected route under `/CacaoMarketCM/dashboard/admin/tables/{table}`. The Angular route guard improves navigation, while the Spring API independently checks the persisted active browser session and `ADMINISTRATEUR` role for every request.
 
-Configuration and account records expose controlled create/update/removal workflows. `sessions_utilisateur`, `registration_confirmation`, and `password_reset` remain audit-oriented with only revocation or pending-registration cancellation actions; `password_history` is read-only. The UI deliberately has no column or form field for password hashes, session hashes, confirmation hashes, or reset-token hashes. The server enforces the same allow-list and safety rules.
+Configuration and account records expose controlled create/update/removal workflows. `client_particulier` is an audit view of the registration-managed private-buyer relationship, while `client_entreprise` allows only controlled updates to the legal company details. `sessions_utilisateur`, `registration_confirmation`, and `password_reset` remain audit-oriented with only revocation or pending-registration cancellation actions; `password_history` is read-only. The UI deliberately has no column or form field for password hashes, session hashes, confirmation hashes, or reset-token hashes. The server enforces the same allow-list and safety rules.
 
 ### Dashboard component layout
 

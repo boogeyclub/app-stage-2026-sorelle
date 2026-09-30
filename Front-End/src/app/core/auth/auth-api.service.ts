@@ -4,11 +4,18 @@ import { Observable } from 'rxjs';
 import { RuntimeConfigurationService } from '../config/runtime-configuration.service';
 
 export type RegistrableUserRole = 'VENDEUR' | 'CLIENT';
+export type ClientProfileType = 'PARTICULIER' | 'ENTREPRISE';
 export type AuthenticatedUserRole = RegistrableUserRole | 'ADMINISTRATEUR';
 export type InterfaceLanguage = 'en' | 'fr';
 
 export interface RegistrationPayload {
   role: RegistrableUserRole;
+  /** Required only when role is CLIENT. */
+  clientProfileType?: ClientProfileType;
+  /** Required only for a CLIENT with clientProfileType ENTREPRISE. */
+  raisonSociale?: string;
+  niu?: string;
+  rccm?: string;
   prenom: string;
   nom: string;
   email: string;

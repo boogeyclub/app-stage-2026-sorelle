@@ -313,6 +313,31 @@ export const TRANSLATIONS = {
         sellerDescription: 'For farmers, cooperatives, and sellers with cocoa lots to present.',
         buyerTitle: 'I want to source cocoa',
         buyerDescription: 'For buyers and sourcing teams looking for commercial quantities.',
+        clientProfileTitle: 'How are you sourcing cocoa?',
+        clientProfileDescription: 'Choose the legal profile that will hold this buyer account.',
+        individualTitle: 'Private individual',
+        individualDescription: 'I am sourcing cocoa in my own name.',
+        enterpriseTitle: 'Company',
+        enterpriseDescription: 'I am sourcing cocoa for a registered enterprise.',
+        clientProfileRequired: 'Choose whether this buyer account is for a private individual or a company.',
+        enterpriseDetailsTitle: 'Company identification',
+        enterpriseDetailsDescription: 'Enter the legal business details used for this buyer account.',
+        companyNameLabel: 'Registered company name',
+        companyNamePlaceholder: 'Your company’s legal name',
+        companyNameRequired: 'Enter the registered company name.',
+        niuLabel: 'NIU',
+        niuPlaceholder: 'Unique identification number',
+        niuRequired: 'Enter the company NIU.',
+        rccmLabel: 'RCCM',
+        rccmPlaceholder: 'Trade and personal property credit register number',
+        rccmRequired: 'Enter the company RCCM.',
+        representativeNotice: 'Your first and last name below identify the enterprise’s legal representative or primary contact.',
+        representativeFirstNameLabel: 'Legal representative’s first name',
+        representativeFirstNamePlaceholder: 'Representative’s first name',
+        representativeFirstNameRequired: 'Enter the legal representative’s first name.',
+        representativeLastNameLabel: 'Legal representative’s last name',
+        representativeLastNamePlaceholder: 'Representative’s last name',
+        representativeLastNameRequired: 'Enter the legal representative’s last name.',
         firstNameLabel: 'First name',
         firstNamePlaceholder: 'Your first name',
         lastNameLabel: 'Last name',
@@ -332,6 +357,9 @@ export const TRANSLATIONS = {
         confirmationExpiry: 'Open its personal link within 3 hours. Unconfirmed registrations expire and are removed automatically.',
         errors: {
           identityExists: 'An account already uses this email address or login.',
+          enterpriseIdentifierExists: 'An account already uses one of these enterprise identifiers.',
+          identityOrEnterpriseIdentifierExists: 'An account already uses this email address, login, or enterprise identifier.',
+          clientProfileInvalid: 'Review the buyer profile and enterprise details, then try again.',
           deliveryUnavailable: 'We could not send your confirmation email. Please try again later.',
           requestFailed: 'We could not start your registration. Please review your information and try again.'
         },
@@ -408,7 +436,17 @@ export const TRANSLATIONS = {
           users: {
             title: 'Users',
             description: 'Create, update, suspend, or remove application accounts.',
-            securityNote: 'Passwords are accepted only when creating a controlled account and are never shown, edited, or returned by this screen.'
+            securityNote: 'Passwords are accepted only when creating a controlled account and are never shown, edited, or returned by this screen. CLIENT accounts are created through the registration workflow so their legal profile is always recorded.'
+          },
+          individualClients: {
+            title: 'Private buyer profiles',
+            description: 'Audit CLIENT accounts registered as private individuals.',
+            securityNote: 'This is an audit view of the profile relationship. A private buyer type is chosen during secure registration and cannot be removed independently from the account.'
+          },
+          enterpriseClients: {
+            title: 'Enterprise buyer profiles',
+            description: 'Review and correct the legal details of registered enterprise buyers.',
+            securityNote: 'Only the company details are editable here. NIU and RCCM remain unique, and a profile type cannot be changed independently from its CLIENT account.'
           },
           sessions: {
             title: 'Browser sessions',
@@ -495,6 +533,11 @@ export const TRANSLATIONS = {
           usedAt: 'Used',
           basicRight: 'Basic right',
           currentPassword: 'Current',
+          companyName: 'Company name',
+          niu: 'NIU',
+          rccm: 'RCCM',
+          representativeFirstName: 'Representative first name',
+          representativeLastName: 'Representative last name',
           recordedAt: 'Recorded',
           changedAt: 'Changed',
           actions: 'Actions'
@@ -509,7 +552,10 @@ export const TRANSLATIONS = {
           login: 'Login',
           status: 'Status',
           temporaryPassword: 'Temporary password',
-          basicRight: 'Basic right'
+          basicRight: 'Basic right',
+          companyName: 'Registered company name',
+          niu: 'NIU',
+          rccm: 'RCCM'
         },
         statuses: {
           active: 'Active',
@@ -897,6 +943,31 @@ export const TRANSLATIONS = {
         sellerDescription: 'Pour les producteurs, coopératives et vendeurs ayant des lots de cacao à présenter.',
         buyerTitle: 'Je souhaite rechercher du cacao',
         buyerDescription: 'Pour les acheteurs et équipes sourcing qui recherchent des quantités commerciales.',
+        clientProfileTitle: 'Sous quel statut recherchez-vous du cacao ?',
+        clientProfileDescription: 'Choisissez le profil juridique qui portera ce compte acheteur.',
+        individualTitle: 'Personne physique',
+        individualDescription: 'Je recherche du cacao en mon nom propre.',
+        enterpriseTitle: 'Personne morale / entreprise',
+        enterpriseDescription: 'Je recherche du cacao pour le compte d’une entreprise immatriculée.',
+        clientProfileRequired: 'Choisissez si ce compte acheteur est créé pour une personne physique ou une entreprise.',
+        enterpriseDetailsTitle: 'Identification de l’entreprise',
+        enterpriseDetailsDescription: 'Saisissez les informations légales de l’entreprise liées à ce compte acheteur.',
+        companyNameLabel: 'Raison sociale',
+        companyNamePlaceholder: 'Dénomination légale de l’entreprise',
+        companyNameRequired: 'Saisissez la raison sociale de l’entreprise.',
+        niuLabel: 'NIU',
+        niuPlaceholder: 'Numéro d’identifiant unique',
+        niuRequired: 'Saisissez le NIU de l’entreprise.',
+        rccmLabel: 'RCCM',
+        rccmPlaceholder: 'Numéro du Registre du Commerce et du Crédit Mobilier',
+        rccmRequired: 'Saisissez le RCCM de l’entreprise.',
+        representativeNotice: 'Les prénom et nom ci-dessous identifient le représentant légal ou le contact principal de l’entreprise.',
+        representativeFirstNameLabel: 'Prénom du représentant légal',
+        representativeFirstNamePlaceholder: 'Prénom du représentant',
+        representativeFirstNameRequired: 'Saisissez le prénom du représentant légal.',
+        representativeLastNameLabel: 'Nom du représentant légal',
+        representativeLastNamePlaceholder: 'Nom du représentant',
+        representativeLastNameRequired: 'Saisissez le nom du représentant légal.',
         firstNameLabel: 'Prénom',
         firstNamePlaceholder: 'Votre prénom',
         lastNameLabel: 'Nom',
@@ -916,6 +987,9 @@ export const TRANSLATIONS = {
         confirmationExpiry: 'Ouvrez son lien personnel dans les 3 heures. Les inscriptions non confirmées expirent et sont supprimées automatiquement.',
         errors: {
           identityExists: 'Un compte utilise déjà cette adresse e-mail ou cet identifiant.',
+          enterpriseIdentifierExists: 'Un compte utilise déjà l’un de ces identifiants d’entreprise.',
+          identityOrEnterpriseIdentifierExists: 'Un compte utilise déjà cette adresse e-mail, cet identifiant ou un identifiant d’entreprise.',
+          clientProfileInvalid: 'Vérifiez le profil acheteur et les informations de l’entreprise, puis réessayez.',
           deliveryUnavailable: 'Nous n’avons pas pu envoyer votre e-mail de confirmation. Réessayez plus tard.',
           requestFailed: 'Nous n’avons pas pu démarrer votre inscription. Vérifiez vos informations et réessayez.'
         },
@@ -992,7 +1066,17 @@ export const TRANSLATIONS = {
           users: {
             title: 'Utilisateurs',
             description: 'Créez, modifiez, suspendez ou supprimez des comptes applicatifs.',
-            securityNote: 'Les mots de passe sont acceptés uniquement lors de la création contrôlée d’un compte et ne sont jamais affichés, modifiés ou renvoyés par cet écran.'
+            securityNote: 'Les mots de passe sont acceptés uniquement lors de la création contrôlée d’un compte et ne sont jamais affichés, modifiés ou renvoyés par cet écran. Les comptes CLIENT sont créés par le parcours d’inscription afin que leur profil juridique soit toujours enregistré.'
+          },
+          individualClients: {
+            title: 'Profils acheteurs personnes physiques',
+            description: 'Auditez les comptes CLIENT inscrits comme personnes physiques.',
+            securityNote: 'Il s’agit d’une vue d’audit de la relation de profil. Le type personne physique est choisi lors de l’inscription sécurisée et ne peut pas être supprimé indépendamment du compte.'
+          },
+          enterpriseClients: {
+            title: 'Profils acheteurs entreprises',
+            description: 'Consultez et corrigez les informations légales des acheteurs entreprises enregistrés.',
+            securityNote: 'Seules les données de l’entreprise sont modifiables ici. Le NIU et le RCCM restent uniques et le type de profil ne peut pas être modifié indépendamment du compte CLIENT.'
           },
           sessions: {
             title: 'Sessions navigateur',
@@ -1079,6 +1163,11 @@ export const TRANSLATIONS = {
           usedAt: 'Utilisé le',
           basicRight: 'Droit de base',
           currentPassword: 'Actuel',
+          companyName: 'Raison sociale',
+          niu: 'NIU',
+          rccm: 'RCCM',
+          representativeFirstName: 'Prénom du représentant',
+          representativeLastName: 'Nom du représentant',
           recordedAt: 'Enregistré le',
           changedAt: 'Modifié le',
           actions: 'Actions'
@@ -1093,7 +1182,10 @@ export const TRANSLATIONS = {
           login: 'Identifiant',
           status: 'Statut',
           temporaryPassword: 'Mot de passe temporaire',
-          basicRight: 'Droit de base'
+          basicRight: 'Droit de base',
+          companyName: 'Raison sociale',
+          niu: 'NIU',
+          rccm: 'RCCM'
         },
         statuses: {
           active: 'Actif',

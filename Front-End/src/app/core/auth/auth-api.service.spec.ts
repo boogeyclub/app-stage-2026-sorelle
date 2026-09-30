@@ -44,6 +44,31 @@ describe('AuthApiService', () => {
     request.flush({ email: payload.email, expiresAt: '2026-09-22T18:00:00Z' });
   });
 
+  it('posts the enterprise buyer profile with the registration request', () => {
+    const payload: RegistrationPayload = {
+      role: 'CLIENT',
+      clientProfileType: 'ENTREPRISE',
+      raisonSociale: 'Cacao Source Cameroun SARL',
+      niu: 'M012345678901A',
+      rccm: 'RC/YAO/2026/B/123',
+      prenom: 'Amina',
+      nom: 'Ngono',
+      email: 'amina@example.com',
+      login: 'amina-cocoa',
+      password: 'secure-passphrase',
+      confirmPassword: 'secure-passphrase',
+      acceptTerms: true,
+      language: 'fr'
+    };
+
+    service.register(payload).subscribe();
+
+    const request = httpTesting.expectOne('/cacaomarketcm/api/auth/registration');
+    expect(request.request.method).toBe('POST');
+    expect(request.request.body).toEqual(payload);
+    request.flush({ email: payload.email, expiresAt: '2026-09-22T18:00:00Z' });
+  });
+
   it('sends an email confirmation token to the backend confirmation route', () => {
     service.confirmRegistration('single-use-token').subscribe((response) => {
       expect(response.status).toBe('CONFIRMED');

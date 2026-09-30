@@ -73,6 +73,42 @@ public class AuthRepository {
         return utilisateurId;
     }
 
+    public boolean enterpriseIdentifiersExist(String niu, String rccm) {
+        Boolean exists = jdbcTemplate.queryForObject(
+            """
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM gu.client_entreprise
+                    WHERE UPPER(niu) = UPPER(?) OR UPPER(rccm) = UPPER(?)
+                )
+                """,
+            Boolean.class,
+            niu,
+            rccm
+        );
+        return Boolean.TRUE.equals(exists);
+    }
+
+    public void insertClientParticulier(long utilisateurId) {
+        jdbcTemplate.update(
+            "INSERT INTO gu.client_particulier (utilisateur_id) VALUES (?)",
+            utilisateurId
+        );
+    }
+
+    public void insertClientEntreprise(long utilisateurId, String raisonSociale, String niu, String rccm) {
+        jdbcTemplate.update(
+            """
+                INSERT INTO gu.client_entreprise (utilisateur_id, raison_sociale, niu, rccm)
+                VALUES (?, ?, ?, ?)
+                """,
+            utilisateurId,
+            raisonSociale,
+            niu,
+            rccm
+        );
+    }
+
     public void insertPasswordHash(long utilisateurId, String passwordHash, Instant insertedAt) {
         jdbcTemplate.update(
             """

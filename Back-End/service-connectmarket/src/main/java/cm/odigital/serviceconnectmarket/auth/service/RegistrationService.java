@@ -16,6 +16,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import cm.odigital.serviceconnectmarket.auth.config.RegistrationProperties;
 import cm.odigital.serviceconnectmarket.auth.domain.AuthException;
+import cm.odigital.serviceconnectmarket.auth.domain.ClientProfileType;
 import cm.odigital.serviceconnectmarket.auth.domain.ConfirmationTokenGenerator;
 import cm.odigital.serviceconnectmarket.auth.domain.PendingRegistration;
 import cm.odigital.serviceconnectmarket.auth.domain.RegistrableUserType;
@@ -67,6 +68,7 @@ public class RegistrationService {
         Instant now = clock.instant();
 
         RegistrableUserType userType = RegistrableUserType.from(command.role());
+        ClientProfile profile = clientProfileFor(userType, command);
         String email = normalizeEmail(command.email());
         String login = normalizeRequired(command.login());
         String prenom = normalizeRequired(command.prenom());
@@ -74,8 +76,9 @@ public class RegistrationService {
         validatePasswordLength(command.password());
 
         LOGGER.info(
-            "event=registration.workflow.started role={} email={} login={}",
+            "event=registration.workflow.started role={} clientProfileType={} email={} login={}",
             userType.name(),
+            profile == null ? "[none]" : profile.type().name(),
             AuditValue.maskedEmail(email),
             AuditValue.maskedIdentity(login)
         );
@@ -87,6 +90,14 @@ public class RegistrationService {
             );
         }
         LOGGER.info("event=registration.identity.available");
+        if (profile != null && profile.type() == ClientProfileType.ENTREPRISE
+            && authRepository.enterpriseIdentifiersExist(profile.niu(), profile.rccm())) {
+            LOGGER.warn("event=registration.workflow.rejected reason=ENTERPRISE_IDENTIFIER_ALREADY_EXISTS");
+            throw AuthException.conflict(
+                "REGISTRATION_ENTERPRISE_IDENTIFIER_ALREADY_EXISTS",
+                "An enterprise account already uses one of these registered identifiers."
+            );
+        }
 
         long typeUtilisateurId = authRepository.findUserTypeId(userType.name())
             .orElseThrow(() -> AuthException.unavailable(
@@ -108,6 +119,7 @@ public class RegistrationService {
                 UtilisateurStatus.PENDING_CONFIRMATION.databaseValue(),
                 now
             );
+            insertClientProfile(utilisateurId, profile);
             authRepository.insertPasswordHash(utilisateurId, passwordEncoder.encode(command.password()), now);
             authRepository.insertConfirmation(utilisateurId, tokenGenerator.hash(rawToken), expiresAt, now);
             LOGGER.info(
@@ -126,10 +138,12 @@ public class RegistrationService {
             ));
             LOGGER.info("event=registration.mail.dispatch.completed utilisateurId={}", utilisateurId);
         } catch (DataIntegrityViolationException exception) {
+            // A concurrent request can race the identity/enterprise-ID checks above. Keep the
+            // response generic and never log the submitted NIU, RCCM, or any database message.
             LOGGER.warn("event=registration.workflow.rejected reason=DATA_INTEGRITY_VIOLATION");
             throw AuthException.conflict(
-                "REGISTRATION_IDENTITY_ALREADY_EXISTS",
-                "An account already uses this email address or login."
+                "REGISTRATION_IDENTITY_OR_ENTERPRISE_IDENTIFIER_EXISTS",
+                "An account or enterprise identifier is already registered."
             );
         }
 
@@ -184,6 +198,73 @@ public class RegistrationService {
         LOGGER.info("event=registration.confirmation.completed utilisateurId={}", confirmation.utilisateurId());
     }
 
+    private ClientProfile clientProfileFor(RegistrableUserType userType, RegistrationCommand command) {
+        if (userType != RegistrableUserType.CLIENT) {
+            if (hasAnyClientProfileValue(command)) {
+                throw AuthException.badRequest(
+                    "REGISTRATION_CLIENT_PROFILE_FORBIDDEN",
+                    "Only CLIENT registrations can include a buyer profile."
+                );
+            }
+            return null;
+        }
+
+        ClientProfileType profileType = ClientProfileType.from(command.clientProfileType());
+        if (profileType == ClientProfileType.PARTICULIER) {
+            if (hasEnterpriseDetails(command)) {
+                throw AuthException.badRequest(
+                    "REGISTRATION_CLIENT_PROFILE_DETAILS_FORBIDDEN",
+                    "Enterprise details are only accepted for an enterprise buyer profile."
+                );
+            }
+            return new ClientProfile(profileType, null, null, null);
+        }
+
+        return new ClientProfile(
+            profileType,
+            normalizeEnterpriseValue(command.raisonSociale(), 150),
+            normalizeEnterpriseIdentifier(command.niu()),
+            normalizeEnterpriseIdentifier(command.rccm())
+        );
+    }
+
+    private void insertClientProfile(long utilisateurId, ClientProfile profile) {
+        if (profile == null) {
+            return;
+        }
+        if (profile.type() == ClientProfileType.PARTICULIER) {
+            authRepository.insertClientParticulier(utilisateurId);
+            return;
+        }
+        authRepository.insertClientEntreprise(utilisateurId, profile.raisonSociale(), profile.niu(), profile.rccm());
+    }
+
+    private boolean hasAnyClientProfileValue(RegistrationCommand command) {
+        return command.clientProfileType() != null
+            || command.raisonSociale() != null
+            || command.niu() != null
+            || command.rccm() != null;
+    }
+
+    private boolean hasEnterpriseDetails(RegistrationCommand command) {
+        return command.raisonSociale() != null || command.niu() != null || command.rccm() != null;
+    }
+
+    private String normalizeEnterpriseValue(String value, int maximumLength) {
+        String normalized = value == null ? "" : value.trim();
+        if (normalized.isEmpty() || normalized.length() > maximumLength) {
+            throw AuthException.badRequest(
+                "REGISTRATION_ENTERPRISE_DETAILS_INVALID",
+                "The enterprise registration details are not valid."
+            );
+        }
+        return normalized;
+    }
+
+    private String normalizeEnterpriseIdentifier(String value) {
+        return normalizeEnterpriseValue(value, 50).toUpperCase(Locale.ROOT);
+    }
+
     private void deletePendingRegistration(long utilisateurId) {
         authRepository.deletePasswordHistory(utilisateurId);
         authRepository.deleteConfirmation(utilisateurId);
@@ -216,5 +297,13 @@ public class RegistrationService {
                 "The password does not meet the supported length requirements."
             );
         }
+    }
+
+    private record ClientProfile(
+        ClientProfileType type,
+        String raisonSociale,
+        String niu,
+        String rccm
+    ) {
     }
 }

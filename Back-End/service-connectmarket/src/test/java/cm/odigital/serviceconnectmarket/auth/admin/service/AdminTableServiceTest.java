@@ -87,8 +87,8 @@ class AdminTableServiceTest {
 
     @Test
     void createsAControlledUserByHashingTheSubmittedPasswordBeforePersistence() {
-        AdminUserTypeRecord clientType = new AdminUserTypeRecord(3L, "CLIENT", "Client");
-        when(repository.findUserType(3L)).thenReturn(Optional.of(clientType));
+        AdminUserTypeRecord vendeurType = new AdminUserTypeRecord(3L, "VENDEUR", "Vendeur");
+        when(repository.findUserType(3L)).thenReturn(Optional.of(vendeurType));
         when(repository.utilisateurHasAppConnection(3L)).thenReturn(true);
         when(repository.identityExists("amina@example.com", "amina-cocoa", null)).thenReturn(false);
         when(repository.insertUtilisateur(
@@ -117,6 +117,46 @@ class AdminTableServiceTest {
             42L,
             "bcrypt-hash-only",
             Instant.parse("2026-09-29T12:00:00Z")
+        );
+    }
+
+    @Test
+    void requiresTheRegistrationWorkflowWhenAnAdministratorTriesToCreateAClientAccount() {
+        when(repository.findUserType(3L)).thenReturn(Optional.of(new AdminUserTypeRecord(3L, "CLIENT", "Client")));
+        when(repository.utilisateurHasAppConnection(3L)).thenReturn(true);
+
+        AuthException exception = assertThrows(
+            AuthException.class,
+            () -> service.create(AdminTable.UTILISATEURS, Map.of("typeUtilisateurId", 3), 1L)
+        );
+
+        assertEquals("ADMIN_CLIENT_CREATION_REQUIRES_REGISTRATION", exception.getCode());
+        verify(repository, never()).insertUtilisateur(
+            anyLong(), any(), any(), any(), any(), any(), any()
+        );
+    }
+
+    @Test
+    void updatesEnterpriseClientDetailsUsingTheControlledProfileTable() {
+        when(repository.enterpriseIdentifiersExist("M012345678901A", "RC/YAO/2026/B/123", 42L)).thenReturn(false);
+        when(repository.updateClientEntreprise(
+            42L,
+            "Cacao Source Cameroun SARL",
+            "M012345678901A",
+            "RC/YAO/2026/B/123"
+        )).thenReturn(true);
+
+        service.update(AdminTable.CLIENT_ENTREPRISE, "42", Map.of(
+            "raisonSociale", "Cacao Source Cameroun SARL",
+            "niu", "m012345678901a",
+            "rccm", "rc/yao/2026/b/123"
+        ), 1L);
+
+        verify(repository).updateClientEntreprise(
+            42L,
+            "Cacao Source Cameroun SARL",
+            "M012345678901A",
+            "RC/YAO/2026/B/123"
         );
     }
 
